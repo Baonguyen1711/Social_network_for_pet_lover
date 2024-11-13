@@ -15,7 +15,16 @@ export interface MessageComponentType {
 export interface RecentChat {
     _id: string,
     latestMessage: string,
-    timeStamp: string
+    timeStamp: string,
+    userInfo: {
+        email: string | undefined,
+
+        phone: string | undefined,
+        firstname: string | undefined,
+        lastname: string | undefined,
+        
+        avatar: string| undefined
+    } | null
 }
 
 

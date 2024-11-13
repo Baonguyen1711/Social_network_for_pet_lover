@@ -1,6 +1,7 @@
 const registerEndPoint = require('./register')
 const loginEndPoint = require('./login')
 const messageEndPoint = require('./message')
+const userEndPoint = require('./user')
 
 function api(app) {
 
@@ -10,6 +11,8 @@ function api(app) {
     app.get('/api/v1/login', loginEndPoint)
 
     app.use('/api/v1/message', messageEndPoint)
+
+    app.use('/api/v1/user', userEndPoint)
 }
 
 module.exports = api

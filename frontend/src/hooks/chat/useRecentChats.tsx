@@ -6,6 +6,7 @@ interface message {
     sendAt: Date
 }
 
+
 const useRecentChats = (email: string) => {
     useEffect(() => {
         const fetchData = async () => {

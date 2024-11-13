@@ -1,10 +1,13 @@
 import React, { ReactEventHandler, useRef, useEffect } from 'react'
+import ColorThief, { RGBColor } from 'colorthief'
 import MessageComponent from './MessageComponent'
 import { Box } from '@mui/material'
 import { MessageComponentType } from '../../types'
 import { useSelectedUser } from './SelectedUserContext'
 import { useSocket } from './SocketContext'
+import { useBackground } from './BackgroundContext'
 import { useState } from 'react'
+
 
 
 interface MessageComponentArray {
@@ -18,6 +21,39 @@ const MessageDisplay: React.FC<MessageComponentArray> = () => {
   const { selectedUserEmail } = useSelectedUser()
   const [recentMessages, setRecentMessages] = useState<MessageComponentType[]>([])
   const {messages, setMessages} = useSocket();
+  const {backgroundImageOver, setPalette} = useBackground()
+
+  const imgRef = useRef<HTMLImageElement>(null);
+  const [messageColor, setMessageColor] = useState<string>("#f0f0f0");
+
+
+  // function convertToImageElement(imageSrc: string): HTMLImageElement {
+  //   const img = new Image();
+  //   img.src = imageSrc;
+  //   return img;
+  // }
+
+  // // const handleImageLoad = () => {
+
+  // //     const colorThief = new ColorThief();
+  // //     const color = colorThief.getColor(convertToImageElement(backgroundImageOver));
+  // //     console.log("rgb", color)
+  // //     //setMessageColor(`rgb(${color[0]}, ${color[1]}, ${color[2]})`);
+
+  // // };
+
+  useEffect(()=> {
+    const colorThief = new ColorThief();
+    const img = new Image()
+    img.src= backgroundImageOver
+    img.crossOrigin = "anonymous"; // Important for cross-origin images
+
+    img.onload = () => {
+      const palette = colorThief.getPalette(img);
+      setPalette(palette)
+     };
+
+  },[backgroundImageOver])
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -45,7 +81,7 @@ const MessageDisplay: React.FC<MessageComponentArray> = () => {
         }
 
         const data = await response.json()
-        setRecentMessages(data.chatHistory)
+        setRecentMessages(data.chatHistory.reverse())
 
 
       } catch (e) {
@@ -63,6 +99,7 @@ const MessageDisplay: React.FC<MessageComponentArray> = () => {
   }, [selectedUserEmail])
 
 
+
   return (
     <Box
       ref={scrollRef}
@@ -72,7 +109,9 @@ const MessageDisplay: React.FC<MessageComponentArray> = () => {
       marginTop="2px"
       padding="20px"
       sx={{
-        overflowY: "auto"
+        overflowY: "auto",
+        backgroundImage: `url(${backgroundImageOver})`,
+        backgroundSize: "cover"
       }}
     >
       {
@@ -81,7 +120,7 @@ const MessageDisplay: React.FC<MessageComponentArray> = () => {
           <MessageComponent
             key={message.timeStamp}
             content={message.content}
-            timeStamp={message.timeStamp}
+            timeStamp={new Date(message.timeStamp).toLocaleString().slice(0,9)}
             isSender={message.isSender}
           />
 

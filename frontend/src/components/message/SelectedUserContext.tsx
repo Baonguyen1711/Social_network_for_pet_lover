@@ -4,6 +4,10 @@ import React, { createContext, useContext, useState, ReactNode, SetStateAction }
 interface SelectedUserContextType {
   selectedUserEmail: string | null;
   setSelectedUserEmail: React.Dispatch<SetStateAction<string|null>>;
+  selectedUserAvatar: string | undefined;
+  setSelectedUserAvatar: React.Dispatch<SetStateAction<string|undefined>>;
+  selectedUserName: string | undefined;
+  setSelectedUserName: React.Dispatch<SetStateAction<string|undefined>>;
 }
 
 // Create the context
@@ -11,9 +15,11 @@ const SelectedUserContext = createContext<SelectedUserContextType | undefined>(u
 
 export const SelectedUserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [selectedUserEmail, setSelectedUserEmail] = useState<string | null>(null);
+  const [selectedUserName, setSelectedUserName] = useState<string | undefined>(undefined);
+  const [selectedUserAvatar, setSelectedUserAvatar] = useState<string | undefined>(undefined)
 
   return (
-    <SelectedUserContext.Provider value={{ selectedUserEmail, setSelectedUserEmail }}>
+    <SelectedUserContext.Provider value={{ selectedUserEmail, setSelectedUserEmail, selectedUserAvatar, setSelectedUserAvatar, selectedUserName, setSelectedUserName}}>
       {children}
     </SelectedUserContext.Provider>
   );

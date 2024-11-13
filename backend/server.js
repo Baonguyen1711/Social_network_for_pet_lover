@@ -9,7 +9,7 @@ const port = 5000
 const socketPort = 4000
 
 app.use(cors());
-
+//app.use(express.json())
 
 api(app)
 

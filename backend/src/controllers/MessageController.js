@@ -4,7 +4,7 @@ const mongoose = require('mongoose')
 const connectToDb = require('../../src/config/database/db')
 mongoose.set('debug', true)
 
-class RegisterController {
+class MessageController {
 
     //[POST]
     async create(req, res) {
@@ -79,6 +79,22 @@ class RegisterController {
                         'timeStamp': { '$first': "$sendAt" }
                     }
                 }
+                ,
+                {
+                    '$lookup': {
+                        'from': 'users',  
+                        'localField': '_id',  
+                        'foreignField': 'email',  
+                        'as': 'userInfo'
+                    }
+                },
+                // Optionally, unwind userInfo if you want it as a single object
+                {
+                    '$unwind': {
+                        'path': '$userInfo',
+                        'preserveNullAndEmptyArrays': true  // In case there's no matching user
+                    }
+                }
 
             ])
 
@@ -139,13 +155,14 @@ class RegisterController {
                 },
                 {
                     '$addFields': {
-                        'isSender': { '$eq': ['$senderEmail', senderEmail] }
+                        'isSender': { '$eq': ['$senderEmail', senderEmail] },
+                        'timeStamp': '$sendAt'
                     }
                 },
                 //sort by latest sent message
                 {
                     '$sort': {
-                        'sendAt': 1
+                        'sendAt': -1
                     }
                 },
                 {
@@ -183,7 +200,8 @@ class RegisterController {
                 senderEmail: senderEmail,
                 recipentEmail: recipentEmail,
                 content: content,
-                sendAt: new Date()
+                sendAt: new Date(),
+                isDeleted: false
             })
 
             await newMessage.save()
@@ -205,4 +223,8 @@ class RegisterController {
     // }
 }
 
-module.exports = new RegisterController
+module.exports = new MessageController
+
+//param
+//query param
+//body

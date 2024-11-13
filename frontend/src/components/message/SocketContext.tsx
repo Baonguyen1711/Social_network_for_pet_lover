@@ -33,7 +33,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       const newRecentChat: RecentChat = {
           "_id": message.sendfrom,
           "latestMessage": message.content,
-          "timeStamp": new Date().toISOString()
+          "timeStamp": new Date().toISOString(),
+          "userInfo": null
       } 
 
       const url = `http://localhost:5000/api/v1/message/post?senderEmail=${message.sendfrom}&recipentEmail=${currentEmail}&content=${message.content}`
