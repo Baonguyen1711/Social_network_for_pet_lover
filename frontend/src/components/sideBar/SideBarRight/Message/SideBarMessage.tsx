@@ -2,8 +2,7 @@ import React from "react";
 import clsx from "clsx";
 import {} from "@mui/icons-material";
 
-import SearchBar from "../../shared/SearchBar/SearchBar";
-import FriendshipBar from "./FriendshipBar/FriendshipBar";
+import SearchBar from "../../../shared/SearchBar/SearchBar";
 import style from "../SideBarRight/SideBarMessage.module.css";
 
 const SideBar_Right = () => {
@@ -13,17 +12,7 @@ const SideBar_Right = () => {
       <SearchBar placeHolderString="Search for chats" /> 
       <div className={clsx(style.recent_chats_box)}>
         <h1 className={clsx(style.title)}>Recent Chats</h1>
-        <FriendshipBar />
-        <FriendshipBar />
-        <FriendshipBar />
-        <FriendshipBar />
-        <FriendshipBar />
-        <FriendshipBar />
-        <FriendshipBar />
-        <FriendshipBar />
-        <FriendshipBar />
-        <FriendshipBar />
-        <FriendshipBar />
+
         <div className={clsx(style.line)}></div>
         <div className={clsx(style.see_all)}>See All</div>
         <div className={clsx(style.media)}>Media</div>

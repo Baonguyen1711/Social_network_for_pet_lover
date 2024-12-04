@@ -49,7 +49,7 @@
 
 .modal_contentBox {
   display: flex;
-  width: 40%; /* Chiếm 1/3 chiều ngang của container */
+  width: 35%; /* Chiếm 1/3 chiều ngang của container */
   margin: 15px 10px 15px 15px;
   flex-direction: column;
 }
@@ -83,7 +83,7 @@
 
 .modal_img {
   display: inline-block;
-  width: 60%; /* Chiếm 2/3 chiều ngang của container */
+  width: 65%; /* Chiếm 2/3 chiều ngang của container */
   height: 100%; /* Phủ toàn bộ chiều cao */
   border-radius: 0px 8px 8px 0px;
   object-fit: cover;

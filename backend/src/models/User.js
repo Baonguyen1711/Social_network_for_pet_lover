@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 mongoose.set('debug', true)
 
-const FashionSocial = mongoose.connection.useDb('SpiceUp');
+const FashionSocial = mongoose.connection.useDb('FashionSocial');
 
 const UserSchema = new mongoose.Schema({
     email: {
@@ -31,8 +31,15 @@ const UserSchema = new mongoose.Schema({
         type: String,
         require: true,
     },
+    location: {
+        type: String,
+        require: true,
+    },
     createdAt: {
         type: Date
+    },
+    description: {
+        type:String
     }
 })
 

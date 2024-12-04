@@ -1,17 +1,15 @@
 import React from "react";
 import SideBarLRForm from "../../components/shared/SideBarLR/SideBarLRForm";
-import ExploreForm from "../../components/explore/ExploreForm";
+import MainProfileForm from "../../components/profile/MainProfileForm"; 
 
-
-
-const ExplorePage = () => {
+const   ProfilePage = () => {
   return (
     <div>
         <SideBarLRForm>
-         <ExploreForm/>
+          <MainProfileForm />
         </SideBarLRForm>
     </div>
   );  
 };
 
-export default ExplorePage;
+export default ProfilePage;
