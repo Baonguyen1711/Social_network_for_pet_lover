@@ -103,7 +103,7 @@ class PostController {
           $lookup: {
             from: "likes",
             localField: "_id", 
-            foreignField: "postId", 
+            foreignField: "targetId", 
             as: "likeInfo", 
           },
         },
@@ -160,7 +160,7 @@ class PostController {
   async getPostById(req, res) {
     try {
       const postId = req.query;
-      if (!userId) {
+      if (!postId) {
         return res.status(400).json({ error: "pId is required" });
       }
       connectToDb();

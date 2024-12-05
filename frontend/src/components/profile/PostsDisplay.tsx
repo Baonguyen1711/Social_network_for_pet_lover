@@ -13,14 +13,7 @@ const PostsDisplay = () => {
   const toggleDisplayToolBox = () => {
     setIsDisplayTool((prev) => !prev);
   };
-  const onCreatedPost = async (newPost: Post | undefined) =>{
-    // if (newPost != undefined) {
-    //   setPostsData((prevPosts) => {
-    //     return [...prevPosts, newPost]; // Cập nhật postsData với bài viết mới
-    //   });
-    await  fetchData();
-    //}
-  };
+
   const updatePostsState = async (returnPost :Post|undefined )=>{
     try 
     {
@@ -35,7 +28,6 @@ const PostsDisplay = () => {
     fetchData(); // Call fetchData inside useEffect
   }, []);
   const fetchData = async () => { 
-    console.log("fetchhhhhh")
     const userId = localStorage.getItem('userId');
     const url = `http://localhost:5000/api/v1/post/getpostsbyid?userId=${userId}`;
     try {
@@ -101,10 +93,10 @@ const PostsDisplay = () => {
             Emotion
           </Button>
         </Stack>
-        {isDisplayTool&&<PostToolDisplay isOpen={isDisplayTool} onClose={toggleDisplayToolBox} onCreatedPost={onCreatedPost}/>}
+        {isDisplayTool&&<PostToolDisplay isOpen={isDisplayTool} onClose={toggleDisplayToolBox} onCreatedPost={updatePostsState}/>}
       </Card>
       { ( postsData!=undefined&& postsData?.length>0 )? (postsData?.map((post,index)=>{
-      return <PostProvider post={post}><PostInformationCard post={post} type= {1} updatePostsState={updatePostsState}  /></PostProvider>
+      return <PostProvider post={post} userId={localStorage.getItem("userId")+""}><PostInformationCard post={post}  updatePostsState={updatePostsState}  /></PostProvider>
       })) : "Don't have any post"}
     </Box>
   )

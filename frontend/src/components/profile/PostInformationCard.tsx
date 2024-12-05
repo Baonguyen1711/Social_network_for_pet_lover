@@ -25,35 +25,43 @@ import {
   Edit,
   Delete,
   VisibilityOff,
+  MoreHoriz
 } from "@mui/icons-material";
 import style from "./css/PostInformationCard.module.css";
 import { Like, Post, IComment } from "../../types";
 import CommentBar from "./CommentBar";
-import ProposalComment from "./ProposalCommentContainer";
 import ProposalCommentContainer from "./ProposalCommentContainer";
-import CommentContainer from "./CommentContainer";
 import { getTimeAgo } from "../../helper";
-import ExpandCommentContainer from "./ExpandComment/ExpandCMTContainer";
-import ExpandComment from "./ExpandComment/ExpandComment";
+import DetailPostContainer from "./ExpandComment/DetailPostContainer";
 
 interface Props {
   post?: Post;
-  type: number;
   updatePostsState?: (returnPost: Post | undefined) => void;
 }
 const PostInformationCard: React.FC<Props> = (props) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [currentPost, setCurrentPost] = useState(props.post);
+  const [isCommentBarDisplay, setIsCommentBarDisplay] = useState(false);
   const open = Boolean(anchorEl);
   const commentRef = useRef<HTMLInputElement>(null);
   const [bonusComment, setBonusComment] = useState<IComment>();
-  const handleAddComment = (newComment: IComment) => {
+  const [countComment, setCountComment] = useState<number>(0);
+
+  //handletogglemodal
+  const [openModal, setOpen] = useState(false);
+  const handleOpenModal = () => setOpen(true);
+  const handleCloseModal = () => setOpen(false);
+
+  const handleAddComment = (newComment: IComment|undefined) => {
     setBonusComment(newComment);
+    setCountComment(countComment+1)
   };
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
-
+  const updateComments = (comments: IComment[]) => {
+    setCountComment(comments.length);
+  };
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -92,7 +100,8 @@ const PostInformationCard: React.FC<Props> = (props) => {
           },
           body: JSON.stringify({
             userId: localStorage.getItem("userId"),
-            postId: currentPost?._id,
+            targetId: currentPost?._id,
+            targetType: "post"
           }),
         }
       );
@@ -101,20 +110,15 @@ const PostInformationCard: React.FC<Props> = (props) => {
       }
       const result = await response.json();
       setCurrentPost(result.updatedPost);
-      props.updatePostsState?.(result.updatedPost)
+      props.updatePostsState?.(result.updatedPost);
     } catch (e) {
       console.error(e);
     }
   };
   const handleCommentClick = () => {
-    // Cuộn đến phần tử bình luận
-    commentRef.current?.scrollIntoView({
-      behavior: "smooth", // Cuộn mượt
-      block: "start", // Cuộn tới đầu phần tử
-    });
-
+    setIsCommentBarDisplay(true);
     // Focus vào trường nhập bình luận
-    commentRef.current?.focus();
+    if (commentRef) commentRef.current?.focus();
   };
 
   return (
@@ -214,24 +218,49 @@ const PostInformationCard: React.FC<Props> = (props) => {
       <CardActions disableSpacing>
         <Stack direction="row" spacing={1} alignItems="center">
           <IconButton onClick={handleLike}>
-            {props.post?.isLiked == null ? <ThumbUp /> : <ThumbUp color="primary" />}
+            {props.post?.isLiked == null ? (
+              <ThumbUp />
+            ) : (
+              <ThumbUp color="primary" />
+            )}
           </IconButton>
           <Typography variant="body2">
-            {props.post?.likedUserInfo.length}{" "}
-            {props.post && props.post.likedUserInfo.length > 0
-              ? props.post.likedUserInfo.at(0)?._id !== props.post.isLiked.userId
-                ? props.post.likedUserInfo.at(0)?.firstname +
-                  " " +
-                  props.post.likedUserInfo.at(0)?.lastname
-                : "You "
-              : ""}
+          {props.post && props.post.likedUserInfo.length > 0
+                      ? props.post.isLiked
+                        ? props.post.likedUserInfo.length > 1
+                          ? `You and ${props.post.likedUserInfo.length - 1} other${
+                              props.post.likedUserInfo.length - 1 > 1 ? "s" : ""
+                            }`
+                          : "You"
+                        : `${props.post.likedUserInfo[0]?.firstname} ${
+                            props.post.likedUserInfo[0]?.lastname
+                          }${
+                            props.post.likedUserInfo.length > 1
+                              ? ` and ${props.post.likedUserInfo.length - 1} other${
+                                  props.post.likedUserInfo.length - 1 > 1 ? "s" : ""
+                                }`
+                              : ""
+                          }`
+                      : ""}
           </Typography>
         </Stack>
-        <Stack direction="row" spacing={2} ml="auto">
+        <Stack direction="row" spacing={1} ml="auto" alignItems="center">
           <IconButton onClick={handleCommentClick}>
             <Comment />
           </IconButton>
-          <Typography variant="body2">10 comments</Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              margin: "0px 0px 0px 5px !important",
+              "&:hover": {
+                textDecoration:"underline",
+                cursor:"pointer"
+              },
+            }}
+            onClick={handleOpenModal}
+          >
+            {countComment} comments
+          </Typography>
           <IconButton>
             <BookmarkBorder />
           </IconButton>
@@ -240,18 +269,23 @@ const PostInformationCard: React.FC<Props> = (props) => {
           </IconButton>
         </Stack>
       </CardActions>
-      <CardContent sx={{ paddingBottom: "0px !important" }}>
-        {props.post &&
-          (props.type == 1 ? (
-            <ProposalCommentContainer
-              newComment={bonusComment}
-              postId={props.post._id}
-            />
-          ) : (
-            <ExpandComment newComment={bonusComment} postId={props.post._id} />
-          ))}
-        {props.post && <CommentBar  post={props.post} onAddComment={handleAddComment} />}
+      <CardContent
+        sx={{ paddingBottom: "0px !important", position: "relative" }}
+      >
+        <ProposalCommentContainer
+          newComment={bonusComment}
+          postId={props.post?._id}
+          updateComments={updateComments}
+        />
+        {props.post && isCommentBarDisplay && (
+          <CommentBar
+            ref={commentRef}
+            post={props.post}
+            onAddComment={handleAddComment}
+          />
+        )}
       </CardContent>
+      <DetailPostContainer updatePostsState={props.updatePostsState} open={openModal} handleClose={handleCloseModal} />
     </Card>
   );
 };

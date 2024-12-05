@@ -3,10 +3,8 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    padding: 5px 15px 5px 15px;
     border-top: 1px solid black;    
     align-items: center;
-    margin-right: 15px ;
     justify-content: left;
 }
 
@@ -14,6 +12,14 @@
 {
     display: inline-block;
     align-items: left;
+}
+
+.watchAll:hover
+{
+    display: inline-block;
+    align-items: left;
+    color:#1976D2;
+    cursor: pointer;
 }
 
 .firstComment

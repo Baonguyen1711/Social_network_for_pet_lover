@@ -10,9 +10,14 @@ const LikeSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     require: true,
   },
-  postId: {
-    type: mongoose.Schema.Types.ObjectId,
-    require: true,
+  targetId: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    required: true,
+  },
+  targetType: { // 'post' hoặc 'comment' để xác định kiểu đối tượng
+    type: String,
+    required: true,
+    enum: ['post', 'comment'],
   },
   timeStamp: {
     type: Date,

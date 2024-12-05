@@ -79,14 +79,14 @@ class CommentController {
   async getCommentByPostId(req, res) {
     try {
       connectToDb();
-      const { postId } = req.query;
-      if (!postId) {
+      const { postId,userId } = req.query;
+      if (!postId||!userId) {
         res.status(400).json({
-          message: "Missing required fields: postId",
+          message: "Missing required fields: postId,userId",
         });
       }
       const comments = await Comment.aggregate([
-        { $match: { postId: new ObjectId(`${postId}`) } },
+        { $match: { postId: new ObjectId(`${postId}`),isDeleted:false } },
         {
           $graphLookup: {
             from: "comments", // Tên collection
@@ -99,9 +99,17 @@ class CommentController {
         {
           $lookup: {
             from: "users",
-            foreignField: "_id",
-            localField: "userId",
-            as: "userInfo",
+            localField: "userId", // Trường trong Post
+            foreignField: "_id", // Trường trong User
+            as: "userInfo", // Tên trường chứa kết quả nối
+          },
+        },
+        {
+          $lookup: {
+            from: "likes",
+            localField: "_id",
+            foreignField: "targetId",
+            as: "likeInfo",
           },
         },
         {
@@ -115,6 +123,30 @@ class CommentController {
                   avatar: "$$user.avatar", // Nếu cần thêm thuộc tính, bạn có thể thêm ở đây
                 },
               },
+            },
+            likedUserInfo: {
+              $filter: {
+                input: "$likeInfo", // Dữ liệu cần lọc
+                as: "like", // Biến đại diện cho từng phần tử trong mảng
+                cond: { $eq: ["$$like.isDeleted", false] }, // Điều kiện lọc
+              },
+            },
+            isLiked: {
+              $arrayElemAt: [
+                {
+                  $filter: {
+                    input: "$likeInfo", // Dữ liệu cần lọc
+                    as: "like", // Biến đại diện cho từng phần tử trong mảng
+                    cond: {
+                      $and: [
+                        { $eq: ["$$like.userId", new ObjectId(`${userId}`)] },
+                        { $eq: ["$$like.isDeleted", false] },
+                      ],
+                    }, // Điều kiện lọc
+                  },
+                },
+                0,
+              ],
             },
           },
         },

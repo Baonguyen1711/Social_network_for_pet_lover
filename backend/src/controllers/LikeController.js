@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const connectToDb = require("../config/database/db");
 const Like = require("../models/Like");
 const Post = require("../models/Post");
+const Comment = require("../models/Comment");
 const { ObjectId } = require("mongodb");
 mongoose.set("debug", true);
 
@@ -9,9 +10,8 @@ class LikeController {
   async createLikePost(req, res) {
     try {
       await connectToDb();
-      const { userId, postId } = req.body;
-      console.log(userId, postId)
-      if (!userId || !postId) {
+      const { userId, targetId, targetType } = req.body;
+      if (!userId || !targetId || !targetType) {
         return res
           .status(400)
           .json({ message: "Not enough required information!" });
@@ -21,7 +21,8 @@ class LikeController {
       }
       const likeExisting = await Like.findOne({
         userId: new ObjectId(`${userId}`),
-        postId: new ObjectId(`${postId}`),
+        targetId: new ObjectId(`${targetId}`),
+        targetType: targetType,
       });
 
       if (likeExisting) {
@@ -31,97 +32,183 @@ class LikeController {
       } else {
         const newLike = Like({
           userId: new ObjectId(`${userId}`),
-          postId: new ObjectId(`${postId}`),
+          targetId: new ObjectId(`${targetId}`),
+          targetType: targetType,
           timeStamp: new Date(),
-          isDeleted: false,
         });
         await newLike.save();
       }
-
-      const post = await Post.aggregate([
-        {
-          $match: {
-            _id: new ObjectId(`${postId}`),
-            isDeleted: false,
+      if (targetType === "post") {
+        const post = await Post.aggregate([
+          {
+            $match: {
+              _id: new ObjectId(`${targetId}`),
+              isDeleted: false,
+            },
           },
-        },
-        {
-          $lookup: {
-            from: "users",
-            localField: "userId", // Trường trong Post
-            foreignField: "_id", // Trường trong User
-            as: "userInfo", // Tên trường chứa kết quả nối
+          {
+            $lookup: {
+              from: "users",
+              localField: "userId", // Trường trong Post
+              foreignField: "_id", // Trường trong User
+              as: "userInfo", // Tên trường chứa kết quả nối
+            },
           },
-        },
-        {
-          $unwind: {
-            path: "$userInfo",
-            preserveNullAndEmptyArrays: true,
+          {
+            $unwind: {
+              path: "$userInfo",
+              preserveNullAndEmptyArrays: true,
+            },
           },
-        },
-        {
-          $lookup: {
-            from: "likes",
-            localField: "_id",
-            foreignField: "postId",
-            as: "likeInfo",
+          {
+            $lookup: {
+              from: "likes",
+              localField: "_id",
+              foreignField: "targetId",
+              as: "likeInfo",
+            },
           },
-        },
-        {
-          $addFields: {
-            likeInfo: {
-              $filter: {
-                input: "$likeInfo", // Dữ liệu cần lọc
-                as: "like", // Biến đại diện cho từng phần tử trong mảng
-                cond: { $eq: ["$$like.isDeleted", false] }, // Điều kiện lọc
+          {
+            $addFields: {
+              likeInfo: {
+                $filter: {
+                  input: "$likeInfo", // Dữ liệu cần lọc
+                  as: "like", // Biến đại diện cho từng phần tử trong mảng
+                  cond: { $eq: ["$$like.isDeleted", false] }, // Điều kiện lọc
+                },
+              },
+              isLiked: {
+                $arrayElemAt: [
+                {
+                $filter: {
+                  input: "$likeInfo", // Dữ liệu cần lọc
+                  as: "like", // Biến đại diện cho từng phần tử trong mảng
+                  cond: { $eq: ["$$like.userId", new ObjectId(`${userId}`)],$eq: ["$$like.isDeleted", false] }, // Điều kiện lọc
+                },
+              },0]
+              },
+              likedUserInfo: {
+                $arrayElemAt: [
+                  {
+                    $filter: {
+                      input: "$likeInfo", // Dữ liệu cần lọc
+                      as: "like", // Biến đại diện cho từng phần tử trong mảng
+                      cond: {
+                        $and: [
+                          { $eq: ["$$like.userId", new ObjectId(`${userId}`)] },
+                          { $eq: ["$$like.isDeleted", false] },
+                        ],
+                      }, // Điều kiện lọc
+                    },
+                  },
+                  0,
+                ],
               },
             },
-            isLiked: {
-              $arrayElemAt: [
-                {
-                  $filter: {
-                    input: "$likeInfo", // Dữ liệu cần lọc
-                    as: "like", // Biến đại diện cho từng phần tử trong mảng
-                    cond: {
-                      $and: [
-                        { $eq: ["$$like.userId", new ObjectId(`${userId}`)] },
-                        { $eq: ["$$like.isDeleted", false] },
-                      ],
-                    }, // Điều kiện lọc
-                  },
-                },
-                0,
-              ],
+          },
+          {
+            $lookup: {
+              from: "users",
+              localField: "likeInfo.userId",
+              foreignField: "_id",
+              as: "likedUserInfo",
             },
           },
-        },{
-          $lookup: {
-            from: "users",
-            localField: "likeInfo.userId", 
-            foreignField: "_id", 
-            as: "likedUserInfo", 
+          {
+            $project: {
+              _id: 1,
+              title: 1,
+              content: 1,
+              images: 1,
+              createdAt: 1,
+              userId: 1,
+              userInfo: 1,
+              "likedUserInfo.lastname": 1,
+              "likedUserInfo.firstname": 1,
+              "likedUserInfo._id": 1,
+              isLiked: 1,
+            },
           },
-        },
-        {
-          $project: {
-            _id: 1,
-            title: 1,
-            content: 1,
-            images: 1,
-            createdAt: 1,
-            userId: 1,
-            userInfo: 1,
-            "likedUserInfo.lastname": 1,
-            "likedUserInfo.firstname":1,
-            "likedUserInfo._id":1,
-            isLiked: 1,
+        ]).then((results) => results[0]);
+        return res.status(200).json({
+          message: "update like successfully",
+          updatedPost: post,
+        });
+      } else {
+        const comment = await Comment.aggregate([
+          { $match: { _id: new ObjectId(`${targetId}`) } },
+          {
+            $graphLookup: {
+              from: "comments", // Tên collection
+              startWith: "$_id", // Bắt đầu từ chính comment hiện tại
+              connectFromField: "_id", // Liên kết từ _id
+              connectToField: "parentId", // Kết nối với parentId
+              as: "replies", // Tên mảng chứa các trả lời
+            },
           },
-        },
-      ]).then((results) => results[0]);
-      return res.status(200).json({
-        message: "update like successfully",
-        updatedPost: post,
-      });
+          {
+            $lookup: {
+              from: "users",
+              foreignField: "_id",
+              localField: "userId",
+              as: "userInfo",
+            },
+          },
+          {
+            $lookup: {
+              from: "likes",
+              localField: "_id",
+              foreignField: "targetId",
+              as: "likeInfo",
+            },
+          },
+          {
+            $addFields: {
+              userInfo: {
+                $let: {
+                  vars: { user: { $arrayElemAt: ["$userInfo", 0] } }, // Lấy user đầu tiên
+                  in: {
+                    firstname: "$$user.firstname", // Chỉ lấy thuộc tính name
+                    lastname: "$$user.lastname",
+                    avatar: "$$user.avatar", // Nếu cần thêm thuộc tính, bạn có thể thêm ở đây
+                  },
+                },
+              },
+              likedUserInfo: {
+                $filter: {
+                  input: "$likeInfo", // Dữ liệu cần lọc
+                  as: "like", // Biến đại diện cho từng phần tử trong mảng
+                  cond: { $eq: ["$$like.isDeleted", false] }, // Điều kiện lọc
+                },
+              },
+              isLiked: {
+                $arrayElemAt: [
+                  {
+                    $filter: {
+                      input: "$likeInfo", // Dữ liệu cần lọc
+                      as: "like", // Biến đại diện cho từng phần tử trong mảng
+                      cond: {
+                        $and: [
+                          { $eq: ["$$like.userId", new ObjectId(`${userId}`)] },
+                          { $eq: ["$$like.isDeleted", false] },
+                        ],
+                      }, // Điều kiện lọc
+                    },
+                  },
+                  0,
+                ],
+              },
+            },
+          },
+          {
+            $sort: { createdAt: -1 }, // Sắp xếp giảm dần theo ngày tạo
+          },
+        ]).then((results) => results[0]);
+        return res.status(200).json({
+          message: "update like comment successfully",
+          updatedComment: comment,
+        });
+      }
     } catch (e) {
       console.log("Some error in registration. Try again!!", e);
       return res.status(404).json({

@@ -85,7 +85,8 @@ export interface Like
 {
   _id:string,
   userId: string,
-  postId: string,
+  targetId: string,
+  targetType:string,
   timeStamp: Date,
   isDeleted: boolean,
 }
@@ -147,6 +148,8 @@ export interface IComment
   isDeleted : string,
 
   userInfo: UserInfo
+  likedUserInfo: User[]
+  isLiked: Like
 }
 export interface PostComment 
 {

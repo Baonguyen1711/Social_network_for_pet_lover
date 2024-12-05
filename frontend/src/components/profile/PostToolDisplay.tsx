@@ -39,6 +39,7 @@ const PostToolDisplay: React.FC<PostToolDisplayProps> = ({
   });
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [isChanged, setIsChanged] = useState(false);
+  const [_message, setMessage] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,6 +98,9 @@ const PostToolDisplay: React.FC<PostToolDisplayProps> = ({
 
   const handlePostData = async () => {
     let response;
+    if(!CheckValidField()) {
+      window.alert(_message)
+      return}
     if (selectedImage) {
       let uploadedImageUrl = await uploadToCloudinary(selectedImage);
       setFields((fields) => ({
@@ -122,7 +126,7 @@ const PostToolDisplay: React.FC<PostToolDisplayProps> = ({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          userId: localStorage.getItem("email"),
+          userId: localStorage.getItem("userId"),
           title: fields.title,
           content: fields.content,
         }),
@@ -137,6 +141,14 @@ const PostToolDisplay: React.FC<PostToolDisplayProps> = ({
       window.alert("Have a trouble");
     }
   };
+  const CheckValidField =  () => 
+  {
+    if(fields.title===""&&!selectedImage&&fields.content==="")
+    {
+      return false;
+    }
+    return true
+  }
   return (
     <>
       <Modal

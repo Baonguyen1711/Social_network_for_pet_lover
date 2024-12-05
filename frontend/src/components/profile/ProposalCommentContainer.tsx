@@ -3,27 +3,32 @@ import style from "./css/ProposalCommentContainer.module.css";
 import { IComment, Post } from "../../types";
 import ProposalComment from "./ProposalComment";
 import DetailPostContainer from "./ExpandComment/DetailPostContainer";
+import { List } from "@mui/material";
 
 interface props {
   onAddComment?: (newComment: IComment) => void;
+  updateComments:(comments:IComment[]) => void;
   newComment?: IComment;
-  postId?:string
+  postId?: string;
 }
 const ChildComponent = React.memo(({ value }: { value: IComment }) => {
-  return <ProposalComment comment={value}/>
+  return <ProposalComment comment={value} />;
 });
 const ProposalCommentContainer: React.FC<props> = (props) => {
-  const [comments, setComments] = useState<IComment[] | undefined>();
+  const [comments, setComments] = useState<IComment[]>([]);
+
   //handletogglemodal
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   useEffect(() => {
-    fetchData(); 
-  }, []);
+    fetchData();
+  }, [props.newComment]);
   const fetchData = async () => {
-    const url = `http://localhost:5000/api/v1/comment/getCommentsByPostId?postId=${props.postId}`;
+    const postId = props.postId;
+    const userId = localStorage.getItem("userId");
+    const url = `http://localhost:5000/api/v1/comment/getCommentsByPostId?postId=${postId}&userId=${userId}`;
     try {
       const response = await fetch(url, {
         method: "GET",
@@ -37,6 +42,7 @@ const ProposalCommentContainer: React.FC<props> = (props) => {
       const data = await response.json();
       if (data.comments.length > 0) {
         setComments(buildTree(data.comments));
+        props.updateComments(data.comments);
       }
     } catch (e) {
       console.error("Error fetching data:", e);
@@ -55,15 +61,16 @@ const ProposalCommentContainer: React.FC<props> = (props) => {
   }
   return (
     <>
-      {comments && comments.length > 0 && (
-        <div className={style.container}>
-          <div className={style.watchAll} onClick={handleOpen}>Xem tất cả... </div>  
-          <div className={style.firstComment}>
-            <ProposalComment comment={comments.at(0)} />
-            {props.newComment&&<ChildComponent value={props.newComment}/>}
+      <div className={style.container}>
+        {comments?.length>1 && (
+          <div className={style.watchAll} onClick={handleOpen}>
+            Xem tất cả...
           </div>
+        )}
+        <div className={style.firstComment}>
+          {comments?.length>0 && <ProposalComment comment={comments?.at(0)} />}
         </div>
-      )}
+      </div>
       <DetailPostContainer open={open} handleClose={handleClose} />
     </>
   );

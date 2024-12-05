@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import style from "./css/CommentBar.module.css";
 import {
   Avatar,
@@ -12,10 +12,10 @@ import { Share } from "@mui/icons-material";
 import SendIcon from "@mui/icons-material/Send";
 
 interface Props {
-  post: Post;
-  onAddComment?: ((newComment: IComment) => void)|undefined;
+  post?: Post;
+  onAddComment?: ((newComment: IComment|undefined) => void)|undefined;
 }
-const CommentBar: React.FC<Props> = (props) => {
+const CommentBar = forwardRef<HTMLInputElement, Props>((props, ref) => {
   const [fields, setFields] = useState<PostComment>({
     content: "",
     postId: "",
@@ -34,7 +34,7 @@ const CommentBar: React.FC<Props> = (props) => {
         },
         body: JSON.stringify({
           content: fields.content,
-          postId: props.post._id,
+          postId: props.post?._id,
           userId: localStorage.getItem("userId"),
           parentId: fields.parentId,
         }),
@@ -63,15 +63,16 @@ const CommentBar: React.FC<Props> = (props) => {
   };
   return (
     <div className={style.container}>
-      <Avatar src={props.post.userInfo.avatar} />
+      <Avatar src={props.post?.userInfo.avatar} />
       <div className={style.inputContent}>
         <TextField
           id="content"
+          inputRef={ref}
           placeholder={
             "Đang bình luận dưới tên " +
-            props.post.userInfo.firstname +
+            props.post?.userInfo.firstname +
             " " +
-            props.post.userInfo.lastname
+            props.post?.userInfo.lastname
           }
           sx={{
             flexGrow: 1,
@@ -90,6 +91,6 @@ const CommentBar: React.FC<Props> = (props) => {
       </IconButton>
     </div>
   );
-};
+})
 
 export default CommentBar;
