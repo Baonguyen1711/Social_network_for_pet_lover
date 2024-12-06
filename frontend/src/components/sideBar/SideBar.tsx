@@ -60,7 +60,7 @@ const SideBar: React.FC<SideBarProps> = ({isOpened}) => {
     <Box
       component="div"
       id="wrapperSideBar"
-      width="100%"
+      width="21%"
       height="100vh"
       display="flex"
       justifyContent="center"

@@ -109,8 +109,8 @@ class MessageController {
                         "userInfo.lastname": 1,
                         "userInfo.avatar": 1,
                         "userInfo.location": 1
-=======
                 }
+            }
                 ,
                 {
                     '$lookup': {

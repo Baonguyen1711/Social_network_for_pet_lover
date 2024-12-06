@@ -15,7 +15,7 @@ const ExplorePage: React.FC<ExploreCenterPage> = ({ children }) => {
         sx={{ display: "inline-block", justifyContent: "flex-start" }}
       >
         <Paper>
-          <SideBar />
+          <SideBar isOpened={true} />
         </Paper>
       </Grid2>
 
