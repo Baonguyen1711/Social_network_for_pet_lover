@@ -65,6 +65,8 @@ const SideBar: React.FC<SideBarProps> = ({isOpened}) => {
       display="flex"
       justifyContent="center"
       alignContent="center"
+      position={'fixed'}
+      top={0}
       sx={{
         backgroundColor: "#ffffff",
         boxShadow: "2px 0px 10px -5px rgba(0, 0, 0, 0.2)",

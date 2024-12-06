@@ -1,5 +1,8 @@
-const User = require('../models/user')
-const connectToDb = require('../../src/config/database/db')
+const User = require("../models/User")
+const mongoose = require("mongoose");
+const { ObjectId } = require("mongodb");
+const connectToDb = require("../config/database/db");
+mongoose.set("debug", true);
 
 class UserController {
 
@@ -39,6 +42,26 @@ class UserController {
             console.log('Some errors happen', e)
         }
     }
+  
+    async getUserById(req,res)
+  {
+    try{
+      const { userId } = req.params;
+      if (!userId) {
+        return res.status(400).json({ error: "userId is required" });
+      }
+      await connectToDb();
+      const user = await User.findOne({ _id: new ObjectId(`${userId}`) },{avatar:1,description:1,firstname:1,lastname:1,location:1});
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      return res.json({ user:user });
+    }
+    catch(e)
+    {
+      console.log(e)
+    }
+  }
 
     // async getAvatar(req,res) {
     //     await connectToDb()
@@ -59,87 +82,11 @@ class UserController {
     //     }
     // }
 
-    //[GET] getBillingAddress
-    async getBillingAddress(req,res) {
-        try {
-            await connectToDb()
-
-            const {email} = req.query
-
-            const user = await User.findOne({email: email})
-            if(user) {
-                res.status(200).json(user.billingAddress)
-            } else {
-                res.status(404).send('User not found')
-            }
-        } catch(e) {
-            console.log('Some errors happen', e)
-        }
-    }
-
-
-    //[POST] setBillingAddress
-    async setBillingAddress(req, res) {
-
-        try {
-            await connectToDb()
-
-            const [firstNameObj,
-                lastNameObj,
-                companyNameObj,
-                countryObj,
-                provinceObj,
-                districtObj,
-                communeObj,
-                detailAddressObj,
-                emailObj] = req.body
-
-            const firstName = firstNameObj.value
-            const lastName = lastNameObj.value
-            const companyName = companyNameObj.value
-            const country = countryObj.value
-            const province = provinceObj.value
-            const district = districtObj.value
-            const commune = communeObj.value
-            const detailAddress = detailAddressObj.value
-            const email = emailObj.value
-
-            const user = await User.findOne({ email: email })
-
-            const billingAddressUpdate = {
-                lastName: lastName,
-                firstName: firstName,
-                companyName: companyName,
-                country: country,
-                province: province,
-                district: district,
-                commune: commune,
-                detailAddress: detailAddress
-            }
-
-            user.billingAddress = {
-                ...billingAddressUpdate
-            };
-
-            console.log(user.billingAddress )
-
-            await user.save()
-
-            if (!user) {
-                res.status(404).send('User not found')
-            } else {
-                res.status(200).send('Add address successfully')
-            }
-        } catch (e) {
-            console.log('Some errors happen', e)
-        }
-
-    }
-
     // async delete(req,res) {
     //     res.status(204).send();
     // }
 }
 
 module.exports = new UserController
+
 

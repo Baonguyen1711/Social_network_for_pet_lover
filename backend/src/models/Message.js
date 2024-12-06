@@ -29,8 +29,6 @@ const MessageSchema = new mongoose.Schema({
 })
 
 
-
-
 const Message = FashionSocial.model('Message', MessageSchema)
 
 module.exports = Message

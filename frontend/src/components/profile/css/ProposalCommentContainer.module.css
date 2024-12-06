@@ -1,0 +1,29 @@
+.container 
+{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    border-top: 1px solid black;    
+    align-items: center;
+    justify-content: left;
+}
+
+.watchAll
+{
+    display: inline-block;
+    align-items: left;
+}
+
+.watchAll:hover
+{
+    display: inline-block;
+    align-items: left;
+    color:#1976D2;
+    cursor: pointer;
+}
+
+.firstComment
+{
+    display: inline-block;
+    align-items: left;
+}

@@ -1,0 +1,19 @@
+.container {
+  display: flex;
+  padding: 5px 15px 5px 15px;
+  border-top: 1px solid black;
+  align-items: center;
+  z-index: 1000;
+}
+
+.inputContent {
+  display: inline-block;
+  align-self: center;
+  width: 100%;
+  height: 100%;
+}
+
+.inputContent input {
+  height: 1px;
+  width: 100%;
+}
