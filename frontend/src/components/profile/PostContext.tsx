@@ -7,7 +7,7 @@ interface PostContextType {
     setComment: (comment:IComment) => void; // Hàm cập nhật post
     userId: String|null
     comment?: IComment | null
-  }
+  } 
 
 export const PostContext = createContext<PostContextType | undefined>(undefined);
 

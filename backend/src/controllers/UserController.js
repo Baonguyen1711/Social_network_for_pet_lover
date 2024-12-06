@@ -1,5 +1,3 @@
-const Follows = require("../models/Follows");
-const Post = require("../models/Post");
 const User = require("../models/User")
 const mongoose = require("mongoose");
 const { ObjectId } = require("mongodb");
@@ -144,3 +142,4 @@ class UserController {
 }
 
 module.exports = new UserController();
+  

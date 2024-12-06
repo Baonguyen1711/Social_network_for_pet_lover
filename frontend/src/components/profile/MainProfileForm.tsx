@@ -3,6 +3,7 @@ import ProfileContainer from "./ProfileContainer";
 import style from "./css/MainProfileForm.module.css";
 import { Outlet, Link } from "react-router-dom";
 import { User } from "../../types";
+import { ProfileContext, ProfileProvider } from "./ProfileContext";
 
 const MainProfileForm: React.FC = () => {
   const [userData,setUserData] = useState<User>()
@@ -39,7 +40,9 @@ const MainProfileForm: React.FC = () => {
           </a>
         </nav>
         <div className={style.layout}>
+          <ProfileProvider>
           <Outlet />
+          </ProfileProvider>
         </div>
       </div>
     </div>

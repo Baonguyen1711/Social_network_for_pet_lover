@@ -5,12 +5,12 @@ import style from "./ExploreForm.module.css";
 import {PostResponse,Post} from '../../types'
 
 
-const Explore = () => {
+const   Explore = () => {
   const [itemData, setItemData] = useState<Post[]>([]);
   const [selectedImage, setSelectedImage] = useState<Post | null>(null);
   useEffect(() => {
     const fetchData = async () => { 
-      const url = "http://localhost:5000/api/v1/post/post";
+      const url = "http://localhost:5000/api/v1/post/posts";
       try {
         const response = await fetch(url, {
           method: "GET",

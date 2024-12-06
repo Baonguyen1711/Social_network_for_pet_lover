@@ -12,6 +12,8 @@ import ExplorePage from "../src/pages/explore/ExplorePage";
 import ProfilePage from "./pages/profile/ProfilePage";
 import PostsDisplay from "./components/profile/PostsDisplay";
 import PetsDisplay from "./components/profile/PetsDisplay";
+import HomePage from "./pages/home/HomePage";
+import { ProfileProvider } from "./components/profile/ProfileContext";
 
 const App = () => {
   return (
@@ -20,13 +22,12 @@ const App = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/explore" element={<ExplorePage />} />
+        <Route path="/home" element={<HomePage />} />
         <Route path="/profile" element={<ProfilePage />}>
           <Route index element={<PostsDisplay />} />
           <Route path="posts" element={<PostsDisplay />} />
           <Route path="pets" element={<PetsDisplay />} />
         </Route>
-        <Route path="/profile/pets" element={<ProfilePage />} />
-        <Route path="/profile" element={<ProfilePage />} />
       </Routes>
     </ThemeProvider>
   );

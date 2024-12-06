@@ -50,7 +50,7 @@ class PostController {
         //sort by latest sent message
         {
           $sort: {
-            updateAt: -1,
+            updatedAt: -1,
           },
         },
       ]);
