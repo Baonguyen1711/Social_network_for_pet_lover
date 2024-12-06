@@ -9,6 +9,7 @@ export interface MessageComponentType {
     content: string,
     timeStamp: string,
     isSender: boolean|undefined
+    isChatbot: boolean|undefined
   }
 
 

@@ -34,7 +34,7 @@ const messages = [
 const MainMessage = () => {
 
     //const [messages, setMessages] = useState<MessageComponentType[]>([])
-    const {messages,setMessages} = useSocket()
+    //const {messages,setMessages} = useSocket()
     const [isSender, setIsSender] = useState<boolean|undefined>(undefined)
     const currentEmail = localStorage.getItem("email")
     const {selectedUserEmail} = useSelectedUser()
@@ -53,8 +53,8 @@ const MainMessage = () => {
             height="100vh"
         >
             <MessageHeader/>
-            <MessageDisplay messages={messages}/>
-            <MessageInput  recipent={selectedUser}  />
+            <MessageDisplay isChatbot={false}/>
+            <MessageInput  recipent={selectedUser} isChatbot={false}  />
         </Box>
 
 

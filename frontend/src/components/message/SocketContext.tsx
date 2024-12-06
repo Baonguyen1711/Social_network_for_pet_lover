@@ -9,6 +9,8 @@ interface SocketContextType {
   socket: Socket;
   messages: MessageComponentType[]
   setMessages: React.Dispatch<React.SetStateAction<MessageComponentType[]>>
+  chatbotMessages: MessageComponentType[]
+  setChatbotMessages: React.Dispatch<React.SetStateAction<MessageComponentType[]>>
   recentChats: RecentChat[];
   setRecentChats: React.Dispatch<React.SetStateAction<RecentChat[]>> // Adjust type according to your message structure
   sendMessage: (message: any) => void; // Function to send messages
@@ -23,6 +25,7 @@ interface SocketProviderProps {
 export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const [recentChats, setRecentChats] = useState<RecentChat[]>([]); // Adjust type as needed
   const [messages, setMessages] = useState<any[]>([])
+  const [chatbotMessages, setChatbotMessages] = useState<any[]>([])
   const currentEmail = localStorage.getItem("email")
 
   useEffect(()=> {
@@ -75,7 +78,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         const newMessageComponent:MessageComponentType = {
           "content":message.content,
           "timeStamp": new Date().toISOString(),
-          "isSender": true
+          "isSender": true,
+          "isChatbot": false   
         }
         return [...prevMessageComponent, newMessageComponent]
       })
@@ -103,7 +107,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       
 
   return (
-    <SocketContext.Provider value={{ messages, setMessages, socket, recentChats, setRecentChats, sendMessage }}>
+    <SocketContext.Provider value={{ messages, setMessages, socket, recentChats, setRecentChats, sendMessage, chatbotMessages, setChatbotMessages }}>
       {children}
     </SocketContext.Provider>
   );

@@ -1,6 +1,6 @@
 import React from 'react'
-import { Box, TextField } from '@mui/material'
-import { EmojiEmotionsOutlined, SendOutlined } from '@mui/icons-material'
+import { adaptV4Theme, Box, TextField } from '@mui/material'
+import { Abc, EmojiEmotionsOutlined, SendOutlined } from '@mui/icons-material'
 import { useState, useEffect } from 'react';
 import { Recipent } from '../../types';
 import { useSelectedUser } from './SelectedUserContext';
@@ -10,22 +10,22 @@ import { MessageComponentType } from '../../types';
 
 
 interface MessageInputProps {
-    recipent: Recipent,
-    //isChatbot: boolean
-  }
+  recipent: Recipent | null,
+  isChatbot: boolean
+}
 
 
 interface message {
-    id: string,
-    senderId: string,
-    senderName: string,
-    senderAvatar: string,
-    content: string,
-    timestamp: string
-  };
+  id: string,
+  senderId: string,
+  senderName: string,
+  senderAvatar: string,
+  content: string,
+  timestamp: string
+};
 
 // var isUser1 = true
-  
+
 // const User2 = {
 //     id: 456,
 //     avatar: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/20240827_Eunha_%EC%9D%80%ED%95%98_01.jpg/250px-20240827_Eunha_%EC%9D%80%ED%95%98_01.jpg",
@@ -38,90 +38,150 @@ interface message {
 //     name: "Baonguyen"
 // }
 
-const MessageInput: React.FC<MessageInputProps>= ({recipent}) => {
+const MessageInput: React.FC<MessageInputProps> = ({ recipent, isChatbot }) => {
 
-    const [message, setMessage] = useState<string>("");
-    const {messages, setMessages, sendMessage} = useSocket();
-    const currentEmail = localStorage.getItem("email")
-    const {selectedUserEmail} = useSelectedUser()
-    
+  const [message, setMessage] = useState<string>("");
+  const { messages, setMessages, sendMessage, chatbotMessages, setChatbotMessages } = useSocket();
+  const currentEmail = localStorage.getItem("email")
+  const { selectedUserEmail } = useSelectedUser()
 
-    console.log(recipent)
+  function convertMarkdownToHtml(input: string) {
+    // Convert **bold** to <strong></strong>
+    input = input.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  
+    // Convert *italic* to <em></em>
+    input = input = input.replace(/\*/g, '</br>');
+  
+    return input;
+  }
   
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        debugger;
-        e.preventDefault();
+  console.log(recipent)
+
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    debugger;
+    e.preventDefault();
+    if (!isChatbot) {
       if (message) {
         debugger;
         const sentMessage = recipent
-        sentMessage.content = message
+        if(sentMessage){
+          sentMessage.content = message
+        }
         console.log("recipent", sentMessage)
         const newMessage: MessageComponentType = {
-          content: sentMessage.content,
+          content: message,
           timeStamp: new Date().toISOString(),
-          isSender: false
+          isSender: false,
+          isChatbot: false
         }
         setMessages((prevMessages) => [...prevMessages, newMessage])
-        
-        const url = `http://localhost:5000/api/v1/message/post?senderEmail=${currentEmail}&recipentEmail=${selectedUserEmail}&content=${sentMessage.content}`
+
+        const url = `http://localhost:5000/api/v1/message/post?senderEmail=${currentEmail}&recipentEmail=${selectedUserEmail}&content=${message}`
         console.log("send Mesage", sentMessage)
         sendMessage(sentMessage)
-
+        setMessage("")
         try {
-            const response = await fetch(url)
+          const response = await fetch(url)
 
-          if(!response.ok) {
+          if (!response.ok) {
             console.log("Fail to post message")
           }
         } catch (e) {
-            console.log("Some errors happen", e)
+          console.log("Some errors happen", e)
         }
+
+       
       }
+      
+    } else {
+      const newMessage: MessageComponentType = {
+        content: message,
+        timeStamp: new Date().toISOString(),
+        isSender: false,
+        isChatbot: true
+      }
+      setChatbotMessages((prevMessages) => [...prevMessages, newMessage])
+
+      const url = `http://localhost:5000/api/v1/chatbot/?input=${message}`
+      try {
+        debugger;
+        const response = await fetch(url)
+
+        if (!response.ok) {
+          console.log("Fail to post message")
+        }
+
+        const data = await response.json()
+        const responseMessage = data.message
+
+        const chatbotMessage: MessageComponentType = {
+          content: convertMarkdownToHtml(responseMessage),
+          timeStamp: new Date().toISOString(),
+          isSender: true,
+          isChatbot: true
+        }
+
+        setChatbotMessages((prevMessages) => [...prevMessages, chatbotMessage ])
+        setMessage(" ");
+      } catch (e) {
+        console.log("Some errors happen", e)
+      }
+
     }
-    return (
+    debugger;
+    
+  }
+  return (
+    <Box
+      component="div"
+      id="inputWrapper"
+      height="80px"
+      width="100%"
+      marginLeft={isChatbot?"0px":"2px"}
+      // position="sticky"
+      bgcolor="#ffffff"
+    >
+      {
+        isChatbot?
         <Box
-            component="div"
-            id="inputWrapper"
-            height="80px"
-            width="100%"
-            marginLeft="2px"
-            bgcolor="#ffffff"
-        >
+        padding="10px"
+        height="100%"
+        bgcolor="#ffffff"
+        width="100%"
+        component="form"
 
-            {/* <Box
-            component="div"
-            display="flex"
-            padding="10px"
-            height="100%"
-            bgcolor="#ffffff"
-            justifyContent="space-between"
-            sx={{
-                boxSizing: "content-box"
-            }}
-        >
-            <EmojiEmotionsOutlined/>
-            <TextField>
+        onSubmit={(e) => handleSubmit(e)}
 
-            </TextField>
-        </Box> */}
+        sx={{ display: 'flex', justifyContent: "space-around", alignItems: "center", padding: "0px 10px" }}>
+        
+        {/* <EmojiEmotionsOutlined sx={{ color: 'action.active', mr: 1, my: 0.5, flexGrow: 1 }} /> */}
+        <TextField value={message} onChange={(e) => setMessage(e.target.value)} id="input-with-sx" label="Type your question here" variant="standard" sx={{ flexGrow: 4 }} />
+        {/* <SendOutlined sx={{ color: 'action.active', mr: 1, my: 0.5, flexGrow: 1 }} /> */}
+      </Box> 
+        :
+        <Box
+        padding="10px"
+        height="100%"
+        bgcolor="#ffffff"
+        width="100%"
+        component="form"
 
-            <Box  
-            padding="10px"
-            height="100%"
-            bgcolor="#ffffff"
-            width="100%"
-            component="form"
+        onSubmit={(e) => 
+          handleSubmit(e)
+        }
 
-            onSubmit={(e)=>handleSubmit(e)}
-            
-            sx={{ display: 'flex', justifyContent:"space-around", alignItems:"center", padding: "0px 10px" }}>
-                <EmojiEmotionsOutlined sx={{ color: 'action.active', mr: 1, my: 0.5, flexGrow: 1 }} />
-                <TextField onChange={(e)=> setMessage(e.target.value)} id="input-with-sx" label="Type your message here" variant="standard" sx={{flexGrow: 5}}/>
-                <SendOutlined sx={{ color: 'action.active', mr: 1, my: 0.5, flexGrow: 1}} />
-            </Box>
-        </Box>
-    )
+        sx={{ display: 'flex', justifyContent: "space-around", alignItems: "center", padding: "0px 10px" }}>
+        
+        <EmojiEmotionsOutlined sx={{ color: 'action.active', mr: 1, my: 0.5, flexGrow: 1 }} />
+        <TextField value={message}  onChange={(e) => setMessage(e.target.value)} id="input-with-sx" label="Type your message here" variant="standard" sx={{ flexGrow: 5 }} />
+        <SendOutlined sx={{ color: 'action.active', mr: 1, my: 0.5, flexGrow: 1 }} />
+      </Box>
+      }
+      
+    </Box>
+  )
 }
 
 export default MessageInput

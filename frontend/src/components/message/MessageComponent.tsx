@@ -3,7 +3,7 @@ import { Avatar, Box, Typography } from '@mui/material'
 import { MessageComponentType } from '../../types'
 import { useBackground } from './BackgroundContext'
 
-const MessageComponent: React.FC<MessageComponentType> = ({ content, timeStamp, isSender }) => {
+const MessageComponent: React.FC<MessageComponentType> = ({ content, timeStamp, isSender, isChatbot }) => {
     const {selectedTheme} = useBackground()
     return (
         isSender ?
@@ -40,7 +40,7 @@ const MessageComponent: React.FC<MessageComponentType> = ({ content, timeStamp, 
                             color: selectedTheme.length!==0?`rgb(${selectedTheme[0][0]},${selectedTheme[0][1]},${selectedTheme[0][2]})`:"black"
                         }}
                     >
-                        {content} <br />
+                        <div dangerouslySetInnerHTML={{ __html: content }} /> <br />
                         <Typography 
                         variant="caption" 
                         fontFamily="Inter" 
@@ -61,8 +61,8 @@ const MessageComponent: React.FC<MessageComponentType> = ({ content, timeStamp, 
                 alignContent="flex-end"
                 width="100%"
                 marginBottom="20px"
-                marginRight="40px"
-
+                marginRight={isChatbot?"0px":"40px"}
+                flexWrap="wrap"
             >
                 <Box
                     component="div"
@@ -81,7 +81,8 @@ const MessageComponent: React.FC<MessageComponentType> = ({ content, timeStamp, 
                         color: selectedTheme.length!==0?`rgb(${selectedTheme[0][0]},${selectedTheme[0][1]},${selectedTheme[0][2]})`:"black"
                     }}
                 >
-                    {content} <br />
+                <div dangerouslySetInnerHTML={{ __html: content }} />
+                 <br />
                     <Typography 
                         variant="caption" 
                         fontFamily="Inter" 

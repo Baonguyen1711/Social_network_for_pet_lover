@@ -11,36 +11,22 @@ import { useState } from 'react'
 
 
 interface MessageComponentArray {
-  messages: MessageComponentType[] | []
+  //messages: MessageComponentType[] | []
+  isChatbot: boolean
 }
 
-const MessageDisplay: React.FC<MessageComponentArray> = () => {
+const MessageDisplay: React.FC<MessageComponentArray> = ({isChatbot}) => {
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const recipentEmail = localStorage.getItem("email")
   const { selectedUserEmail } = useSelectedUser()
   const [recentMessages, setRecentMessages] = useState<MessageComponentType[]>([])
-  const {messages, setMessages} = useSocket();
+  const {messages, setMessages, chatbotMessages, setChatbotMessages} = useSocket();
   const {backgroundImageOver, setPalette} = useBackground()
 
   const imgRef = useRef<HTMLImageElement>(null);
   const [messageColor, setMessageColor] = useState<string>("#f0f0f0");
 
-
-  // function convertToImageElement(imageSrc: string): HTMLImageElement {
-  //   const img = new Image();
-  //   img.src = imageSrc;
-  //   return img;
-  // }
-
-  // // const handleImageLoad = () => {
-
-  // //     const colorThief = new ColorThief();
-  // //     const color = colorThief.getColor(convertToImageElement(backgroundImageOver));
-  // //     console.log("rgb", color)
-  // //     //setMessageColor(`rgb(${color[0]}, ${color[1]}, ${color[2]})`);
-
-  // // };
 
   useEffect(()=> {
     const colorThief = new ColorThief();
@@ -104,17 +90,18 @@ const MessageDisplay: React.FC<MessageComponentArray> = () => {
     <Box
       ref={scrollRef}
       component="div"
-      height="100%"
-      bgcolor="#CBD9C4"
-      marginTop="2px"
+      height= "100%"
+      bgcolor={isChatbot?"#89966b":"#CBD9C4"}
+      //marginTop="2px"
       padding="20px"
       sx={{
-        overflowY: "auto",
+        overflowY: "scroll",
         backgroundImage: `url(${backgroundImageOver})`,
         backgroundSize: "cover"
       }}
     >
       {
+        !isChatbot?
         [...recentMessages,...messages].map((message) => (
 
           <MessageComponent
@@ -122,6 +109,19 @@ const MessageDisplay: React.FC<MessageComponentArray> = () => {
             content={message.content}
             timeStamp={new Date(message.timeStamp).toLocaleString().slice(0,9)}
             isSender={message.isSender}
+            isChatbot={false}
+          />
+
+        ))
+        :
+        [...chatbotMessages].map((message) => (
+
+          <MessageComponent
+            key={message.timeStamp}
+            content={message.content}
+            timeStamp={new Date(message.timeStamp).toLocaleString().slice(0,9)}
+            isSender={message.isSender}
+            isChatbot={true}
           />
 
         ))
