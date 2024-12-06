@@ -1,4 +1,6 @@
-const User = require('../models/User')
+
+const User = require('../models/user')
+
 const Message = require('../models/Message')
 const mongoose = require('mongoose')
 const connectToDb = require('../../src/config/database/db')
@@ -58,23 +60,34 @@ class MessageController {
             // await message.save()
 
             const recentMessagesArray = await Message.aggregate([
+
+
+                //get all recieved messages
+
                 {
                     '$match': {
                         'recipentEmail': email,
                         'isDeleted': false
                     }
                 },
+
+                //sort by latest sent message
+
                 {
                     '$sort': {
                         'sendAt': -1
                     }
                 },
+
+                //group by email. content and sendAt
+
                 {
                     '$group': {
                         '_id': '$senderEmail',
                         'latestMessage': { '$first': "$content" },
                         'timeStamp': { '$first': "$sendAt" }
                     }
+
                 },
                 {
                     $lookup: {
@@ -96,12 +109,33 @@ class MessageController {
                         "userInfo.lastname": 1,
                         "userInfo.avatar": 1,
                         "userInfo.location": 1
+                }
+            }
+                ,
+                {
+                    '$lookup': {
+                        'from': 'users',  
+                        'localField': '_id',  
+                        'foreignField': 'email',  
+                        'as': 'userInfo'
+                    }
+                },
+                // Optionally, unwind userInfo if you want it as a single object
+                {
+                    '$unwind': {
+                        'path': '$userInfo',
+                        'preserveNullAndEmptyArrays': true  // In case there's no matching user
+
                     }
                 }
 
             ])
 
             const recentMessages = recentMessagesArray.length>0? recentMessagesArray:[]
+
+            
+            console.log("recentMessages",recentMessages)
+
 
             res.json({
                 'recentMessages': recentMessages
@@ -156,13 +190,16 @@ class MessageController {
                 },
                 {
                     '$addFields': {
-                        'isSender': { '$eq': ['$senderEmail', senderEmail] }
+
+                        'isSender': { '$eq': ['$senderEmail', senderEmail] },
+                        'timeStamp': '$sendAt'
                     }
                 },
                 //sort by latest sent message
                 {
                     '$sort': {
-                        'sendAt': 1
+
+                        'sendAt': -1
                     }
                 },
                 {
@@ -200,7 +237,9 @@ class MessageController {
                 senderEmail: senderEmail,
                 recipentEmail: recipentEmail,
                 content: content,
-                sendAt: new Date()
+                sendAt: new Date(),
+                isDeleted: false
+
             })
 
             await newMessage.save()
@@ -222,4 +261,10 @@ class MessageController {
     // }
 }
 
-module.exports = new MessageController  
+
+module.exports = new MessageController
+
+//param
+//query param
+//body
+

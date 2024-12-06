@@ -1,9 +1,9 @@
 import { User } from '../../types';
+import { Navigate } from 'react-router-dom';
 
 const useAuth = () => {
     const login = async (user: string, password: string): Promise<void> => {
 
-        debugger;
 
         const url = "http://127.0.0.1:5000/api/v1/login"
         try {
@@ -19,6 +19,8 @@ const useAuth = () => {
             
             
             localStorage.setItem("jwt", jwt)
+
+            
             console.log("login success")
         } catch(e) {
             console.log("Some errors happen", e)

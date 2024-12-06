@@ -3,19 +3,22 @@ import { TextField, Button, Box, Typography, Divider, Link } from "@mui/material
 import { APP_NAME } from "../../constants/constants"
 import useAuth from "../../hooks/auth/useAuth"
 import { User } from "../../types"
-//import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 
 const LoginForm: React.FC = () => {
 
     const { login } = useAuth();
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const navigate = useNavigate()
     
     const handleSubmit = async(event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
 
         try {
             await login(email, password)
+            localStorage.setItem("email", email)
+            navigate("/message")
         } catch (e) {
             console.log("Login failed" , e)
         }
