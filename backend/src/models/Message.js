@@ -24,10 +24,9 @@ const MessageSchema = new mongoose.Schema({
     },
     isDeleted: {
         type: Boolean,
-        default: true
+        default: false
     }
 })
-
 
 
 const Message = FashionSocial.model('Message', MessageSchema)

@@ -1,5 +1,3 @@
-const Follows = require("../models/Follows");
-const Post = require("../models/Post");
 const User = require("../models/User")
 const mongoose = require("mongoose");
 const { ObjectId } = require("mongodb");
@@ -7,125 +5,48 @@ const connectToDb = require("../config/database/db");
 mongoose.set("debug", true);
 
 class UserController {
+
+    //[GET] user info
+    async getInfo(req, res) {
+        await connectToDb()
+        const { email } = req.query
+
+        const userInfo = await User.findOne({ email })
+
+        try {
+            if (userInfo) {
+                res.json({
+                    "userInfo": userInfo
+                })
+            } 
+        } catch (e) {
+            console.log('Some errors happen', e)
+        }
+    }
+
+    async setAvatar(req,res) {
+        await connectToDb()
+        const { email, avtar } = req.query
+
+        const user = await User.find({ email })
+
+        try {
+            if (user) {
+                user.avtar = avtar
+                await user.save()
+                res.status(200).json(user)
+            } else {
+                res.status(404).send('email not found')
+            }
+        } catch (e) {
+            console.log('Some errors happen', e)
+        }
+    }
   
-  async getAllUser(req, res) {
-    try {
-      connectToDb();
-
-      const recentPostsArray = await User.aggregate([
-        //sort by latest sent message
-        {
-          $sort: {
-            updateAt: -1,
-          },
-        },
-      ]);
-
-      const postExplores = recentPostsArray.length > 0 ? recentPostsArray : [];
-      res.json({
-        recommentPost: postExplores,
-      });
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  async getChatHistory(req, res) {
-    try {
-      connectToDb();
-
-      const { senderEmail, recipentEmail } = req.query;
-
-      // const message = new Message({
-      //     recipentEmail: "Baonguyen2@gmail.com",
-      //     senderEmail: "Baonguyen1@gmail.com",
-
-      //     content: "MU Vodoi 3",
-      //     sendAt:Date(),
-      //     isDeleted: false
-      // })
-
-      // console.log(message)
-
-      // await message.save()
-
-      const chatHistoryArray = await Message.aggregate([
-        //get all recieved messages
-        {
-          $match: {
-            $expr: {
-              $or: [
-                {
-                  recipentEmail: recipentEmail,
-                  senderEmail: senderEmail,
-                  isDeleted: false,
-                },
-                {
-                  recipentEmail: senderEmail,
-                  senderEmail: recipentEmail,
-                  isDeleted: false,
-                },
-              ],
-            },
-          },
-        },
-        {
-          $addFields: {
-            isSender: { $eq: ["$senderEmail", senderEmail] },
-          },
-        },
-        //sort by latest sent message
-        {
-          $sort: {
-            sendAt: 1,
-          },
-        },
-        {
-          $limit: 10,
-        },
-        // {
-        //     '$group': {
-        //         '_id': null,
-        //         'isSender': {'$first': '$isSender'},
-        //         'content': {'$first': '$content'},
-        //         'timeStamp': {'$first': '$sendAt'}
-        //     }
-        // }
-      ]);
-
-      const chatHistory = chatHistoryArray.length > 0 ? chatHistoryArray : [];
-      res.json({
-        chatHistory: chatHistory,
-      });
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  async saveMessage(req, res) {
-    try {
-      connectToDb();
-      const { senderEmail, recipentEmail, content } = req.query;
-
-      const newMessage = new Message({
-        senderEmail: senderEmail,
-        recipentEmail: recipentEmail,
-        content: content,
-        sendAt: new Date(),
-      });
-
-      await newMessage.save();
-
-      return res.status(200);
-    } catch (e) {
-      console.log("Some erros happen", e);
-    }
-  }
-
-  async getUserById(req,res)
+    async getUserById(req,res)
   {
     try{
-      const { userId } = req.query;
+      const { userId } = req.params;
       if (!userId) {
         return res.status(400).json({ error: "userId is required" });
       }
@@ -141,6 +62,31 @@ class UserController {
       console.log(e)
     }
   }
+
+    // async getAvatar(req,res) {
+    //     await connectToDb()
+    //     const { email, avtar } = req.query
+
+    //     const user = await User.find({ email })
+
+    //     try {
+    //         if (user) {
+    //             user.avtar = avtar
+    //             await user.save()
+    //             res.status(200).json(user)
+    //         } else {
+    //             res.status(404).send('email not found')
+    //         }
+    //     } catch (e) {
+    //         console.log('Some errors happen', e)
+    //     }
+    // }
+
+    // async delete(req,res) {
+    //     res.status(204).send();
+    // }
 }
 
-module.exports = new UserController();
+module.exports = new UserController
+
+

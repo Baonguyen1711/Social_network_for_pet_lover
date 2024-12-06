@@ -35,6 +35,36 @@ export interface Recipent {
   content: string | null;
 }
 
+export interface MessageComponentType {
+    content: string,
+    timeStamp: string,
+    isSender: boolean|undefined
+    isChatbot: boolean|undefined
+  }
+
+
+export interface RecentChat {
+    _id: string,
+    latestMessage: string,
+    timeStamp: string,
+    userInfo: {
+        email: string | undefined,
+
+        phone: string | undefined,
+        firstname: string | undefined,
+        lastname: string | undefined,
+        
+        avatar: string| undefined
+    } | null
+}
+
+
+export interface Recipent {
+    recipentEmail: string | null,
+    senderEmail: string |null,
+    content: string | null
+}
+
 export interface AuthState {
   isAuthenticated: boolean;
   payload: {
