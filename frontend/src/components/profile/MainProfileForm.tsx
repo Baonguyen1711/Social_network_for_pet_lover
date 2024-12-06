@@ -10,7 +10,7 @@ const MainProfileForm: React.FC = () => {
   useEffect(() => {
     const userId = localStorage.getItem('userId')
     const fetchData = async () => { 
-      const url = `http://localhost:5000/api/v1/user/getbyid?userId=${userId}`;
+      const url = `http://localhost:5000/api/v1/user/getbyid/${userId}`;
       try {
         const response = await fetch(url, {
           method: "GET",

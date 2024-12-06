@@ -7,7 +7,7 @@ router.use(express.json())
 
 router.get('/info',userController.getInfo)
 router.use('/avatar', userController.setAvatar)
-router.use('/getbyid', userController.getUserById)
+router.use('/getbyid/:userId', userController.getUserById)
 
 
 module.exports = router
