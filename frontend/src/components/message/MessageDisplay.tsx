@@ -7,7 +7,7 @@ import { useSelectedUser } from './SelectedUserContext'
 import { useSocket } from './SocketContext'
 import { useBackground } from './BackgroundContext'
 import { useState } from 'react'
-
+import { lightTheme } from '../../themes/theme'
 
 
 interface MessageComponentArray {
@@ -91,7 +91,7 @@ const MessageDisplay: React.FC<MessageComponentArray> = ({isChatbot}) => {
       ref={scrollRef}
       component="div"
       height= "100%"
-      bgcolor={isChatbot?"#89966b":"#CBD9C4"}
+      bgcolor={isChatbot?"#89966b":lightTheme.colors.secondary}
       //marginTop="2px"
       padding="20px"
       sx={{

@@ -3,6 +3,7 @@ import React, { createContext, useContext, useEffect, useState, ReactNode } from
 import { io, Socket } from 'socket.io-client';
 import { MessageComponentType } from '../../types';
 import { RecentChat } from '../../types';
+import { useBackground } from './BackgroundContext';
 const socket = io('http://localhost:4000');
 
 interface SocketContextType {
@@ -14,6 +15,7 @@ interface SocketContextType {
   recentChats: RecentChat[];
   setRecentChats: React.Dispatch<React.SetStateAction<RecentChat[]>> // Adjust type according to your message structure
   sendMessage: (message: any) => void; // Function to send messages
+  changeBackground: (image: any) => void
 }
 
 const SocketContext = createContext<SocketContextType | undefined>(undefined);
@@ -27,10 +29,15 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const [messages, setMessages] = useState<any[]>([])
   const [chatbotMessages, setChatbotMessages] = useState<any[]>([])
   const currentEmail = localStorage.getItem("email")
-
+  const {setBackgroundImageOver, setSelectedTheme} = useBackground()
   useEffect(()=> {
     socket.emit("connection",currentEmail)
     socket.emit("register",currentEmail)
+
+    socket.on("changeBackground", (image) => {
+      setBackgroundImageOver(image.src)
+      setSelectedTheme(image.theme)
+    })
 
     socket.on("newMessage", (message) => {
       const newRecentChat: RecentChat = {
@@ -94,6 +101,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   },[])
 
  
+
+  const changeBackground = (image: string) => {
+    socket.emit("changeBackground", image)
+  }
   const sendMessage = (message: any) => {
     socket.emit("chatMessage", message);
   };
@@ -107,7 +118,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       
 
   return (
-    <SocketContext.Provider value={{ messages, setMessages, socket, recentChats, setRecentChats, sendMessage, chatbotMessages, setChatbotMessages }}>
+    <SocketContext.Provider value={{ messages, setMessages, socket, recentChats, setRecentChats, sendMessage, chatbotMessages, setChatbotMessages, changeBackground }}>
       {children}
     </SocketContext.Provider>
   );

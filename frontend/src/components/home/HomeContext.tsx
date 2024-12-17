@@ -2,7 +2,7 @@ import React, { createContext, ReactNode, useState } from "react";
 import { Post, IComment } from "../../types";
 
 interface HomeContextType {
-  url: String;
+  url: string;
   setUrl: (string: string) => void;
 }
 

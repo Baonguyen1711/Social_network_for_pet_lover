@@ -2,7 +2,7 @@ import React from 'react'
 import { Box, Avatar, Typography } from '@mui/material'
 import { MoreHorizOutlined } from '@mui/icons-material'
 import { useSelectedUser } from './SelectedUserContext'
-
+import { lightTheme } from '../../themes/theme';
 
 
 
@@ -18,12 +18,12 @@ const MessageHeader = () => {
             component="div"
             id="messageHeader"
             height="80px"
-            bgcolor="#ffffff"
+            bgcolor={lightTheme.colors.background}
             display="flex"
             justifyContent="space-between"
             alignItems="center"
-            marginLeft="2px"
-            borderRadius="0px 10px"
+            //marginLeft="2px"
+            //borderRadius="0px 10px"
             sx={{
                 boxShadow: "0px 2px 10px -5px rgba(0, 0, 0, 0.2)"
             }}
@@ -42,8 +42,8 @@ const MessageHeader = () => {
                     display="flex"
                     flexDirection="column"
                 >
-                    <Typography variant="h6" alignContent="center" color="#A1A7B3">{selectedUserName}</Typography>
-                    <Typography variant="caption" alignContent="center" color="#A1A7B3">@{selectedUserEmail?.replace("@gmail.com", "")}</Typography>
+                    <Typography variant="h6" alignContent="center" color={lightTheme.colors.text}>{selectedUserName}</Typography>
+                    <Typography variant="caption" alignContent="center" color={lightTheme.colors.text}>@{selectedUserEmail?.replace("@gmail.com", "")}</Typography>
 
                 </Box>
             </Box>

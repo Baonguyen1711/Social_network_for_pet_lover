@@ -6,7 +6,7 @@ import { Recipent } from '../../types';
 import { useSelectedUser } from './SelectedUserContext';
 import { useSocket } from './SocketContext'
 import { MessageComponentType } from '../../types';
-
+import { lightTheme } from '../../themes/theme';
 
 
 interface MessageInputProps {
@@ -139,16 +139,16 @@ const MessageInput: React.FC<MessageInputProps> = ({ recipent, isChatbot }) => {
       id="inputWrapper"
       height="80px"
       width="100%"
-      marginLeft={isChatbot?"0px":"2px"}
+      
       // position="sticky"
-      bgcolor="#ffffff"
+      bgcolor={lightTheme.colors.background}
     >
       {
         isChatbot?
         <Box
         padding="10px"
         height="100%"
-        bgcolor="#ffffff"
+        bgcolor={lightTheme.colors.background}
         width="100%"
         component="form"
 
@@ -164,7 +164,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ recipent, isChatbot }) => {
         <Box
         padding="10px"
         height="100%"
-        bgcolor="#ffffff"
+        bgcolor={lightTheme.colors.background}
         width="100%"
         component="form"
 

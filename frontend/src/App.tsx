@@ -1,6 +1,6 @@
 import React from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
-import ProtectedRoutes from "./components/auth/ProtectedRoutes";
+
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
 import MessagePage from "./pages/message/MessagePage";
@@ -17,6 +17,7 @@ import { SelectedUserProvider } from "./components/message/SelectedUserContext";
 import { SocketProvider } from "./components/message/SocketContext";
 import { BackgroundProvider } from "./components/message/BackgroundContext";
 import HomePage from "./pages/home/HomePage";
+import ProtectedRoutes from "./pages/auth/ProtectedRoute";
 import { ProfileProvider } from "./components/profile/ProfileContext";
 
 const App = () => {
@@ -28,20 +29,22 @@ const App = () => {
         <SelectedUserProvider>
           <ThemeProvider theme={theme}>
             <Box component="div" minHeight="100vh">
+              
               <Routes>
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
+                
+                
+                <Route path="/message" element={<ProtectedRoutes element={<MessagePage />} />} />
+                <Route path="/explore" element={<ProtectedRoutes element={<ExplorePage />} />} />
+                <Route path="/home" element={<ProtectedRoutes element={<HomePage />} />} />
 
-                <Route path="/message" element={<MessagePage />} />
-                <Route path="/explore" element={<ExplorePage />} />
-                <Route path="/home" element={<HomePage />} />
-
-                <Route path="/profile" element={<ProfilePage />}>
-                  <Route index element={<PostsDisplay />} />
-                  <Route path="posts" element={<PostsDisplay />} />
-                  <Route path="pets" element={<PetsDisplay />} />
+                <Route path="/profile" element={<ProtectedRoutes element={<ProfilePage />} />}>
+                  <Route index element={<ProtectedRoutes element={<PostsDisplay />} />} />
+                  <Route path="posts" element={<ProtectedRoutes element={<PostsDisplay />} />} />
+                  <Route path="pets" element={<ProtectedRoutes element={<PetsDisplay />} />} />
                 </Route>
-              </Routes>
+              </Routes> 
 
               {location.pathname !== "/login" &&
               location.pathname != "register" ? (

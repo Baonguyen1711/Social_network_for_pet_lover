@@ -1,6 +1,9 @@
-const User = require("../models/User")
+//const User = require("../models/user")
 const mongoose = require("mongoose");
 const { ObjectId } = require("mongodb");
+const User = require('../models/user')
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');//
 const connectToDb = require("../config/database/db");
 mongoose.set("debug", true);
 
@@ -60,6 +63,56 @@ class UserController {
     catch(e)
     {
       console.log(e)
+    }
+  }
+
+  async verify(req,res) {
+    try {
+      let token = req.headers['authorization'];
+        if (!token) {
+            console.log(token);
+            return res.status(401).json(
+                {
+                    status: 'error',
+                    code: 401,
+                    message: 'Authorization header is required',
+                    data: null,
+                    errors: 'Unauthorized'
+                }
+            );
+        }
+        else {
+            token = token.split(' ')[1];
+        }
+
+        jwt.verify(token, process.env.JWT_SECRET, (error, user) => {
+            if (error) {
+                return res.status(401).json(
+                    {
+                        status: 'error',
+                        code: 401,
+                        message: 'Invalid token. You need to login first',
+                        data: null,
+                        errors: 'Unauthorized'
+                    }
+                );
+            }
+
+            return res.status(200).json(
+              {
+                  status: 'success',
+                  code: 200,
+              }
+          );
+        })    
+    } catch(e) {
+      return res.status(500).json(
+        {
+            status: 'error',
+            code: 500,
+            message: 'Internal server error',
+        }
+    );
     }
   }
 

@@ -7,6 +7,7 @@ router.use(express.json())
 
 router.get('/info',userController.getInfo)
 router.use('/avatar', userController.setAvatar)
+router.use('/verify', userController.verify)
 router.use('/getbyid/:userId', userController.getUserById)
 
 

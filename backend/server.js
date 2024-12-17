@@ -52,10 +52,25 @@ io.on('connection', (socket) => {
         userRegistration[email] = socket.id
         console.log(userRegistration)
     })
+
+
+    socket.on("changeBackground", (image) => {
+        console.log(image)
+        const recipentId = userRegistration[image.recipentEmail]
+        socket.to(recipentId).emit("changeBackground", {
+            "sendFrom": image.senderEmail,
+            "src": image.src,
+            "theme": image.theme
+        })
+
+    })
   
     socket.on('disconnect', () => {
       console.log('A user disconnected');
     });
+
+
+
 });
 
 // const corsOptions = {

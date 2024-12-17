@@ -2,7 +2,7 @@ import React from 'react'
 import { Avatar, Box, Typography } from '@mui/material'
 import { MessageComponentType } from '../../types'
 import { useBackground } from './BackgroundContext'
-
+import { lightTheme } from '../../themes/theme'
 const MessageComponent: React.FC<MessageComponentType> = ({ content, timeStamp, isSender, isChatbot }) => {
     const {selectedTheme} = useBackground()
     return (
@@ -36,8 +36,8 @@ const MessageComponent: React.FC<MessageComponentType> = ({ content, timeStamp, 
                         marginLeft="10px"
                         
                         sx={{
-                            bgcolor: selectedTheme.length!==0?`rgb(${selectedTheme[2][0]},${selectedTheme[2][1]},${selectedTheme[2][2]})`:"#e6f5de",
-                            color: selectedTheme.length!==0?`rgb(${selectedTheme[0][0]},${selectedTheme[0][1]},${selectedTheme[0][2]})`:"black"
+                            bgcolor: selectedTheme.length!==0?`rgb(${selectedTheme[2][0]},${selectedTheme[2][1]},${selectedTheme[2][2]})`:lightTheme.colors.primary,
+                            color: selectedTheme.length!==0?`rgb(${selectedTheme[0][0]},${selectedTheme[0][1]},${selectedTheme[0][2]})`:lightTheme.colors.secondary
                         }}
                     >
                         <div dangerouslySetInnerHTML={{ __html: content }} /> <br />
@@ -45,7 +45,7 @@ const MessageComponent: React.FC<MessageComponentType> = ({ content, timeStamp, 
                         variant="caption" 
                         fontFamily="Inter" 
                         sx={{
-                            color: selectedTheme.length!==0?`rgb(${selectedTheme[1][0]},${selectedTheme[1][1]},${selectedTheme[1][2]})`:"#acb1bc"
+                            color: selectedTheme.length!==0?`rgb(${selectedTheme[1][0]},${selectedTheme[1][1]},${selectedTheme[1][2]})`:lightTheme.colors.text
                         }}
                         >{timeStamp.slice(0,5)}</Typography>
                     </Box>
@@ -77,8 +77,8 @@ const MessageComponent: React.FC<MessageComponentType> = ({ content, timeStamp, 
                     padding="10px"
                     marginLeft="auto"
                     sx={{
-                        bgcolor: selectedTheme.length!==0?`rgb(${selectedTheme[2][0]},${selectedTheme[2][1]},${selectedTheme[2][2]})`:"#e6f5de",
-                        color: selectedTheme.length!==0?`rgb(${selectedTheme[0][0]},${selectedTheme[0][1]},${selectedTheme[0][2]})`:"black"
+                        bgcolor: selectedTheme.length!==0?`rgb(${selectedTheme[2][0]},${selectedTheme[2][1]},${selectedTheme[2][2]})`:lightTheme.colors.primary,
+                        color: selectedTheme.length!==0?`rgb(${selectedTheme[0][0]},${selectedTheme[0][1]},${selectedTheme[0][2]})`:lightTheme.colors.secondary
                     }}
                 >
                 <div dangerouslySetInnerHTML={{ __html: content }} />
@@ -87,7 +87,7 @@ const MessageComponent: React.FC<MessageComponentType> = ({ content, timeStamp, 
                         variant="caption" 
                         fontFamily="Inter" 
                         sx={{
-                            color: selectedTheme.length!==0?`rgb(${selectedTheme[1][0]},${selectedTheme[1][1]},${selectedTheme[1][2]})`:"#acb1bc"
+                            color: selectedTheme.length!==0?`rgb(${selectedTheme[1][0]},${selectedTheme[1][1]},${selectedTheme[1][2]})`:lightTheme.colors.text
                         }}
                         >{timeStamp.slice(0,5)}</Typography>
                 </Box>
