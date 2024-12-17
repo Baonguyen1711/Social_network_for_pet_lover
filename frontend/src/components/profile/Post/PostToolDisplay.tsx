@@ -15,10 +15,9 @@ import {
 } from "@mui/material";
 import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
 import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
-import React, { useRef, useState } from "react";
-import style from "../profile/css/PostToolDisplay.module.css";
-import uploadToCloudinary from "../profile/UploadImage";
-import { Post,FormPost } from "../../types";
+import React, { useEffect, useRef, useState } from "react";
+import uploadToCloudinary from "../UploadImage";
+import { Post,FormPost, User } from "../../../types";
 
 interface PostToolDisplayProps {
   isOpen: boolean; // Điều khiển hiển thị
@@ -40,6 +39,7 @@ const PostToolDisplay: React.FC<PostToolDisplayProps> = ({
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [isChanged, setIsChanged] = useState(false);
   const [_message, setMessage] = useState(false);
+  const [userData,setUserData] = useState<User>()
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,7 +57,26 @@ const PostToolDisplay: React.FC<PostToolDisplayProps> = ({
     }));
     setIsChanged(true);
   };
+  useEffect(() => {
+    const userId = localStorage.getItem('userId')
+    const fetchData = async () => { 
+      const url = `http://localhost:5000/api/v1/user/getbyid/${userId}`;
+      try {
+        const response = await fetch(url, {
+          method: "GET",
+        });
+        if (!response.ok) {
+          throw new Error("Error in getting user");
+        }
+        const data = await response.json();
+        setUserData(data.user);
+      } catch (e) { 
+        console.error("Error fetching data:", e);
+      }
+    };
 
+    fetchData(); // Call fetchData inside useEffect
+  }, []);
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files || event.target.files.length === 0) {
       return;
@@ -149,13 +168,13 @@ const PostToolDisplay: React.FC<PostToolDisplayProps> = ({
     }
     return true
   }
+  
   return (
     <>
       <Modal
         open={isOpen}
         onClose={handleClose}
         sx={{ backdropFilter: "blur(2px)" }}
-        className={style.mainTool}
       >
         <Card
           sx={{
@@ -215,12 +234,12 @@ const PostToolDisplay: React.FC<PostToolDisplayProps> = ({
               }}
             >
               <Stack direction="row">
-                <Avatar src="https://via.placeholder.com/40"></Avatar>
+                <Avatar src={userData?.avatar}></Avatar>
                 <Typography
                   variant="h5"
                   sx={{ alignSelf: "center", marginLeft: "10px" }}
                 >
-                  FhuAnn
+                  {userData&&userData.firstname+" "+userData.lastname}
                 </Typography>
                 {/* <Typography variant="body1" sx={{ alignSelf: "center" }}>
                   đang cảm thấy

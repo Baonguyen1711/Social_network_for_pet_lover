@@ -1,78 +1,95 @@
 import React, { useEffect, useState } from "react";
+import clsx from 'clsx'
 import style from "../css/ProposalCommentContainer.module.css";
-import { IComment, Post } from "../../../types";
-import ProposalComment from "../ProposalComment";
+import { IComment, Post, UserInfo } from "../../../types";
+import ProposalComment from "../Post/ProposalComment";
 import DetailPostContainer from "./DetailPostContainer";
 
-interface props {
+interface PropsBase {
   onAddComment?: (newComment: Comment) => void;
-  newComment?: IComment;
-  postId?: string;
-  updateComments:(comments:IComment[]) => void;
+  level: number;
+  newCommentsArray?: IComment[];
+  updateComments: (comments: IComment[]) => void;
+  handleCommentParentClick?: (user: UserInfo | null | undefined) => void; // focus vào commentbar của comment cha
 }
-const ChildComponent = React.memo(({ value }: { value: IComment }) => {
-  return <ProposalComment comment={value} />;
-});
-const ProposalCommentContainer: React.FC<props> = (props) => {
+type Props =
+  | (PropsBase & { postId: string | undefined; commentParentId?: never })
+  | (PropsBase & { commentParentId: string | undefined; postId?: never });
+
+const ProposalCommentContainer: React.FC<Props> = (props) => {
+  const [isWatchMoreComments, setIsWatchMoreComment] = useState<boolean>(false);
   const [comments, setComments] = useState<IComment[] | undefined>();
-  //handletogglemodal
-  const [open, setOpen] = useState(false);
-  //const handleOpen = () => setOpen(true);
-  //const handleClose = () => setOpen(false);
-  
   useEffect(() => {
+    //console.log("load because have new commment",props.newCommentsArray)
     fetchData();
-  }, []);
+  }, [props.newCommentsArray]);
   const fetchData = async () => {
     const postId = props.postId;
+    const commentId = props.commentParentId;
+    const actionPath = postId
+      ? `getCommentsByPostId?postId=${postId}`
+      : `getCommentsByCommentId?commentParentId=${commentId}`;
     const userId = localStorage.getItem("userId");
-    const url = `http://localhost:5000/api/v1/comment/getCommentsByPostId?postId=${postId}&userId=${userId}`;
+    const url = `http://localhost:5000/api/v1/comment/${actionPath}&userId=${userId}`;
     try {
       const response = await fetch(url, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
-        });
+      });
       if (!response.ok) {
         throw new Error("Error in getting message");
       }
       const data = await response.json();
       if (data.comments.length > 0) {
-        setComments(buildTree(data.comments));
+        setComments(data.comments);
         props.updateComments(data.comments);
       }
     } catch (e) {
       console.error("Error fetching data:", e);
     }
   };
-  
-  function buildTree(
-    comments: IComment[],
-    parentId: string | null = null
-  ): IComment[] {
-    return comments
-      .filter((comment) => comment.parentId === parentId) // Lọc bình luận có parentId khớp
-      .map((comment) => ({
-        ...comment, // Sao chép tất cả thuộc tính của bình luận
-        replies: buildTree(comments, comment._id), // Đệ quy để tìm các phản hồi
-      }));
-  }
+
   return (
-    <>
-      {comments && comments.length > 0 && (
+    <div className={clsx(style.expandCommentContainer)}>
+      {!isWatchMoreComments ? (
+        <div
+          onClick={() => {
+            setIsWatchMoreComment(true);
+          }}
+          className={style.userName}
+        >
+          {props.newCommentsArray&&props.newCommentsArray.length>0&&comments&&comments?.length > 0?"Watch another comments":comments&&comments?.length > 0
+            ? `Xem ${comments.length} bình luận`
+            : ""}
+        </div>
+      ) : (
         <div className={style.container}>
           <div className={style.firstComment}>
-            {comments.map((comment, index) => (
-              <div id={index + ""}>
-                <ProposalComment comment={comment} />
-              </div>
+            {comments&&comments.map((comment) => (
+              <ProposalComment
+                key={comment._id}
+                level={props.level + 1}
+                handleCommentParentClick={props.handleCommentParentClick}
+                comment={comment}
+              />
             ))}
-            {props.newComment && <ChildComponent value={props.newComment} />}
           </div>
         </div>
       )}
-    </>
+      {props.newCommentsArray &&
+      !isWatchMoreComments&&
+        props.newCommentsArray.length > 0 &&
+        props.newCommentsArray.map((newComment) => (
+          <ProposalComment
+            key={newComment._id}
+            level={props.level + 1}
+            handleCommentParentClick={props.handleCommentParentClick}
+            comment={newComment}
+          />
+        ))}
+    </div>
   );
 };
 

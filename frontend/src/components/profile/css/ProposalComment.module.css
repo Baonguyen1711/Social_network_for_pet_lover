@@ -32,7 +32,6 @@
 
 .cardFooter {
   display: flex;
-  background: #f9f9f9;  
   margin-left: 5px;
   align-items: center;
   justify-content: space-between;
@@ -68,3 +67,26 @@ h4 ,p
 {
   margin:0
 }
+
+.WatchMoreComments
+{
+  margin-left: 5px;
+}
+.WatchMoreComments:hover
+{
+  text-decoration: underline; 
+  cursor: pointer;
+}
+
+.avatar:hover
+{
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.content 
+{
+  word-wrap: break-word;
+  text-wrap:;
+}
+

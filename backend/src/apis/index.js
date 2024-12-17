@@ -6,6 +6,8 @@ const postEndPoint = require('./post')
 const eventEndPoint = require('./event')
 const followEndPoint = require('./follow')
 const petEndPoint = require('./pet')
+const petUserEndPoint = require('./petuser')
+const postUserEndPoint = require('./postuser')
 const likeEndPoint = require('./like')
 const commentEndPoint = require('./comment')
 
@@ -26,9 +28,10 @@ function api(app) {
     app.use('/api/v1/event', eventEndPoint)
     app.use('/api/v1/follow', followEndPoint)
     app.use('/api/v1/pet',petEndPoint)
+    app.use('/api/v1/petuser',petUserEndPoint)
+    app.use('/api/v1/postuser',postUserEndPoint)
     app.use('/api/v1/like',likeEndPoint)
     app.use('/api/v1/comment',commentEndPoint)
-
 
     app.use('/api/v1/user', userEndPoint)
 

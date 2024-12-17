@@ -1,4 +1,5 @@
 const User = require("../models/User")
+const Pet = require("../models/Pet")
 const mongoose = require("mongoose");
 const { ObjectId } = require("mongodb");
 const connectToDb = require("../config/database/db");
@@ -50,12 +51,21 @@ class UserController {
       if (!userId) {
         return res.status(400).json({ error: "userId is required" });
       }
+      if (!ObjectId.isValid(userId)) {
+        return res.status(400).send({ error: 'Invalid userId format',userId });
+    }
       await connectToDb();
       const user = await User.findOne({ _id: new ObjectId(`${userId}`) },{avatar:1,description:1,firstname:1,lastname:1,location:1});
-      if (!user) {
+      if (user) {
+        const petCount = await Pet.countDocuments({userId:new ObjectId(`${userId}`),isDeleted:false})
+        const result ={
+          ...user.toObject(),
+          petCount:petCount
+        }
+        return res.json({ user:result });
+      }else {
         return res.status(404).json({ error: "User not found" });
-      }
-      return res.json({ user:user });
+      } 
     }
     catch(e)
     {

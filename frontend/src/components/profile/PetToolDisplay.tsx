@@ -22,10 +22,9 @@ import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
 import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import React, { useRef, useState } from "react";
-import style from "../profile/css/PostToolDisplay.module.css";
+import React, { useEffect, useRef, useState } from "react";
 import uploadToCloudinary from "../profile/UploadImage";
-import { FormPet, Pet } from "../../types";
+import { FormPet, Pet, User } from "../../types";
 import DatePicker from "./DatePicker";
 import { format, parseISO } from 'date-fns';
 
@@ -54,7 +53,7 @@ const PetToolDisplay: React.FC<PetToolDisplayProps> = ({
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [isChanged, setIsChanged] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-
+  const [user,setUser] = useState<User|null>()
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const target = event.target;
@@ -156,7 +155,7 @@ const PetToolDisplay: React.FC<PetToolDisplayProps> = ({
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        userId: localStorage.getItem("email"),
+        userId: localStorage.getItem("userId"),
         name: fields.name,
         bio: fields.bio,
         profilePicture: uploadedImageUrl,
@@ -177,13 +176,32 @@ const PetToolDisplay: React.FC<PetToolDisplayProps> = ({
       window.alert("Have a trouble");
     }
   };
+  useEffect(() => {
+    const userId = localStorage.getItem('userId')
+    const fetchData = async () => { 
+      const url = `http://localhost:5000/api/v1/user/getbyid/${userId}`;
+      try {
+        const response = await fetch(url, {
+          method: "GET",
+        });
+        if (!response.ok) {
+          throw new Error("Error in getting user");
+        }
+        const data = await response.json();
+        setUser(data.user);
+      } catch (e) { 
+        console.error("Error fetching data:", e);
+      }
+    };
+
+    fetchData(); // Call fetchData inside useEffect
+  }, []);
   return (
     <>
       <Modal
         open={isOpen}
         onClose={handleClose}
         sx={{ backdropFilter: "blur(2px)" }}
-        className={style.mainTool}
       >
         <Card
           sx={{
@@ -243,12 +261,12 @@ const PetToolDisplay: React.FC<PetToolDisplayProps> = ({
               }}
             >
               <Stack direction="row">
-                <Avatar src="https://via.placeholder.com/40"></Avatar>
+                <Avatar src={user?.avatar}></Avatar>
                 <Typography
                   variant="h5"
                   sx={{ alignSelf: "center", marginLeft: "10px" }}
                 >
-                  FhuAnn
+                  {user?.firstname+" "+user?.lastname}
                 </Typography>
                 {/* <Typography variant="body1" sx={{ alignSelf: "center" }}>
                   đang cảm thấy

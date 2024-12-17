@@ -6,7 +6,10 @@ import {
   CardActions,
   CardContent,
   CardHeader,
+  Icon,
   IconButton,
+  ImageList,
+  ImageListItem,
   Menu,
   MenuItem,
   Modal,
@@ -14,7 +17,7 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useContext, useRef, useState } from "react";
-import { PostContext } from "../PostContext";
+import { PostContext } from "../Post/PostContext";
 import ExpandComment from "./ExpandComment";
 import {
   BookmarkBorder,
@@ -26,29 +29,35 @@ import {
   VisibilityOff,
   Comment,
 } from "@mui/icons-material";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
+
 import { getTimeAgo } from "../../../helper";
 import { IComment, Post } from "../../../types";
 import CommentBar from "../CommentBar";
 interface props {
   open: boolean;
-  handleClose: () => void;
+  handleClose?: () => void;
   updatePostsState?: (returnPost: Post | undefined) => void;
+  handleLike?: () => void;
+  handleSave?: () => void;
 }
 const DetailPostContainer: React.FC<props> = ({
   open,
   handleClose,
   updatePostsState,
+  handleLike,
+  handleSave,
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const commentInputRef = useRef<HTMLInputElement>(null);
   const { post, setPost } = useContext(PostContext)!;
-  const [currentPost, setCurrentPost] = useState(post);
   const openAnChor = Boolean(anchorEl);
   const [countComment, setCountComment] = useState<number>(0);
-  const [bonusComment, setBonusComment] = useState<IComment>();
-  const handleAddComment = (newComment: IComment|undefined) => {
-    setBonusComment(newComment);
-    setCountComment(countComment + 1);
+  const [newCommentsArray,setNewCommentsArray] = useState<IComment[]>()
+//const [bonusComment, setBonusComment] = useState<IComment>();
+  const handleAddComment = (newComment: IComment | undefined) => {
+    if (!newComment) return;
+    setNewCommentsArray((prev)=>prev?[...prev,newComment]:[newComment])
   };
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -61,13 +70,13 @@ const DetailPostContainer: React.FC<props> = ({
   };
 
   const handleEdit = () => {
-    handleClose();
+    if(handleClose) handleClose();
   };
 
   const handleDelete = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/post/delete?postId=${currentPost?._id}`,
+        `http://localhost:5000/api/v1/post/delete?postId=${post?._id}`,
         { method: "DELETE" }
       );
       if (!response.ok) {
@@ -75,7 +84,7 @@ const DetailPostContainer: React.FC<props> = ({
       }
       const result = await response.json();
       updatePostsState?.(result.deletedPost);
-      handleClose();
+      if(handleClose) handleClose();
     } catch (e) {
       console.error(e);
     }
@@ -84,34 +93,6 @@ const DetailPostContainer: React.FC<props> = ({
   const handleHide = () => {
     console.log("Hide clicked");
   };
-  const handleLike = async () => {
-    try {
-      const response = await fetch(
-        "http://localhost:5000/api/v1/like/likepost",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userId: localStorage.getItem("userId"),
-            targetId: currentPost?._id,
-            targetType: "post",
-          }),
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Failed to like post");
-      }
-      const result = await response.json();
-      setCurrentPost(result.updatedPost);
-      setPost(result.updatedPost);
-      //updatePostsState?.(result.updatedPost);
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
   const handleCommentClick = () => {
     if (commentInputRef.current) {
       commentInputRef.current.focus();
@@ -247,33 +228,29 @@ const DetailPostContainer: React.FC<props> = ({
                     justifyContent="center"
                     alignItems="center"
                   >
-                    {post.images.map((url, i) => {
-                      return (
-                        <img
-                          id={i + ""}
-                          src={url}
-                          alt="Cat with style 1"
-                          width="100%"
-                          style={{
-                            borderRadius: 8,
-                            maxHeight: "500px",
-                            maxWidth: "500px",
-                            objectFit: "cover",
-                          }}
-                        />
-                      );
-                    })}
+                    <ImageList
+                      variant="masonry"
+                      cols={post.images.length}
+                      gap={8}
+                    >
+                      {post.images.map((url, i) => {
+                        return (
+                          <ImageListItem key={i + ""}>
+                            <img
+                              src={`${url}?w=248&fit=crop&auto=format&dpr=2`}
+                              loading="lazy"
+                            />
+                          </ImageListItem>
+                        );
+                      })}
+                    </ImageList>
                   </Stack>
                 )}
               </CardContent>
               <CardActions disableSpacing>
                 <Stack direction="row" spacing={1} alignItems="center">
                   <IconButton onClick={handleLike}>
-                    {post?.isLiked == null ? (
-                      <ThumbUp />
-                    ) : (
-                      <ThumbUp color="primary" />
-                    )}
+                    {post?.isLiked ? <ThumbUp color="primary" /> : <ThumbUp />}
                   </IconButton>
                   <Typography variant="body2">
                     {post && post.likedUserInfo.length > 0
@@ -316,18 +293,24 @@ const DetailPostContainer: React.FC<props> = ({
                   >
                     {countComment} comments
                   </Typography>
-                  <IconButton>
-                    <BookmarkBorder />
+                  <IconButton onClick={handleSave}>
+                    {post?.isSaved ? (
+                      <BookmarkIcon style={{ color: "#F17826" }} />
+                    ) : (
+                      <BookmarkBorder />
+                    )}
                   </IconButton>
+
                   <IconButton>
                     <Share />
                   </IconButton>
                 </Stack>
               </CardActions>
-              <CardContent sx={{ paddingBottom: "0px !important" }}>
+              <CardContent sx={{ paddingBottom: "0px !important", justifySelf:"left",width:"auto" }}>
                 {post && (
                   <ExpandComment
-                    newComment={bonusComment}
+                    level={0}
+                    newCommentsArray={newCommentsArray}
                     postId={post._id}
                     updateComments={updateComments}
                   />
@@ -347,7 +330,7 @@ const DetailPostContainer: React.FC<props> = ({
             {post && (
               <CommentBar
                 ref={commentInputRef}
-                post={post}
+                postId={post._id}
                 onAddComment={handleAddComment}
               />
             )}

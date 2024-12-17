@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import PetInfomationCard from "./PetInfomationCard";
 import { AddPhotoAlternate, AddReaction, Padding } from "@mui/icons-material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
@@ -16,10 +16,11 @@ import { Pet } from "../../types";
 import style from "./css/PetsDisplay.module.css";
 import PetToolDisplay from "./PetToolDisplay";
 import { hover } from "@testing-library/user-event/dist/hover";
+import { useParams } from "react-router-dom";
 const PetsDisplay = () => {
   const [isDisplayTool, setIsDisplayTool] = useState(false);
   const [petsData, setPetsData] = useState<Pet[]>([]);
-
+  const {userId} = useParams();
   const toggleDisplayToolBox = () => {
     setIsDisplayTool((prev) => !prev);
   };
@@ -39,8 +40,8 @@ const PetsDisplay = () => {
     fetchData(); // Call fetchData inside useEffect
   }, []);
   const fetchData = async () => {
-    const email = localStorage.getItem("email");
-    const url = `http://localhost:5000/api/v1/pet/getbyuserid?userId=${email}`;
+    //console.log("sdsksjsj",userId)
+    const url = `http://localhost:5000/api/v1/pet/getbyuserid?userId=${userId}`;
     try {
       const response = await fetch(url, {
         method: "GET",

@@ -2,7 +2,7 @@ import React from "react";
 import SideBarLRForm from "../../components/shared/SideBarLR/SideBarLRForm";
 import MainProfileForm from "../../components/profile/MainProfileForm"; 
 
-const   ProfilePage = () => {
+const ProfilePage = () => {
   return (
     <div>
         <SideBarLRForm>

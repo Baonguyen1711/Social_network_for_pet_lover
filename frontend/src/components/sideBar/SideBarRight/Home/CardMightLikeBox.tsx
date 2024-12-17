@@ -12,11 +12,11 @@ type CardMightLikeBoxProps = {
 const CardMightLikeBox: React.FC<CardMightLikeBoxProps> = ({
   notFollowUser,
 }) => {
-  const currentEmail = localStorage.getItem("email");
+  const currentUserId = localStorage.getItem("userId");
   const [isFollowing, setIsFollowing] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
 
-  async function handleFollow(followingEmail: string) {
+  async function handleFollow(followingId: string) {
     try {
       const response = await fetch(
         "http://localhost:5000/api/v1/follow/create",
@@ -26,8 +26,8 @@ const CardMightLikeBox: React.FC<CardMightLikeBoxProps> = ({
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            followerId: currentEmail,
-            followingId: followingEmail,
+            followerId: currentUserId,
+            followingId: followingId,
           }),
         }
       );
@@ -47,7 +47,7 @@ const CardMightLikeBox: React.FC<CardMightLikeBoxProps> = ({
       alert("Error occurred while trying to follow.");
     }
   }
-  async function handleIgnore(followingEmail: string) {
+  async function handleIgnore(followingId: string) {
     try {
       const response = await fetch(
         "http://localhost:5000/api/v1/follow/ignore",
@@ -57,8 +57,8 @@ const CardMightLikeBox: React.FC<CardMightLikeBoxProps> = ({
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            ignorerId: currentEmail,
-            ignoringId: followingEmail,
+            ignorerId: currentUserId,
+            ignoringId: followingId,
           }),
         }
       );
@@ -115,7 +115,7 @@ const CardMightLikeBox: React.FC<CardMightLikeBoxProps> = ({
               variant="contained"
               color="success"
               style={{ height: "30px" }}
-              onClick={() => handleFollow(notFollowUser.email)}
+              onClick={() => handleFollow(notFollowUser._id)}
             >
               {isFollowing ? "Following" : "Follow"}
             </Button>
@@ -126,7 +126,7 @@ const CardMightLikeBox: React.FC<CardMightLikeBoxProps> = ({
                 color: "white",
                 height: "30px",
               }}
-              onClick={()=>handleIgnore(notFollowUser.email)}
+              onClick={()=>handleIgnore(notFollowUser._id)}
             >
               Ignore
             </Button>

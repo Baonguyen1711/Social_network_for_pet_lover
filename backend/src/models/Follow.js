@@ -6,11 +6,11 @@ const FashionSocial = mongoose.connection.useDb('FashionSocial');
 
 const FollowsSchema = new mongoose.Schema({
     followerId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         require: true,
     },
     followingId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         require: true,
     },
     dateTime: {

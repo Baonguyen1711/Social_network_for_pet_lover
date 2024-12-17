@@ -7,7 +7,7 @@ interface ExploreCenterPage {
   children?: React.ReactNode; // Khai báo kiểu cho children
 }
 
-const ExplorePage: React.FC<ExploreCenterPage> = ({ children }) => {
+const SideBarLRForm: React.FC<ExploreCenterPage> = ({ children }) => {
   return (
     <Grid2 container sx={{ height: "100vh", overflowY: "auto" }}>
       <Grid2
@@ -40,4 +40,4 @@ const ExplorePage: React.FC<ExploreCenterPage> = ({ children }) => {
   );
 };
 
-export default ExplorePage;
+export default SideBarLRForm;
