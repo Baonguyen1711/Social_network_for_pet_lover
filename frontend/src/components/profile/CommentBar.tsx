@@ -1,4 +1,4 @@
-import React, { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import style from "./css/CommentBar.module.css";
 import {
   Avatar,
@@ -7,24 +7,41 @@ import {
   TextareaAutosize,
   TextField,
 } from "@mui/material";
-import { PostComment,IComment ,Post, UserInfo } from "../../types";
+import { PostComment,IComment ,Post, UserInfo, User } from "../../types";
 import { Share } from "@mui/icons-material";
 import SendIcon from "@mui/icons-material/Send";
+import { getUserByUserId } from "../../sercives/api";
 
 interface Props {
-  post?: Post;
-  onAddComment?: ((newComment: IComment|undefined) => void)|undefined;
+  postId:string|undefined|null
+  parentId?:string|undefined|null
+  onAddComment?: (newComment: IComment|undefined) => void
+  content?: string|null
 }
 const CommentBar = forwardRef<HTMLInputElement, Props>((props, ref) => {
   const [fields, setFields] = useState<PostComment>({
     content: "",
-    postId: "",
+    postId: props.postId?props.postId:"",
     userId: "",
-    parentId: "",
+    parentId: props.parentId?props.parentId:"",
   });
   const [loading, setLoading] = useState(false);
+  const [currentUser,setCurrentUser] = useState<User>();
+  useEffect(()=>{
+    fetchUserData()
+  },[])
+  //
+  const fetchUserData = async () => { 
+    const userId = localStorage.getItem("userId")
+    setCurrentUser(await getUserByUserId(userId))
+  };
   const handlePostComment = async () => {
-    setLoading(true);
+    if(fields.content==="") 
+    {
+      return;
+    }
+    console.log("dsadsajasdskdajkdjsadkjs",fields)
+    //setLoading(true);
     try {
       const url = `http://localhost:5000/api/v1/comment/create`;
       const response = await fetch(url, {
@@ -34,17 +51,17 @@ const CommentBar = forwardRef<HTMLInputElement, Props>((props, ref) => {
         },
         body: JSON.stringify({
           content: fields.content,
-          postId: props.post?._id,
+          postId: fields.postId,
           userId: localStorage.getItem("userId"),
           parentId: fields.parentId,
         }),
       });
       if (response.ok) {
         const data = await response.json()
-        console.log("datareturn",data)
+        //console.log("dasdkajkasjdksdjasksajask",data.newComment)
         props.onAddComment?.(data.newComment)
-        console.log("Comment posted successfully");
-        setFields({ content: "", postId: "", userId: "", parentId: "" });
+        //console.log("Comment posted successfully");
+        setFields((prev)=>({ ...prev,content: "" }));
       }
     } catch (e) {
       console.log("Error: ", e);
@@ -63,16 +80,16 @@ const CommentBar = forwardRef<HTMLInputElement, Props>((props, ref) => {
   };
   return (
     <div className={style.container}>
-      <Avatar src={props.post?.userInfo.avatar} />
+      <Avatar src={currentUser?.avatar} />
       <div className={style.inputContent}>
         <TextField
           id="content"
           inputRef={ref}
           placeholder={
             "Đang bình luận dưới tên " +
-            props.post?.userInfo.firstname +
+            currentUser?.firstname +
             " " +
-            props.post?.userInfo.lastname
+            currentUser?.lastname
           }
           sx={{
             flexGrow: 1,

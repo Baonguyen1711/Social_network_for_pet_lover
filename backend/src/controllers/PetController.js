@@ -1,3 +1,4 @@
+const PetUser = require("../models/PetUser");
 const Pet = require("../models/Pet");
 const mongoose = require("mongoose");
 const connectToDb = require("../config/database/db");
@@ -26,6 +27,9 @@ class PetController {
           .status(400)
           .json({ message: "Not enough required information!" });
       }
+      if (!ObjectId.isValid(userId)) {
+        return res.status(400).send({ error: 'Invalid userId format',userId });
+    }
       const newPet = Pet({
         name: name,
         bio: bio,
@@ -118,15 +122,18 @@ class PetController {
 
   async getPetsByUserId(req, res) {
     try {
-      const userId = req.query;
+      const {userId} = req.query;
       if (!userId) {
         return res.status(400).json({ error: "userId is required" });
       }
+      if (!ObjectId.isValid(userId)) {
+        return res.status(400).send({ error: 'Invalid userId format',userId });
+    }
       connectToDb();
       const pets = await Pet.aggregate([
         {
           $match: {
-            userId: { $regex: new RegExp(userId, "i") },
+            userId: new ObjectId(`${userId}`),
             isDeleted: false,
           },
         },
@@ -139,7 +146,7 @@ class PetController {
           $lookup: {
             from: "users",
             localField: "userId", // Trường trong Post
-            foreignField: "email", // Trường trong User
+            foreignField: "_id", // Trường trong User
             as: "userInfo", // Tên trường chứa kết quả nối
           },
         },
@@ -163,18 +170,87 @@ class PetController {
           },
         },
       ]);
-      res.json({ pets });
+      
+      return res.json({ pets });
     } catch (e) {
       console.log(e);
     }
   }
-
+  // async getFavouritedPetsByUserId(req, res) {
+  //   try {
+  //     const {userId} = req.query;
+  //     if (!userId) {
+  //       return res.status(400).json({ error: "userId is required" });
+  //     }
+  //     if (!ObjectId.isValid(userId)) {
+  //       return res.status(400).send({ error: 'Invalid userId format',userId });
+  //   }
+  //     connectToDb();
+  //     const pets = await PetUser.aggregate([
+  //       {
+  //         $match: {
+  //           userId: new ObjectId(`${userId}`),
+  //           isDeleted: false,
+  //         },
+  //       },
+  //       {
+  //         $lookup: {
+  //           from: "pets",
+  //           localField: "petId", // Trường trong Post
+  //           foreignField: "_id", // Trường trong User
+  //           as: "petInfo", // Tên trường chứa kết quả nối
+  //         },
+  //       },
+  //       {
+  //         $lookup: {
+  //           from: "users",
+  //           localField: "petInfo.userId", // Trường trong Post
+  //           foreignField: "_id", // Trường trong User
+  //           as: "ownerInfo", // Tên trường chứa kết quả nối
+  //         },
+  //       },
+  //       {
+  //         $sort: {
+  //           createdAt: -1,
+  //         },
+  //       },
+  //       {
+  //         $project: {
+  //           _id: 1,
+  //           "petInfo._id": 1,
+  //           "petInfo.name": 1,
+  //           "petInfo.bio": 1,
+  //           "petInfo.profilePicture": 1,
+  //           "petInfo.updatedAt": 1,
+  //           "petInfo.height": 1,
+  //           "petInfo.weight": 1,
+  //           "petInfo.sex": 1,
+  //           "petInfo.type": 1,
+  //           "petInfo.breed": 1,
+  //           "petInfo.birthday": 1,
+  //           "ownerInfo.lastname": 1,
+  //           "ownerInfo.firstname": 1,
+  //           "ownerInfo.avatar": 1,
+  //           "ownerInfo._id": 1,
+  //         },
+  //       },
+  //     ]);
+  //     if(pets.length>0)
+  //     return res.json.status(200)({pets});
+  //   else return res.json.status(404)([])
+  //   } catch (e) {
+  //     console.log(e);
+  //   }
+  // }
   async deletePetById(req, res) {
     try {
       const { petId } = req.query;
       if (!petId) {
         return res.status(400).json({ error: "petId is required" });
       }
+      if (!ObjectId.isValid(petId)) {
+        return res.status(400).send({ error: 'Invalid petId format',petId });
+    }
       connectToDb();
       const updatedPet = await Pet.findByIdAndUpdate(
         petId,
@@ -195,6 +271,7 @@ class PetController {
       res.status(500).send({ message: "Server error" });
     }
   }
+  async 
 }
 
 module.exports = new PetController();

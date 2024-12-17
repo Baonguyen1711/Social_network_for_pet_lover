@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import style from "./css/ProposalCommentContainer.module.css";
-import { IComment, Post } from "../../types";
+import style from "../css/ProposalCommentContainer.module.css";
+import { IComment, Post } from "../../../types";
 import ProposalComment from "./ProposalComment";
-import DetailPostContainer from "./ExpandComment/DetailPostContainer";
+import DetailPostContainer from "../ExpandComment/DetailPostContainer";
 import { List } from "@mui/material";
 
 interface props {
@@ -10,10 +10,12 @@ interface props {
   updateComments:(comments:IComment[]) => void;
   newComment?: IComment;
   postId?: string;
+  handleLike: ()=>void
+  handleSave: ()=>void
 }
-const ChildComponent = React.memo(({ value }: { value: IComment }) => {
-  return <ProposalComment comment={value} />;
-});
+// const ChildComponent = React.memo(({ value }: { value: IComment }) => {
+//   return <ProposalComment comment={value} />;
+// });
 const ProposalCommentContainer: React.FC<props> = (props) => {
   const [comments, setComments] = useState<IComment[]>([]);
 
@@ -41,24 +43,14 @@ const ProposalCommentContainer: React.FC<props> = (props) => {
       }
       const data = await response.json();
       if (data.comments.length > 0) {
-        setComments(buildTree(data.comments));
+        setComments(data.comments);
         props.updateComments(data.comments);
       }
     } catch (e) {
       console.error("Error fetching data:", e);
     }
   };
-  function buildTree(
-    comments: IComment[],
-    parentId: string | null = null
-  ): IComment[] {
-    return comments
-      .filter((comment) => comment.parentId === parentId) // Lọc bình luận có parentId khớp
-      .map((comment) => ({
-        ...comment, // Sao chép tất cả thuộc tính của bình luận
-        replies: buildTree(comments, comment._id), // Đệ quy để tìm các phản hồi
-      }));
-  }
+  
   return (
     <>
       <div className={style.container}>
@@ -68,10 +60,10 @@ const ProposalCommentContainer: React.FC<props> = (props) => {
           </div>
         )}
         <div className={style.firstComment}>
-          {comments?.length>0 && <ProposalComment comment={comments?.at(0)} />}
+          {comments?.length>0 && <ProposalComment level={1} comment={comments?.at(0)} />}
         </div>
       </div>
-      <DetailPostContainer open={open} handleClose={handleClose} />
+      <DetailPostContainer handleSave={props.handleSave} handleLike={props.handleLike} open={open} handleClose={handleClose} />
     </>
   );
 };

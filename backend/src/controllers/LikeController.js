@@ -11,6 +11,7 @@ class LikeController {
     try {
       await connectToDb();
       const { userId, targetId, targetType } = req.body;
+      console.log("userId,xcxc targetId, targetType", userId, targetId, targetType);
       if (!userId || !targetId || !targetType) {
         return res
           .status(400)
@@ -65,53 +66,33 @@ class LikeController {
               from: "likes",
               localField: "_id",
               foreignField: "targetId",
-              as: "likeInfo",
+              as: "likesInfo",
             },
           },
           {
             $addFields: {
-              likeInfo: {
+              likesInfo: {
                 $filter: {
-                  input: "$likeInfo", // Dữ liệu cần lọc
+                  input: "$likesInfo", // Dữ liệu cần lọc
                   as: "like", // Biến đại diện cho từng phần tử trong mảng
                   cond: { $eq: ["$$like.isDeleted", false] }, // Điều kiện lọc
                 },
-              },
-              isLiked: {
-                $arrayElemAt: [
-                {
-                $filter: {
-                  input: "$likeInfo", // Dữ liệu cần lọc
-                  as: "like", // Biến đại diện cho từng phần tử trong mảng
-                  cond: { $eq: ["$$like.userId", new ObjectId(`${userId}`)],$eq: ["$$like.isDeleted", false] }, // Điều kiện lọc
-                },
-              },0]
-              },
-              likedUserInfo: {
-                $arrayElemAt: [
-                  {
-                    $filter: {
-                      input: "$likeInfo", // Dữ liệu cần lọc
-                      as: "like", // Biến đại diện cho từng phần tử trong mảng
-                      cond: {
-                        $and: [
-                          { $eq: ["$$like.userId", new ObjectId(`${userId}`)] },
-                          { $eq: ["$$like.isDeleted", false] },
-                        ],
-                      }, // Điều kiện lọc
-                    },
-                  },
-                  0,
-                ],
               },
             },
           },
           {
             $lookup: {
               from: "users",
-              localField: "likeInfo.userId",
+              localField: "likesInfo.userId",
               foreignField: "_id",
               as: "likedUserInfo",
+            },
+          },
+          {
+            $addFields: {
+              isLiked: {
+                $in: [new ObjectId(`${userId}`), "$likesInfo.userId"], // Kiểm tra nếu userId có trong mảng likeInfo
+              },
             },
           },
           {
@@ -126,6 +107,7 @@ class LikeController {
               "likedUserInfo.lastname": 1,
               "likedUserInfo.firstname": 1,
               "likedUserInfo._id": 1,
+              //likesInfo:1,
               isLiked: 1,
             },
           },

@@ -4,25 +4,26 @@ import { Avatar, Box, Button, Card, CardActions, CardContent, CardHeader, IconBu
 import { AddReaction, AddPhotoAlternate, Comment, Share, MoreVert, ThumbUp, BookmarkBorder, Edit, Delete, VisibilityOff } from "@mui/icons-material";
 import style from './css/PostsDisplay.module.css'
 import PostToolDisplay from './PostToolDisplay';
-import { Like, Post, User } from '../../types';
+import { Like, Post, User } from '../../../types';
 import { PostProvider } from './PostContext';
 import PostRequestBar from './PostRequestBar';
-import { ProfileContext } from './ProfileContext';
+import { AccessUrlContext } from '../AccessUrlContext';
 
 const PostsDisplay = () => {
   const [isDisplayTool, setIsDisplayTool] = useState(false);
   const [postsData,setPostsData] = useState<Post[]>([])
   const [user,setUser] = useState<User>()
-  const {url,setUrl} = useContext(ProfileContext)!
-
+  const {url,setUrl} = useContext(AccessUrlContext)!
   const toggleDisplayToolBox = () => {
     setIsDisplayTool((prev) => !prev);
   };
 
-  const updatePostsState = async (returnPost :Post|undefined )=>{
+  const updatePostsState = async ()=>{
     try 
     {
-      await fetchData()
+      fetchData()
+      console.log("update post state")
+      // setPostsData((prev)=> prev?.filter((post)=> post._id !== returnPost?._id))
     } 
     catch (error)
     {
@@ -31,6 +32,7 @@ const PostsDisplay = () => {
   }
   
   useEffect(() => {
+    
     fetchData(); // Call fetchData inside useEffect
   }, []);
   const fetchData = async () => { 
@@ -53,13 +55,15 @@ const PostsDisplay = () => {
       console.error("Error fetching data:", e);
     }
   };
+  const handleHide = () => {
+    console.log("Hide clicked");
+  };
   return (
     <Box sx={{ width: "100", mx: "auto", mt: 4 }}>
       {/* Top post input area */}
       <PostRequestBar user={user} toggleDisplayToolBox={toggleDisplayToolBox} isDisplayTool={isDisplayTool} updatePostsState={updatePostsState}/>
-      
       { ( postsData!=undefined&& postsData?.length>0 )? (postsData?.map((post,index)=>{
-      return <PostProvider post={post} userId={localStorage.getItem("userId")+""}><PostInformationCard post={post}  updatePostsState={updatePostsState}  /></PostProvider>
+      return <PostProvider post={post} key={post._id}><PostInformationCard updatePostsState={updatePostsState}  /></PostProvider>
       })) : "Don't have any post"}
     </Box>
   )

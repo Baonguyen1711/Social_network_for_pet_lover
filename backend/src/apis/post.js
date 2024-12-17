@@ -7,9 +7,12 @@ const postController = require('../controllers/PostController')
 router.use(express.json())
 // router.use('/', loginController.get)
 router.use('/posts', postController.getAllPost)
-router.use('/create', postController.create)
+router.use('/tog', postController.create)
 router.use('/getpostsbyuserid', postController.getPostsByUserId)
+router.use('/getposthome/:userId', postController.getPostsByFollowedUsers)
 router.use('/delete', postController.deletePostById)
-router.use('/getpost', postController.getPostById)
+router.use('/getpostbypostid', postController.getPostById)
+
+router.use('/favourited/getbyuserid', postController.getFavouritedPostsByUserId)
 
 module.exports = router

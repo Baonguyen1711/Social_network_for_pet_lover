@@ -2,8 +2,8 @@ import { Avatar, Button, Card, Stack, TextField } from '@mui/material'
 import React from 'react'
 import PostToolDisplay from './PostToolDisplay'
 import { AddPhotoAlternate, AddReaction } from '@mui/icons-material'
-import { Post, User } from '../../types'
-import style from './css/PostRequestBar.module.css'
+import { Post, User } from '../../../types'
+import style from '../css/PostRequestBar.module.css'
 
 interface Props
 {

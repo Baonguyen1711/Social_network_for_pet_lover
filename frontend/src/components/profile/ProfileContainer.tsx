@@ -39,7 +39,7 @@ const ProfileContainer:React.FC<Properties> = (props) => {
             <div className={style.sectionBossAMount}>
                 <div className={style.bossIcon}>
                     <img src="" alt="" />
-                    <h5>1</h5>
+                    <h5>{props.userData?.petCount}</h5>
                 </div>
             </div>
           </div>

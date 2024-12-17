@@ -23,7 +23,6 @@ import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternate
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import React, { useRef, useState } from "react";
-import style from "../profile/css/PostToolDisplay.module.css";
 import uploadToCloudinary from "../profile/UploadImage";
 import { FormPet, Pet } from "../../types";
 import DatePicker from "./DatePicker";
@@ -202,7 +201,6 @@ const PetEditToolDisplay: React.FC<PetEditToolDisplayProps> = ({
         open={isOpen}
         onClose={handleClose}
         sx={{ backdropFilter: "blur(2px)" }}
-        className={style.mainTool}
       >
         <Card
           sx={{
