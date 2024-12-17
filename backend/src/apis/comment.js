@@ -7,6 +7,7 @@ const commentController = require('../controllers/CommentController')
 router.use(express.json())
 // router.use('/', loginController.get)
 router.use('/create', commentController.create)
-router.use('/getCommentsByPostId', commentController.getCommentByPostId)
+router.use('/getCommentsByPostId', commentController.getCommentsByPostId)
+router.use('/getCommentsByCommentId', commentController.getCommentsByCommentId)
 
 module.exports = router

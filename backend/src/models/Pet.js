@@ -5,23 +5,23 @@ mongoose.set('debug', true)
 const FashionSocial = mongoose.connection.useDb('FashionSocial');
 
 const PetSchema = new mongoose.Schema({
-    name: {
+    name: {//
         type: String,
         require: true,
     },
-    bio: {
+    bio: {//
         type: String,
         require: true,
     },
-    profilePicture: {
+    profilePicture: {//
         type: String,
         default:"default"
     },
     userId:{
-        type:String,
+        type:mongoose.Schema.Types.ObjectId,
         require: true
     },
-    sex:{
+    sex:{ //
         type:String,
         default:"undefine"
     },
@@ -41,14 +41,14 @@ const PetSchema = new mongoose.Schema({
         type: Date,
         require: true,
     },
-    type: {
+    type: {//
         type:String,
         require:true
     },
-    breed:{
+    breed:{//
         type:String,
     },
-    birthday:{
+    birthday:{//
         type:String,
     },
     isDeleted: {

@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import ProfileContainer from "./ProfileContainer";
 import style from "./css/MainProfileForm.module.css";
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link,useParams } from "react-router-dom";
 import { User } from "../../types";
-import { ProfileContext, ProfileProvider } from "./ProfileContext";
+import { AccessUrlContext, AccessUrlProvider } from "./AccessUrlContext";
 
 const MainProfileForm: React.FC = () => {
+  const { userId } = useParams();
   const [userData,setUserData] = useState<User>()
   useEffect(() => {
-    const userId = localStorage.getItem('userId')
     const fetchData = async () => { 
       const url = `http://localhost:5000/api/v1/user/getbyid/${userId}`;
       try {
@@ -33,16 +33,16 @@ const MainProfileForm: React.FC = () => {
         <ProfileContainer userData={userData} />
         <nav className={style.navbar}>
           <a>
-            <Link to="/profile/posts" className={style.link}>Posts</Link>
+            <Link to={`/profile/${userId}/posts`} className={style.link}>Posts</Link>
           </a>
           <a>
-            <Link to="/profile/pets" className={style.link}>Pets</Link>
+            <Link to={`/profile/${userId}/pets`} className={style.link}>Pets</Link>
           </a>
         </nav>
         <div className={style.layout}>
-          <ProfileProvider>
+          <AccessUrlProvider type="profile"  TargetUserId={userId}>
           <Outlet />
-          </ProfileProvider>
+          </AccessUrlProvider>
         </div>
       </div>
     </div>

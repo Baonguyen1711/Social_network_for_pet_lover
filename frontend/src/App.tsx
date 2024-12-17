@@ -9,7 +9,7 @@ import theme from "./themes/theme";
 
 import ExplorePage from "../src/pages/explore/ExplorePage";
 import ProfilePage from "./pages/profile/ProfilePage";
-import PostsDisplay from "./components/profile/PostsDisplay";
+import PostsDisplay from "./components/profile/Post/PostsDisplay";
 import PetsDisplay from "./components/profile/PetsDisplay";
 
 import { ThemeProvider, Box } from "@mui/material";
@@ -17,32 +17,40 @@ import { SelectedUserProvider } from "./components/message/SelectedUserContext";
 import { SocketProvider } from "./components/message/SocketContext";
 import { BackgroundProvider } from "./components/message/BackgroundContext";
 import HomePage from "./pages/home/HomePage";
-import { ProfileProvider } from "./components/profile/ProfileContext";
+import FavouritePage from "./pages/favourite/FavouritePage";
+import { Favorite } from "@mui/icons-material";
+import FavouritePostsDisplay from "./pages/favourite/FavouritePostsDisplay";
+import FavouritePetsDisplay from "./pages/favourite/FavouritePetsDisplay";
+import FavouriteGeneral from "./pages/favourite/FavouriteGeneralDisplay";
+import PostModal from "./components/favourite/post/PostModal";
 
 const App = () => {
   const location = useLocation();
-
+  const state = location.state;
   return (
     <BackgroundProvider>
       <SocketProvider>
         <SelectedUserProvider>
           <ThemeProvider theme={theme}>
             <Box component="div" minHeight="100vh">
-              <Routes>
+              <Routes location={state?.background || location}>
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
 
                 <Route path="/message" element={<MessagePage />} />
                 <Route path="/explore" element={<ExplorePage />} />
                 <Route path="/home" element={<HomePage />} />
-
-                <Route path="/profile" element={<ProfilePage />}>
+                <Route path="/favourite" element={<FavouritePage />}>
+                  <Route path="general" element={<FavouriteGeneral />} />
+                  <Route path="posts" element={<FavouritePostsDisplay />} />
+                  <Route path="pets" element={<FavouritePetsDisplay />} />
+                </Route>
+                <Route path="/profile/:userId" element={<ProfilePage />}>
                   <Route index element={<PostsDisplay />} />
                   <Route path="posts" element={<PostsDisplay />} />
                   <Route path="pets" element={<PetsDisplay />} />
-                </Route>
+                </Route>  
               </Routes>
-
               {location.pathname !== "/login" &&
               location.pathname != "register" ? (
                 <ChatBot />

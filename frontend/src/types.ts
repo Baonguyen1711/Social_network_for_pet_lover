@@ -8,9 +8,13 @@ export interface User {
   email: string;
   description:string;
   // Add any other user-related properties
-  
+  petCount:number
+  isFollowed:boolean
 }
-
+export interface Position {
+  x: number;
+  y: number;
+}
 export interface MessageComponentType {
   content: string;
   timeStamp: string;
@@ -108,7 +112,8 @@ export interface Post {
   
   userInfo:UserInfo;
   likedUserInfo: User[];
-  isLiked: Like
+  isLiked: boolean
+  isSaved: boolean
 }
 
 export interface Like 
@@ -125,7 +130,8 @@ export interface UserInfo
 {
   firstname:string;
   lastname:string;
-  avatar:string
+  avatar:string;
+  _id:string;
 }
 
 export interface PostResponse {
@@ -166,17 +172,30 @@ export interface Pet {
   isDeleted: string,
 }
 
+export interface PetFavourite{
+  _id:String
+  petInfo: Pet
+  ownerInfo:User
+}
+
+export interface PostFavourite{
+  _id:String
+  postInfo: Post
+  ownerInfo:User
+}
+
+
 export interface IComment 
 {
   _id:string,
   content : string,
   postId : string,
   userId : string,
-  parentId : string,
+  parentId : string|null,
   createdAt : Date,
-  updatedAt : Date,
-  isDeleted : string,
-
+  isDeleted : boolean,
+  
+  replies: IComment[];
   userInfo: UserInfo
   likedUserInfo: User[]
   isLiked: Like
