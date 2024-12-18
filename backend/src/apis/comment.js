@@ -9,5 +9,7 @@ router.use(express.json())
 router.use('/create', commentController.create)
 router.use('/getCommentsByPostId', commentController.getCommentsByPostId)
 router.use('/getCommentsByCommentId', commentController.getCommentsByCommentId)
+router.use('/delete', commentController.deleteCommentByCommentId)
+router.use('/update', commentController.updateCommentByCommentId)
 
 module.exports = router

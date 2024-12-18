@@ -36,7 +36,7 @@
     overflow-x: auto; 
     padding-right: 10px; 
     scrollbar-width: thin;
-    z-index: 2;
+    z-index: 0;
 }
 
 .containerInside::-webkit-scrollbar {
@@ -51,48 +51,18 @@
 .containerInside::-webkit-scrollbar-thumb:hover {
     background-color: #888; /* Màu thanh cuộn khi hover */
 }
-.petAvatar {
-    display: inline-block;
-    border: 4px solid #00BCD4; /* Màu border tinh tế hơn */
-    width: 265px; /* Điều chỉnh kích thước hợp lý */
-    height: 265px;
-    border-radius: 15px;
-    object-fit: cover; /* Giúp ảnh vừa khít */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Đổ bóng cho nổi bật */
-    position: relative; /* Để tạo box tên phía trên */
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    z-index: 5;
 
-}
-
-
-.petAvatar img
+.row
 {
-    width: 100%;
-    border-radius: 10px;
-}
-.petAvatar:hover {
-    transform: translateY(-2px); /* Dịch chuyển lên trên */
-    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Tăng độ nổi bật khi hover */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap:5px
 }
 
-.petAvatar span {
-    position: absolute;
-    left: 50%; /* Canh giữa theo chiều ngang */
-    transform: translateX(-50%);
-    background-color: rgba(0, 0, 0, 0.7); /* Nền tối để dễ đọc chữ */
-    color: #fff; /* Màu chữ */
-    padding: 8px 12px; /* Khoảng cách nội dung */
-    border-radius: 6px; /* Bo góc */
-    font-size: 14px; /* Cỡ chữ */
-    white-space: nowrap; /* Không xuống dòng */
-    opacity: 0; 
-    transition: opacity 0.3s ease; 
-    pointer-events: none; 
+.title
+{
+    font-size: 17px;
+    font-weight: 500;
 }
-
-.petAvatar:hover span {
-    opacity: 1; /* Hiển thị box tên khi hover */
-}
-
 

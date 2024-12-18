@@ -7,6 +7,7 @@ import {
   CardContent,
   CardHeader,
   IconButton,
+  ImageList,
   InputBase,
   Modal,
   Stack,
@@ -15,31 +16,35 @@ import {
 } from "@mui/material";
 import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
 import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import uploadToCloudinary from "../UploadImage";
-import { Post,FormPost, User } from "../../../types";
+import { Post, FormPost, User } from "../../../types";
+import { PostContext } from "./PostContext";
+import { title } from "process";
+import { handleUpdatePostAPI } from "../../../sercives/api";
 
 interface PostToolDisplayProps {
   isOpen: boolean; // Điều khiển hiển thị
   onClose: () => void;
-  onCreatedPost: (newPost: Post | undefined) => void; // Hàm đóng modal
+  onUpdated?: () => void; // Hàm đóng modal
 }
 
 const PostToolDisplay: React.FC<PostToolDisplayProps> = ({
   isOpen,
   onClose,
-  onCreatedPost,
+  onUpdated,
 }) => {
-  const MAX_CHAR = 200;
+  const { post } = useContext(PostContext)!;
   const [fields, setFields] = useState<FormPost>({
-    title: "",
-    content: "",
-    images: [],
+    title: post?.title,
+    content: post?.content,
+    images: post?.images,
   });
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [selectedImages, setSelectedImages] = useState<File[] | null>(null);
   const [isChanged, setIsChanged] = useState(false);
   const [_message, setMessage] = useState(false);
-  const [userData,setUserData] = useState<User>()
+  const [isDisableConfirmButton, setIsDisableConfirmButton] = useState(true);
+  const [userData, setUserData] = useState<User>();
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,17 +54,20 @@ const PostToolDisplay: React.FC<PostToolDisplayProps> = ({
     if (id.includes("title") && value.length > 150) {
       return;
     }
+    if (id === "title") setIsDisableConfirmButton(post?.title === value);
+    if (id === "content") setIsDisableConfirmButton(post?.content === value);
+
     setFields((fields) => ({
       ...fields,
-      ...{  
+      ...{
         [id]: value,
       },
     }));
     setIsChanged(true);
   };
   useEffect(() => {
-    const userId = localStorage.getItem('userId')
-    const fetchData = async () => { 
+    const userId = localStorage.getItem("userId");
+    const fetchData = async () => {
       const url = `http://localhost:5000/api/v1/user/getbyid/${userId}`;
       try {
         const response = await fetch(url, {
@@ -70,7 +78,7 @@ const PostToolDisplay: React.FC<PostToolDisplayProps> = ({
         }
         const data = await response.json();
         setUserData(data.user);
-      } catch (e) { 
+      } catch (e) {
         console.error("Error fetching data:", e);
       }
     };
@@ -81,7 +89,6 @@ const PostToolDisplay: React.FC<PostToolDisplayProps> = ({
     if (!event.target.files || event.target.files.length === 0) {
       return;
     }
-
     const file = event.target.files[0];
 
     // Kiểm tra phần mở rộng của tệp (chỉ cho phép .png, .jpg, .jpeg, .gif)
@@ -94,7 +101,8 @@ const PostToolDisplay: React.FC<PostToolDisplayProps> = ({
       );
       return;
     }
-    setSelectedImage(file);
+    setIsDisableConfirmButton(false);
+    setSelectedImages((prev) => (prev ? [...prev, file] : [file]));
   };
   const handleUploadImage = () => {
     if (fileInputRef.current) {
@@ -108,63 +116,57 @@ const PostToolDisplay: React.FC<PostToolDisplayProps> = ({
       );
       if (!confirmClose) return; // Hủy đóng nếu người dùng chọn "Cancel"
     }
+    setFields({
+      title: post?.title,
+      content: post?.content,
+      images: post?.images,
+    });
+    setSelectedImages([]);
+    setIsDisableConfirmButton(true);
     onClose();
   };
 
-  const handlePostData = async () => {
-    let response;
-    if(!CheckValidField()) {
-      window.alert(_message)
-      return}
-    if (selectedImage) {
-      let uploadedImageUrl = await uploadToCloudinary(selectedImage);
-      setFields((fields) => ({
-        ...fields,
-        images: [uploadedImageUrl], // Update the images field
-      }));
-      response = await fetch("http://localhost:5000/api/v1/post/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: localStorage.getItem("userId"),
-          title: fields.title,
-          content: fields.content,
-          imgUrl: uploadedImageUrl,
-        }),
-      });
-    } else {
-      response = await fetch("http://localhost:5000/api/v1/post/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: localStorage.getItem("userId"),
-          title: fields.title,
-          content: fields.content,
-        }),
-      });
-    }
+  function delay(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
 
-    if (response.ok) {
-      const dataResponse = await response.json();
-      onCreatedPost(dataResponse.newpost);
+  const handleUpdateData = async () => {
+    if (selectedImages) {
+      for (let selectedImage of selectedImages) {
+        let uploadedImageUrl = await uploadToCloudinary(selectedImage);
+        fields.images?.push(uploadedImageUrl);
+        console.log("fields.images", fields.images);
+      }
+    }
+    if (!CheckValidField()) {
+      window.alert(_message);
+      return;
+    }
+    const response = await handleUpdatePostAPI(
+      fields.title,
+      fields.content,
+      fields.images ? fields.images : [],
+      post?._id
+    );
+
+    if (response) {
+      if(onUpdated) onUpdated();
       onClose();
     } else {
       window.alert("Have a trouble");
     }
   };
-  const CheckValidField =  () => 
-  {
-    if(fields.title===""&&!selectedImage&&fields.content==="")
-    {
+  const CheckValidField = () => {
+    if (
+      fields.title === "" &&
+      fields.images?.length === 0 &&
+      fields.content === ""
+    ) {
       return false;
     }
-    return true
-  }
-  
+    return true;
+  };
+
   return (
     <>
       <Modal
@@ -213,7 +215,7 @@ const PostToolDisplay: React.FC<PostToolDisplayProps> = ({
             sx={{ width: "100%", textAlign: "center" }}
           >
             <CardHeader
-              title="Create Post"
+              title="Edit Post"
               subheader="Some options for you"
               sx={{ bgcolor: "#f4f4f4", flexDirection: "col" }} // Bạn có thể tùy chỉnh thêm
             />
@@ -235,24 +237,8 @@ const PostToolDisplay: React.FC<PostToolDisplayProps> = ({
                   variant="h5"
                   sx={{ alignSelf: "center", marginLeft: "10px" }}
                 >
-                  {userData&&userData.firstname+" "+userData.lastname}
+                  {userData && userData.firstname + " " + userData.lastname}
                 </Typography>
-                {/* <Typography variant="body1" sx={{ alignSelf: "center" }}>
-                  đang cảm thấy
-                </Typography> */}
-                <EmojiEmotions sx={{ alignSelf: "center" }} />
-                {/* <Typography
-                  variant="body1"
-                  sx={{
-                    cursor: "pointer",
-                    alignSelf: "center",
-                    "&:hover": {
-                      color: "#d5d5d5",
-                    },
-                  }}
-                >
-                  vui vẻ bên người ấy
-                </Typography> */}
               </Stack>
               <TextField
                 id="title"
@@ -302,59 +288,134 @@ const PostToolDisplay: React.FC<PostToolDisplayProps> = ({
                 fullWidth
                 required
               />
-
-              {selectedImage ? (
-                <Box
-                  sx={{
-                    position: "relative",
-                    width: "auto",
-                    paddingTop: "75%", // 4:3 Aspect Ratio
-                    border: "1px solid #ddd",
-                    borderRadius: "8px",
-                    overflow: "hidden",
-                    marginBottom: "16px",
-                  }}
-                >
-                  <img
-                    src={URL.createObjectURL(selectedImage)}
-                    alt="Uploaded"
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                    }}
-                  />
-                  <Button
-                    onClick={() => setSelectedImage(null)} // Đặt lại ảnh về null khi nhấn
-                    sx={{
-                      position: "absolute",
-                      top: "8px",
-                      right: "8px",
-                      opacity: "0.4",
-                      backgroundColor: "#99A67A", // Màu nền trắng mờ
-                      border: "2px solid #CCDCBA",
-                      color: "#E6F5DE", // Màu chữ
-                      borderRadius: "50%", // Hình dạng tròn
-                      minWidth: "32px", // Kích thước nhỏ nhất
-                      height: "32px", // Chiều cao cố định
-                      "&:hover": {
-                        backgroundColor: "#B6C79B",
-                        color: "#708258", // Màu chữ
-                        border: "1px solid #99A67A", // Hiệu ứng hover
-                      },
-                    }}
-                  >
-                    <a>X</a>
-                  </Button>
-                </Box>
-              ) : (
-                <Typography color="text.secondary">
-                  No image selected
-                </Typography>
-              )}
+              {fields.images
+                ? fields.images.map((imgUrl) => (
+                    <Box
+                      sx={{
+                        position: "relative",
+                        width: "auto",
+                        paddingTop: "75%", // 4:3 Aspect Ratio
+                        border: "1px solid #ddd",
+                        borderRadius: "8px",
+                        overflow: "hidden",
+                        marginBottom: "16px",
+                      }}
+                    >
+                      <img
+                        src={imgUrl}
+                        alt="Uploaded"
+                        style={{
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                        }}
+                      />
+                      <Button
+                        onClick={() => {
+                          setFields((prev) => {
+                            const postImagesLength = post?.images?.length || 0;
+                            const fieldsImagesLength =
+                              fields?.images?.length || 0;
+                            setIsDisableConfirmButton(
+                              postImagesLength - fieldsImagesLength === 1
+                            );
+                            return {
+                              ...prev,
+                              images: prev.images?.filter(
+                                (img) => imgUrl !== img
+                              ),
+                            };
+                          });
+                        }}
+                        sx={{
+                          position: "absolute",
+                          top: "8px",
+                          right: "8px",
+                          opacity: "0.4",
+                          backgroundColor: "#99A67A", // Màu nền trắng mờ
+                          border: "2px solid #CCDCBA",
+                          color: "#E6F5DE", // Màu chữ
+                          borderRadius: "50%", // Hình dạng tròn
+                          minWidth: "32px", // Kích thước nhỏ nhất
+                          height: "32px", // Chiều cao cố định
+                          "&:hover": {
+                            backgroundColor: "#B6C79B",
+                            color: "#708258", // Màu chữ
+                            border: "1px solid #99A67A", // Hiệu ứng hover
+                          },
+                        }}
+                      >
+                        <a>X</a>
+                      </Button>
+                    </Box>
+                  ))
+                : "No image selected"}
+              {selectedImages
+                ? selectedImages.map((selectedImage) => (
+                    <Box
+                      sx={{
+                        position: "relative",
+                        width: "auto",
+                        paddingTop: "75%", // 4:3 Aspect Ratio
+                        border: "1px solid #ddd",
+                        borderRadius: "8px",
+                        overflow: "hidden",
+                        marginBottom: "16px",
+                      }}
+                    >
+                      <img
+                        src={URL.createObjectURL(selectedImage)}
+                        alt="Uploaded"
+                        style={{
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                        }}
+                      />
+                      <Button
+                        onClick={() => {
+                          setSelectedImages((prev) => {
+                            setIsDisableConfirmButton(
+                              selectedImages.length === 1
+                            );
+                            return prev
+                              ? prev.filter(
+                                  (img) =>
+                                    img?.lastModified !==
+                                    selectedImage?.lastModified
+                                )
+                              : [];
+                          });
+                        }}
+                        sx={{
+                          position: "absolute",
+                          top: "8px",
+                          right: "8px",
+                          opacity: "0.4",
+                          backgroundColor: "#99A67A", // Màu nền trắng mờ
+                          border: "2px solid #CCDCBA",
+                          color: "#E6F5DE", // Màu chữ
+                          borderRadius: "50%", // Hình dạng tròn
+                          minWidth: "32px", // Kích thước nhỏ nhất
+                          height: "32px", // Chiều cao cố định
+                          "&:hover": {
+                            backgroundColor: "#B6C79B",
+                            color: "#708258", // Màu chữ
+                            border: "1px solid #99A67A", // Hiệu ứng hover
+                          },
+                        }}
+                      >
+                        <a>X</a>
+                      </Button>
+                    </Box>
+                  ))
+                : ""}
             </CardContent>
             {/* Các button hoặc các công cụ khác */}
             <Box
@@ -386,10 +447,11 @@ const PostToolDisplay: React.FC<PostToolDisplayProps> = ({
               <Button
                 variant="contained"
                 color="secondary"
-                onClick={handlePostData}
+                onClick={handleUpdateData}
                 startIcon={<SendOutlinedIcon />}
+                disabled={isDisableConfirmButton}
               >
-                Post
+                Confirm
               </Button>
             </Box>
           </Stack>

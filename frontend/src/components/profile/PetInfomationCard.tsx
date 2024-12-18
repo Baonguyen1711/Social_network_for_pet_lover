@@ -15,6 +15,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import { blue, green, pink } from "@mui/material/colors";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
 import { Pet } from "../../types";
 import { BookmarkBorder, Delete, Edit, MoreVert } from "@mui/icons-material";
 import PetsIcon from "@mui/icons-material/Pets";
@@ -22,6 +23,7 @@ import FemaleIcon from "@mui/icons-material/Female";
 import MaleIcon from "@mui/icons-material/Male";
 import PetEditToolDisplay from "./PetEditToolDisplay";
 import { createPetUserRelationship, isChecked } from "../../sercives/api";
+import Confirmation from "../comfirmation/Confirmation";
 
 interface Props {
   pet: Pet;
@@ -30,24 +32,32 @@ interface Props {
 const PetInfomationCard: React.FC<Props> = (props) => {
   const [pet, setPet] = useState(props.pet);
   const [isDisplayTool, setIsDisplayTool] = useState(false);
-  const [isSaved,setIdSaved] = useState(false)
+  const [isSaved, setIdSaved] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [isOpenModal, setIsOpenModal] = useState(false);
+  const handleOpenConfirmModal = () => setIsOpenModal(true);
+  const handleCloseConfirmModal = () => setIsOpenModal(false);
+  const handleConfirmDelete = () => {
+    handleDelete();
+  };
   const open = Boolean(anchorEl);
   useEffect(() => {
     fetchData(); // Call fetchData inside useEffect
   }, []);
   const handleSave = async () => {
     const response = await createPetUserRelationship(props.pet._id);
-    if(response.newPetUser)
-    {
-      alert("Lưu thành công")
+    if (response.newPetUser) {
+      setIdSaved(!response.newPetUser.isDeleted)
     }
-  }
+  };
   const fetchData = async () => {
-    const response = await isChecked(localStorage.getItem("userId"),props.pet._id)
-    setIdSaved(response.isSaved)
-  }
-  
+    const response = await isChecked(
+      localStorage.getItem("userId"),
+      props.pet._id
+    );
+    setIdSaved(response.isSaved);
+  };
+
   const toggleDisplayToolBox = () => {
     setIsDisplayTool((prev) => !prev);
   };
@@ -133,34 +143,38 @@ const PetInfomationCard: React.FC<Props> = (props) => {
                 <MoreVert />
               </IconButton>
               {/* Menu với các tùy chọn */}
-              <Menu
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleClose}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-              >
-                <MenuItem
-                  sx={{ justifyContent: "flex-start" }}
-                  onClick={toggleDisplayToolBox}
+              {pet.userId === localStorage.getItem("userId") ? (
+                <Menu
+                  anchorEl={anchorEl}
+                  open={open}
+                  onClose={handleClose}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
                 >
-                  <Edit />
-                  Edit
-                </MenuItem>
-                <MenuItem
-                  sx={{ justifyContent: "flex-start" }}
-                  onClick={handleDelete}
-                >
-                  <Delete />
-                  Delete
-                </MenuItem>
-              </Menu>
+                  <MenuItem
+                    sx={{ justifyContent: "flex-start" }}
+                    onClick={toggleDisplayToolBox}
+                  >
+                    <Edit />
+                    Edit
+                  </MenuItem>
+                  <MenuItem
+                    sx={{ justifyContent: "flex-start" }}
+                    onClick={handleDelete}
+                  >
+                    <Delete />
+                    Delete
+                  </MenuItem>
+                </Menu>
+              ) : (
+                ""
+              )}
             </div>
           }
         />
@@ -306,14 +320,24 @@ const PetInfomationCard: React.FC<Props> = (props) => {
                   </ul>
                 </Stack>
                 <IconButton onClick={handleSave}>
-                  
-                  <BookmarkBorder sx={{color: isSaved ?"yellow":""}} />
-           </IconButton>
+            {isSaved ? (
+              <BookmarkIcon style={{ color: "#F17826" }} />
+            ) : (
+              <BookmarkBorder />
+            )}
+                </IconButton>
               </Stack>
             </Stack>
           </Stack>
         </CardContent>
       </Card>
+      <Confirmation
+        open={isOpenModal}
+        onClose={handleClose}
+        onConfirm={handleConfirmDelete}
+        message="Do you want to delete your pet?"
+        title="Do you want to delete?"
+      />
     </>
   );
 };

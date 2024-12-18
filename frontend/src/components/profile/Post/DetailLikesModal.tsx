@@ -44,6 +44,7 @@ const DetaiLikesModal: React.FC<Props> = ({ open, onClose, likedUserInfo }) => {
             email: "",
             description: "",
             petCount: 0,
+            followerCount:0
           };
         }
         return { ...prev, isFollowed: true };

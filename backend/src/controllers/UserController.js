@@ -95,6 +95,104 @@ class UserController {
     // async delete(req,res) {
     //     res.status(204).send();
     // }
+    async updateNameByUserId(req, res) {
+      try {
+        const { userId,lastName, firstName } = req.body;
+        console.log("abcdefgh",userId,lastName, firstName)
+        if (!userId) {
+          return res
+            .status(400)
+            .json({ message: "Not enougddddh required information!" });
+        }
+        if (!userId || !lastName || !firstName) {
+          return res
+            .status(400)
+            .json({ message: "Not enough required information!" });
+        }
+        if (!ObjectId.isValid(userId)) {
+          return res.status(400).send({ error: "Invalid userId format", userId });
+        }
+        connectToDb();
+
+        const user = await User.findById(userId);
+        if(user)
+        {
+          user.firstname= firstName
+          user.lastName = lastName
+          user.save()
+          return res
+          .status(200)
+          .json({ message:"Updated user successfully!",updatedUser:user });
+        } else
+        return res
+            .status(404)
+            .json({ message: "Not Found User!" });
+      } catch (e) {
+        return res.status(400).send({ error: "Some error, can't update name" });
+      }
+    }
+
+    async updateDescriptionByUserId(req, res) {
+      try {
+        const { userId, description } = req.body;
+        //console.log("abcdefgh",userId,description)
+        if (!userId || !description) {
+          return res
+            .status(400)
+            .json({ message: "Not enough required information!" });
+        }
+        if (!ObjectId.isValid(userId)) {
+          return res.status(400).send({ error: "Invalid userId format", userId });
+        }
+        connectToDb();
+
+        const user = await User.findById(userId);
+        if(user)
+        {
+          user.description= description
+          user.save()
+          return res
+          .status(200)
+          .json({ message:"Updated user successfully!",updatedUser:user });
+        } else
+        return res
+            .status(404)
+            .json({ message: "Not Found User!" });
+      } catch (e) {
+        return res.status(400).send({ error: "Some error, can't update name" });
+      }
+    }
+
+    async updateAvatarByUserId(req, res) {
+      try {
+        const { userId, imageUrl } = req.body;
+        //console.log("abcdefgh",userId,imageUrl )
+        if (!userId || !imageUrl) {
+          return res
+            .status(400)
+            .json({ message: "Not enough required information!" });
+        }
+        if (!ObjectId.isValid(userId)) {
+          return res.status(400).send({ error: "Invalid userId format", userId });
+        }
+        connectToDb();
+
+        const user = await User.findById(userId);
+        if(user)
+        {
+          user.avatar= imageUrl
+          user.save()
+          return res
+          .status(200)
+          .json({ message:"Updated user successfully!",updatedUser:user });
+        } else
+        return res
+            .status(404)
+            .json({ message: "Not Found User!" });
+      } catch (e) {
+        return res.status(400).send({ error: "Some error, can't update name" });
+      }
+    }
 }
 
 module.exports = new UserController

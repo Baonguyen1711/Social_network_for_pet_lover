@@ -2,7 +2,9 @@
   max-width: 200px;
   padding: 10px;
   border-radius: 10px;
-  background-color: #E6F5DE;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+
 }
 
 .container_inside {

@@ -34,10 +34,12 @@ import BookmarkIcon from "@mui/icons-material/Bookmark";
 import { getTimeAgo } from "../../../helper";
 import { IComment, Post } from "../../../types";
 import CommentBar from "../CommentBar";
+import EditPostTool from "../Post/EditPostTool";
+import Confirmation from "../../comfirmation/Confirmation";
 interface props {
   open: boolean;
   handleClose?: () => void;
-  updatePostsState?: (returnPost: Post | undefined) => void;
+  updatePostsState?: () => void;
   handleLike?: () => void;
   handleSave?: () => void;
 }
@@ -53,11 +55,19 @@ const DetailPostContainer: React.FC<props> = ({
   const { post, setPost } = useContext(PostContext)!;
   const openAnChor = Boolean(anchorEl);
   const [countComment, setCountComment] = useState<number>(0);
-  const [newCommentsArray,setNewCommentsArray] = useState<IComment[]>()
-//const [bonusComment, setBonusComment] = useState<IComment>();
+  const [newCommentsArray, setNewCommentsArray] = useState<IComment[]>();
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [propsConfirmation, setPropsConfirmation] = useState({
+    title: "",
+    message: "",
+    open: false,
+  });
+  //const [bonusComment, setBonusComment] = useState<IComment>();
   const handleAddComment = (newComment: IComment | undefined) => {
     if (!newComment) return;
-    setNewCommentsArray((prev)=>prev?[...prev,newComment]:[newComment])
+    setNewCommentsArray((prev) =>
+      prev ? [...prev, newComment] : [newComment]
+    );
   };
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -70,7 +80,9 @@ const DetailPostContainer: React.FC<props> = ({
   };
 
   const handleEdit = () => {
-    if(handleClose) handleClose();
+    setOpenEditModal(true);
+    setAnchorEl(null);
+    //if (handleClose) handleClose();
   };
 
   const handleDelete = async () => {
@@ -83,13 +95,20 @@ const DetailPostContainer: React.FC<props> = ({
         throw new Error("Failed to delete post");
       }
       const result = await response.json();
-      updatePostsState?.(result.deletedPost);
-      if(handleClose) handleClose();
+      updatePostsState?.();
+      if (handleClose) handleClose();
     } catch (e) {
       console.error(e);
     }
   };
-
+  const handleShowDeleteConfirmation = async () => {
+    setPropsConfirmation({
+      open: true,
+      title: "Do you want to delete?",
+      message: "Do you want to delete this post?",
+    });
+    if (handleClose) handleClose();
+  };
   const handleHide = () => {
     console.log("Hide clicked");
   };
@@ -117,8 +136,8 @@ const DetailPostContainer: React.FC<props> = ({
             left: "50%",
             transform: "translate(-50%, -50%)",
             width: "auto",
-            maxWidth: "700px",
-            maxHeight: "80vh",
+            maxWidth: "800px",
+            maxHeight: "90vh",
             bgcolor: "background.paper",
             boxShadow: 24,
             p: 4,
@@ -137,8 +156,7 @@ const DetailPostContainer: React.FC<props> = ({
             }}
           >
             <Typography sx={{ display: "inline-block" }}>
-              Bài viết của{" "}
-              {post?.userInfo.firstname + " " + post?.userInfo.lastname}
+              {post?.userInfo.firstname + " " + post?.userInfo.lastname} 's Post
             </Typography>
             <Button
               onClick={handleClose}
@@ -196,7 +214,7 @@ const DetailPostContainer: React.FC<props> = ({
                       </MenuItem>
                       <MenuItem
                         sx={{ justifyContent: "flex-start" }}
-                        onClick={handleDelete}
+                        onClick={handleShowDeleteConfirmation}
                       >
                         <Delete />
                         Delete
@@ -293,20 +311,30 @@ const DetailPostContainer: React.FC<props> = ({
                   >
                     {countComment} comments
                   </Typography>
-                  <IconButton onClick={handleSave}>
-                    {post?.isSaved ? (
-                      <BookmarkIcon style={{ color: "#F17826" }} />
-                    ) : (
-                      <BookmarkBorder />
-                    )}
-                  </IconButton>
+                  {handleSave ? (
+                    <IconButton onClick={handleSave}>
+                      {post?.isSaved ? (
+                        <BookmarkIcon style={{ color: "#F17826" }} />
+                      ) : (
+                        <BookmarkBorder />
+                      )}
+                    </IconButton>
+                  ) : (
+                    ""
+                  )}
 
                   <IconButton>
                     <Share />
                   </IconButton>
                 </Stack>
               </CardActions>
-              <CardContent sx={{ paddingBottom: "0px !important", justifySelf:"left",width:"auto" }}>
+              <CardContent
+                sx={{
+                  paddingBottom: "0px !important",
+                  justifySelf: "left",
+                  width: "auto",
+                }}
+              >
                 {post && (
                   <ExpandComment
                     level={0}
@@ -335,6 +363,22 @@ const DetailPostContainer: React.FC<props> = ({
               />
             )}
           </Box>
+          <EditPostTool
+            isOpen={openEditModal}
+            onClose={() => {
+              setOpenEditModal(false);
+            }}
+            onUpdated={updatePostsState}
+          />
+          <Confirmation
+            title={propsConfirmation.title}
+            open={propsConfirmation.open}
+            message={propsConfirmation.message}
+            onClose={() =>
+              setPropsConfirmation((prev) => ({ ...prev, open: false }))
+            }
+            onConfirm={handleDelete}
+          />
         </Box>
       </Modal>
     </div>

@@ -38,7 +38,7 @@ const PostCard: React.FC<Props> = ({ data, onDelete,handleOpenModal }) => {
     }
     setIsDeleting(false); // Gỡ trạng thái đang xóa
   };
-  const location = useLocation();
+  //const location = useLocation();
 
   return (
     <div className={clsx(style.container)}>

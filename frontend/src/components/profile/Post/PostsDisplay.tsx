@@ -22,7 +22,6 @@ const PostsDisplay = () => {
     try 
     {
       fetchData()
-      console.log("update post state")
       // setPostsData((prev)=> prev?.filter((post)=> post._id !== returnPost?._id))
     } 
     catch (error)

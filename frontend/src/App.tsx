@@ -41,6 +41,7 @@ const App = () => {
                 <Route path="/explore" element={<ExplorePage />} />
                 <Route path="/home" element={<HomePage />} />
                 <Route path="/favourite" element={<FavouritePage />}>
+                  <Route index element={<FavouriteGeneral />} />
                   <Route path="general" element={<FavouriteGeneral />} />
                   <Route path="posts" element={<FavouritePostsDisplay />} />
                   <Route path="pets" element={<FavouritePetsDisplay />} />
@@ -49,7 +50,7 @@ const App = () => {
                   <Route index element={<PostsDisplay />} />
                   <Route path="posts" element={<PostsDisplay />} />
                   <Route path="pets" element={<PetsDisplay />} />
-                </Route>  
+                </Route>
               </Routes>
               {location.pathname !== "/login" &&
               location.pathname != "register" ? (

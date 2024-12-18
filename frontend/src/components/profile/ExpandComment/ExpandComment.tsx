@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import clsx from 'clsx'
+import clsx from "clsx";
 import style from "../css/ProposalCommentContainer.module.css";
 import { IComment, Post, UserInfo } from "../../../types";
 import ProposalComment from "../Post/ProposalComment";
 import DetailPostContainer from "./DetailPostContainer";
+import { handleDeleteCommentAPI } from "../../../sercives/api";
+import Confirmation from "../../comfirmation/Confirmation";
 
 interface PropsBase {
   onAddComment?: (newComment: Comment) => void;
@@ -19,6 +21,7 @@ type Props =
 const ProposalCommentContainer: React.FC<Props> = (props) => {
   const [isWatchMoreComments, setIsWatchMoreComment] = useState<boolean>(false);
   const [comments, setComments] = useState<IComment[] | undefined>();
+  const [deleteCommentId, setDeleteCommentId] = useState<string>();
   useEffect(() => {
     //console.log("load because have new commment",props.newCommentsArray)
     fetchData();
@@ -50,7 +53,15 @@ const ProposalCommentContainer: React.FC<Props> = (props) => {
       console.error("Error fetching data:", e);
     }
   };
+  const handleDelete = async (id: string | undefined) => {
+    const response = await handleDeleteCommentAPI(id);
+    if (response)
+      setComments((prev) => {
+        return prev ? prev.filter((comment) => comment._id != id) : prev;
+      });
+  };
 
+ 
   return (
     <div className={clsx(style.expandCommentContainer)}>
       {!isWatchMoreComments ? (
@@ -60,26 +71,32 @@ const ProposalCommentContainer: React.FC<Props> = (props) => {
           }}
           className={style.userName}
         >
-          {props.newCommentsArray&&props.newCommentsArray.length>0&&comments&&comments?.length > 0?"Watch another comments":comments&&comments?.length > 0
+          {props.newCommentsArray &&
+          props.newCommentsArray.length > 0 &&
+          comments &&
+          comments?.length > 0
+            ? "Watch another comments"
+            : comments && comments?.length > 0
             ? `Xem ${comments.length} bình luận`
             : ""}
         </div>
       ) : (
         <div className={style.container}>
           <div className={style.firstComment}>
-            {comments&&comments.map((comment) => (
-              <ProposalComment
-                key={comment._id}
-                level={props.level + 1}
-                handleCommentParentClick={props.handleCommentParentClick}
-                comment={comment}
-              />
-            ))}
+            {comments &&
+              comments.map((comment) => (
+                <ProposalComment
+                  key={comment._id}
+                  level={props.level + 1}
+                  handleCommentParentClick={props.handleCommentParentClick}
+                  comment={comment}
+                />
+              ))}
           </div>
         </div>
       )}
       {props.newCommentsArray &&
-      !isWatchMoreComments&&
+        !isWatchMoreComments &&
         props.newCommentsArray.length > 0 &&
         props.newCommentsArray.map((newComment) => (
           <ProposalComment
@@ -89,6 +106,7 @@ const ProposalCommentContainer: React.FC<Props> = (props) => {
             comment={newComment}
           />
         ))}
+      
     </div>
   );
 };
