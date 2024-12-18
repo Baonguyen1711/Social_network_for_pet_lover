@@ -18,9 +18,9 @@ interface MessageComponentArray {
 interface MessageInputProps {
     recipent: Recipent
     onSendMessage: (content: string) => void
-  }
+}
 
-  
+
 const selectedUser = {
     senderId: "123",
     recipentId: "456",
@@ -35,10 +35,10 @@ const MainMessage = () => {
 
     //const [messages, setMessages] = useState<MessageComponentType[]>([])
     //const {messages,setMessages} = useSocket()
-    const [isSender, setIsSender] = useState<boolean|undefined>(undefined)
+    const [isSender, setIsSender] = useState<boolean | undefined>(undefined)
     const currentEmail = localStorage.getItem("email")
-    const {selectedUserEmail} = useSelectedUser()
-    const selectedUser:Recipent = {
+    const { selectedUserEmail } = useSelectedUser()
+    const selectedUser: Recipent = {
         senderEmail: currentEmail,
         recipentEmail: selectedUserEmail,
         content: null
@@ -46,18 +46,11 @@ const MainMessage = () => {
 
 
     return (
-        <Box
-            component="div"
-            display="flex"
-            flexDirection="column"
-            height="100vh"
-        >
-            <MessageHeader/>
-            <MessageDisplay isChatbot={false}/>
-            <MessageInput  recipent={selectedUser} isChatbot={false}  />
-        </Box>
-
-
+        <>
+            <MessageHeader />
+            <MessageDisplay isChatbot={false} />
+            <MessageInput recipent={selectedUser} isChatbot={false} />
+        </>
     )
 
 }

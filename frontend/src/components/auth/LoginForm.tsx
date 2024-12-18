@@ -18,6 +18,7 @@ const LoginForm: React.FC = () => {
         try {
             await login(email, password)
             localStorage.setItem("email", email)
+
             navigate("/message")
         } catch (e) {
             console.log("Login failed" , e)

@@ -24,7 +24,8 @@ class LoginController {
                 console.log(token)
 
                 res.json({
-                    'jwt': token
+                    'jwt': token,
+                    'user_id': user._id
                 })
             } else {
                 res.status(401).send('wrong email or password')

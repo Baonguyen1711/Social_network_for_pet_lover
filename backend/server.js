@@ -39,16 +39,31 @@ io.on("connection", (socket) => {
     });
   });
 
-  socket.on("register", (email) => {
-    console.log(email);
+    socket.on("register", (email) => {
+        console.log(email)
+        
+        userRegistration[email] = socket.id
+        console.log(userRegistration)
+    })
 
-    userRegistration[email] = socket.id;
-    console.log(userRegistration);
-  });
 
-  socket.on("disconnect", () => {
-    console.log("A user disconnected");
-  });
+    socket.on("changeBackground", (image) => {
+        console.log(image)
+        const recipentId = userRegistration[image.recipentEmail]
+        socket.to(recipentId).emit("changeBackground", {
+            "sendFrom": image.senderEmail,
+            "src": image.src,
+            "theme": image.theme
+        })
+
+    })
+  
+    socket.on('disconnect', () => {
+      console.log('A user disconnected');
+    });
+
+
+
 });
 
 // const corsOptions = {

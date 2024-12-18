@@ -3,13 +3,19 @@ import { useBackground } from '../message/BackgroundContext'
 import { Box, Typography } from '@mui/material'
 import { Height } from '@mui/icons-material'
 import { reverse } from 'dns'
+import { useSocket } from '../message/SocketContext'
+import { useSelectedUser } from '../message/SelectedUserContext'
+
 
 interface PaletteProps {
     imgSrc: string
 }
 
 const Palette: React.FC<PaletteProps> = ({ imgSrc }) => {
+    const senderEmail = localStorage.getItem("email")
+    const {selectedUserEmail} = useSelectedUser()
     const { isPaletteOpen, palette, setIsPaletteOpen, selectedTheme, setSelectedTheme } = useBackground()
+    const {changeBackground} = useSocket()
     const [isSelectedColor, setIsSelectedColor] = useState<boolean>(false)
     const [tempSelectedColors, setTempSelectedColors] = useState<number[][]>([])
     const overlayStyles = {
@@ -165,6 +171,15 @@ const Palette: React.FC<PaletteProps> = ({ imgSrc }) => {
                             setSelectedTheme(tempSelectedColors)
                             setTempSelectedColors([])
                             setIsPaletteOpen(false)
+
+                            const image = {
+                                "src": imgSrc,
+                                "theme": tempSelectedColors,
+                                "senderEmail": senderEmail,
+                                "recipentEmail": selectedUserEmail
+                            }
+
+                            changeBackground(image)
                         }
 
                     }
