@@ -265,3 +265,192 @@ export async function handleGetPostByPostId(postId:String|null|undefined,userId:
     console.error(e);
   }
 }
+
+export async function handleLikeAPI(postId:string|undefined,type:string  )
+{
+
+  try {
+    const response = await fetch(
+      "http://localhost:5000/api/v1/like/likepost",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: localStorage.getItem("userId"),
+          targetId: postId,
+          targetType: type,
+        }),
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to like post");
+    }
+    const result = await response.json();
+    //setCurrentPost(result.updatedPost);
+    //setPost(result.updatedPost);
+    //setIsLiked(result.updatedPost.isLiked)
+    return result
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+export async function handleDeleteCommentAPI(commentId:string|undefined)
+{
+  try {
+    const response = await fetch(
+      `http://localhost:5000/api/v1/comment/delete?commentId=${commentId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to comment post");
+    }
+    const result = await response.json();
+    return result
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+export async function handleUpdateNameAPI(lastName:String|undefined,firstName:String|undefined,userId:String|undefined)
+{
+  try {
+    const response = await fetch(
+      `http://localhost:5000/api/v1/user/updatename`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: userId,
+          lastName: lastName,
+          firstName: firstName,
+        }),
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to comment post");
+    }
+    const result = await response.json();
+    return result
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+export async function handleUpdateDescriptionAPI(description:String|undefined,userId:String|undefined)
+{
+  try {
+    const response = await fetch(
+      `http://localhost:5000/api/v1/user/updatedescription`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: userId,
+          description: description,
+        }),
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to comment post");
+    }
+    const result = await response.json();
+    return result
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+export async function handleUpdateAvatarAPI(imageUrl:String|undefined,userId:String|undefined)
+{
+  try {
+    const response = await fetch(
+      `http://localhost:5000/api/v1/user/updateAvatar`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: userId,
+          imageUrl: imageUrl,
+        }),
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to comment post");
+    }
+    const result = await response.json();
+    return result
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+export async function handleUpdatePostAPI(title:String|undefined,content:String|undefined,images:String[],postId:String|undefined)
+{
+  //console.log("images",images)
+  try {
+    const response = await fetch(
+      `http://localhost:5000/api/v1/post/updatepost`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          postId: postId,
+          title: title,
+          content:content,
+          images:images
+        }),
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to comment post");
+    }
+    const result = await response.json();
+    return result
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+export async function handleUpdateCommentAPI(content:String|undefined,commentId:String|undefined)
+{
+  //console.log("images",images)
+  try {
+    const response = await fetch(
+      `http://localhost:5000/api/v1/comment/update`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contentComment:content,
+          commentId:commentId
+        }),
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to updateComment");
+    }
+    const result = await response.json();
+    return result
+  } catch (e) {
+    console.error(e);
+  }
+}

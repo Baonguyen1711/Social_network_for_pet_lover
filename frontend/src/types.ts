@@ -6,10 +6,11 @@ export interface User {
   avatar: string;
   location: string;
   email: string;
-  description:string;
+  description: string;
   // Add any other user-related properties
-  petCount:number
-  isFollowed:boolean
+  petCount: number;
+  isFollowed: boolean;
+  followerCount: number;
 }
 export interface Position {
   x: number;
@@ -40,33 +41,31 @@ export interface Recipent {
 }
 
 export interface MessageComponentType {
-    content: string,
-    timeStamp: string,
-    isSender: boolean|undefined
-    isChatbot: boolean|undefined
-  }
-
-
-export interface RecentChat {
-    _id: string,
-    latestMessage: string,
-    timeStamp: string,
-    userInfo: {
-        email: string | undefined,
-
-        phone: string | undefined,
-        firstname: string | undefined,
-        lastname: string | undefined,
-        
-        avatar: string| undefined
-    } | null
+  content: string;
+  timeStamp: string;
+  isSender: boolean | undefined;
+  isChatbot: boolean | undefined;
 }
 
+export interface RecentChat {
+  _id: string;
+  latestMessage: string;
+  timeStamp: string;
+  userInfo: {
+    email: string | undefined;
+
+    phone: string | undefined;
+    firstname: string | undefined;
+    lastname: string | undefined;
+
+    avatar: string | undefined;
+  } | null;
+}
 
 export interface Recipent {
-    recipentEmail: string | null,
-    senderEmail: string |null,
-    content: string | null
+  recipentEmail: string | null;
+  senderEmail: string | null;
+  content: string | null;
 }
 
 export interface AuthState {
@@ -109,29 +108,28 @@ export interface Post {
   updatedAt: Date;
   isDeleted: boolean;
   userId: string;
-  
-  userInfo:UserInfo;
+
+  likeCount: number;
+  userInfo: UserInfo;
   likedUserInfo: User[];
-  isLiked: boolean
-  isSaved: boolean
+  isLiked: boolean;
+  isSaved: boolean;
 }
 
-export interface Like 
-{
-  _id:string,
-  userId: string,
-  targetId: string,
-  targetType:string,
-  timeStamp: Date,
-  isDeleted: boolean,
+export interface Like {
+  _id: string;
+  userId: string;
+  targetId: string;
+  targetType: string;
+  timeStamp: Date;
+  isDeleted: boolean;
 }
 
-export interface UserInfo
-{
-  firstname:string;
-  lastname:string;
-  avatar:string;
-  _id:string;
+export interface UserInfo {
+  firstname: string;
+  lastname: string;
+  avatar: string;
+  _id: string;
 }
 
 export interface PostResponse {
@@ -139,72 +137,79 @@ export interface PostResponse {
 }
 
 export interface FormPost {
-  title: string;
-  content: string;
-  images: string;
+  title: string|undefined;
+  content: string|undefined;
+  images: string[]|undefined;
 }
+
+export interface FormUser {
+  firstname: string|undefined;
+  lastname: string|undefined;
+  avatar: string|undefined;
+  location: string|undefined;
+  description: string|undefined;
+}
+
 export interface FormPet {
   name: string;
   bio: string;
   profilePicture: string;
-  sex:string,
-  height:number,
-  weight:number,
-  type:string,
-  breed:string,
-  birthday:string
+  sex: string;
+  height: number;
+  weight: number;
+  type: string;
+  breed: string;
+  birthday: string;
 }
 
 export interface Pet {
-  _id:string,
-  name: string,
-  bio: string,
-  profilePicture: string,
-  userId: string,
-  sex:string,
-  height:number,
-  weight:number,
-  type:string,
-  breed:string,
-  birthday:string,
-  createdAt: string,
-  updatedAt: string,
-  isDeleted: string,
+  _id: string;
+  name: string;
+  bio: string;
+  profilePicture: string;
+  userId: string;
+  sex: string;
+  height: number;
+  weight: number;
+  type: string;
+  breed: string;
+  birthday: string;
+  createdAt: string;
+  updatedAt: string;
+  isDeleted: string;
+  followerCount: number;
 }
 
-export interface PetFavourite{
-  _id:String
-  petInfo: Pet
-  ownerInfo:User
+export interface PetFavourite {
+  _id: String;
+  petInfo: Pet;
+  ownerInfo: User;
 }
 
-export interface PostFavourite{
-  _id:String
-  postInfo: Post
-  ownerInfo:User
+export interface PostFavourite {
+  _id: String;
+  postInfo: Post;
+  ownerInfo: User;
 }
 
+export interface IComment {
+  _id: string;
+  content: string;
+  postId: string;
+  userId: string;
+  parentId: string | null;
+  createdAt: Date;
+  isDeleted: boolean;
 
-export interface IComment 
-{
-  _id:string,
-  content : string,
-  postId : string,
-  userId : string,
-  parentId : string|null,
-  createdAt : Date,
-  isDeleted : boolean,
-  
   replies: IComment[];
-  userInfo: UserInfo
-  likedUserInfo: User[]
-  isLiked: Like
+  userInfo: UserInfo;
+  likedUserInfo: User[];
+  isLiked: Like;
 }
-export interface PostComment 
-{
-  content : string,
-  postId : string,
-  userId : string,
-  parentId : string,
+export interface PostComment {
+  content: string;
+  postId: string;
+  userId: string;
+  parentId: string;
 }
 export type AuthAction = LogInAction | LogOutAction;

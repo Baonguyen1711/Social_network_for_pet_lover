@@ -3,10 +3,10 @@
   width: 100%;
   padding: 10px;
   border-radius: 10px;
-  background-color: #fff;
   margin-top: 15px;
-  background-color: #e6f5de;
+  background-color: #d2eac5;
   width: 100%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .container_inside {
@@ -17,7 +17,7 @@
 .container_img
 {
   width: 30%;
-  height: 30%;
+  height: 200px;
 }
 
 .image {

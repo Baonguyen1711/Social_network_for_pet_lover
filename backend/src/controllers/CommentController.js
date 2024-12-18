@@ -264,6 +264,75 @@ class CommentController {
       });
     }
   }
+  async deleteCommentByCommentId(req, res) {
+    try {
+      connectToDb();
+      const { commentId} = req.query;
+      if (!commentId) {
+        res.status(400).json({
+          message: "Missing required fields: commentId",
+        });
+      }
+      const updateComment = await Comment.findOne({_id:new ObjectId(`${commentId}`),isDeleted:false});
+      if(updateComment)
+      {
+        updateComment.isDeleted=true;
+        updateComment.save()
+        return res.status(200).json({
+          message:"delete comment successfully",
+          deletedComment: updateComment,
+        });
+      }
+      else
+      {
+        return res.status(400).json({
+          message:"Comment not found",
+        });
+      }
+      
+    } catch (e) {
+      console.error("Error while creating a comment:", e);
+      return res.status(500).json({
+        message:
+          "An error occurred while getting comments of comment. Please try again later.",
+      });
+    }
+  }
+
+  async updateCommentByCommentId(req, res) {
+    try {
+      connectToDb();
+      const { commentId,contentComment} = req.body;
+      if (!commentId||!contentComment) {
+        res.status(400).json({
+          message: "Missing required fields: commentId,contentComment",
+        });
+      }
+      const updateComment = await Comment.findOne({_id:new ObjectId(`${commentId}`),isDeleted:false});
+      if(updateComment)
+      {
+        updateComment.content=contentComment;
+        updateComment.save()
+        return res.status(200).json({
+          message:"edit comment successfully",
+          editComment: updateComment,
+        });
+      }
+      else
+      {
+        return res.status(400).json({
+          message:"Comment not found",
+        });
+      }
+      
+    } catch (e) {
+      console.error("Error while creating a comment:", e);
+      return res.status(500).json({
+        message:
+          "An error occurred while editting comments of comment. Please try again later.",
+      });
+    }
+  }
 }
 
 module.exports = new CommentController();

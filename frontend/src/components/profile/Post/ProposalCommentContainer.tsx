@@ -4,18 +4,17 @@ import { IComment, Post } from "../../../types";
 import ProposalComment from "./ProposalComment";
 import DetailPostContainer from "../ExpandComment/DetailPostContainer";
 import { List } from "@mui/material";
+import { handleDeleteCommentAPI } from "../../../sercives/api";
 
 interface props {
   onAddComment?: (newComment: IComment) => void;
-  updateComments:(comments:IComment[]) => void;
+  updateComments: (comments: IComment[]) => void;
   newComment?: IComment;
   postId?: string;
-  handleLike: ()=>void
-  handleSave: ()=>void
+  handleLike: () => void;
+  handleSave: () => void;
 }
-// const ChildComponent = React.memo(({ value }: { value: IComment }) => {
-//   return <ProposalComment comment={value} />;
-// });
+
 const ProposalCommentContainer: React.FC<props> = (props) => {
   const [comments, setComments] = useState<IComment[]>([]);
 
@@ -50,20 +49,30 @@ const ProposalCommentContainer: React.FC<props> = (props) => {
       console.error("Error fetching data:", e);
     }
   };
-  
+  // const handleDelete = async (id:string|undefined) => {
+  //   const response = await handleDeleteCommentAPI(id);
+  //   if(response) setComments((prev)=>{return prev.filter(comment=>comment._id!=response.deletedComment)})
+  // }
   return (
     <>
       <div className={style.container}>
-        {comments?.length>1 && (
+        {comments?.length > 1 && (
           <div className={style.watchAll} onClick={handleOpen}>
             Xem tất cả...
           </div>
         )}
         <div className={style.firstComment}>
-          {comments?.length>0 && <ProposalComment level={1} comment={comments?.at(0)} />}
+          {comments?.length > 0 && (
+            <ProposalComment level={1} comment={comments?.at(0)}  />
+          )}
         </div>
       </div>
-      <DetailPostContainer handleSave={props.handleSave} handleLike={props.handleLike} open={open} handleClose={handleClose} />
+      <DetailPostContainer
+        handleSave={props.handleSave}
+        handleLike={props.handleLike}
+        open={open}
+        handleClose={handleClose}
+      />
     </>
   );
 };

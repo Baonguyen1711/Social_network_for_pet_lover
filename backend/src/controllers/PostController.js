@@ -744,6 +744,37 @@ class PostController {
       console.log(e);
     }
   }
+
+  async updateTitleAndContentAndImagesPostByPostId(req, res) {
+    try {
+      const { postId,title,content,images } = req.body;
+      if (!ObjectId.isValid(postId)) {
+        return res.status(400).send({ error: "Invalid postId format", postId });
+      }
+      if (!postId || !title|| !content) {
+        return res
+          .status(400)
+          .json({ message: "Not enough required information!" });
+      }
+      connectToDb();
+
+      const post = await Post.findById(postId)
+      if(post) 
+      {
+        post.title=title
+        post.content = content
+        post.images = images
+        post.save();
+        return res.status(200).json({message:"Update post successfully"})
+      } 
+      else
+      {
+        return res.status(404).json({message:"Post is not found"})
+      }
+    } catch (e) {
+      return res.status(500).send({ message: "Server error" });
+    }
+  }
 }
 
 module.exports = new PostController();

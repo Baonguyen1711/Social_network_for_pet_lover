@@ -123,7 +123,7 @@ const SideBarFavourite: React.FC<SideBarProps> = ({ isOpened }) => {
               height="40px"
               padding="10px"
               borderRadius="10px"
-              bgcolor={isActive("/favourite/general") ? "#CBD9C4" : "#ffffff"}
+              bgcolor={isActive("/favourite/general")||isActive("/favourite") ? "#CBD9C4" : "#ffffff"}
             >
               <HomeOutlined sx={{ color: "#89966B" }} />
               <Typography fontFamily="Inter" color="#89966B" fontWeight="500">

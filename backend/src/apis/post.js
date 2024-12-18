@@ -12,6 +12,7 @@ router.use('/getpostsbyuserid', postController.getPostsByUserId)
 router.use('/getposthome/:userId', postController.getPostsByFollowedUsers)
 router.use('/delete', postController.deletePostById)
 router.use('/getpostbypostid', postController.getPostById)
+router.use('/updatepost', postController.updateTitleAndContentAndImagesPostByPostId)
 
 router.use('/favourited/getbyuserid', postController.getFavouritedPostsByUserId)
 

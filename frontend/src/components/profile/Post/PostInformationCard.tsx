@@ -15,6 +15,7 @@ import {
   Menu,
   ImageList,
   ImageListItem,
+  Modal,
 } from "@mui/material";
 import {
   AddReaction,
@@ -39,8 +40,15 @@ import { getTimeAgo } from "../../../helper";
 import DetailPostContainer from "../ExpandComment/DetailPostContainer";
 import DetaiLikesModal from "./DetailLikesModal";
 import { PostContext } from "./PostContext";
-import { createPostUserRelationship } from "../../../sercives/api";
+import {
+  createPostUserRelationship,
+  handleLikeAPI,
+} from "../../../sercives/api";
 import { useNavigate } from "react-router-dom";
+import EditPostTool from "./EditPostTool";
+import Confirmation from "../../comfirmation/Confirmation";
+import { title } from "process";
+import DetailPostExploreModal from "../../explore/DetailPostExploreModal";
 interface Props {
   updatePostsState: () => void;
 }
@@ -54,13 +62,16 @@ const PostInformationCard: React.FC<Props> = (props) => {
   const [countComment, setCountComment] = useState<number>(0);
   const [openDetailLikes, setOpenDetailLikes] = useState(false);
   const navigate = useNavigate();
-
-  //const [isSaved, setIsSaved] = useState(props.post?.isSaved);
-  //const [isLiked, setIsLiked] = useState(props.post?.isLiked);
-  //handletogglemodal
   const [openModal, setOpenModal] = useState(false);
+  const [openDetaiExplorePost, setOpenDetaiExplorePost] = useState(false);
   const handleOpenModal = () => setOpenModal(true);
   const handleCloseModal = () => setOpenModal(false);
+  const [propsConfirmation, setPropsConfirmation] = useState({
+    title: "",
+    message: "",
+    open: false,
+  });
+  const [openEditModal, setOpenEditModal] = useState(false);
   const handleAddComment = (newComment: IComment | undefined) => {
     setBonusComment(newComment);
     setCountComment(countComment + 1);
@@ -76,9 +87,17 @@ const PostInformationCard: React.FC<Props> = (props) => {
   };
 
   const handleEdit = () => {
+    setOpenEditModal(true);
     handleClose();
   };
-
+  const handleShowDeleteConfirmation = async () => {
+    setPropsConfirmation({
+      open: true,
+      title: "Do you want to delete?",
+      message: "Do you want to delete this post?",
+    });
+    handleClose();
+  };
   const handleDelete = async () => {
     try {
       const response = await fetch(
@@ -95,37 +114,12 @@ const PostInformationCard: React.FC<Props> = (props) => {
       console.error(e);
     }
   };
-
   const handleHide = () => {
     console.log("Hide clicked");
   };
   const handleLike = async () => {
-    try {
-      const response = await fetch(
-        "http://localhost:5000/api/v1/like/likepost",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userId: localStorage.getItem("userId"),
-            targetId: post?._id,
-            targetType: "post",
-          }),
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Failed to like post");
-      }
-      const result = await response.json();
-      //setCurrentPost(result.updatedPost);
-      //setPost(result.updatedPost);
-      //setIsLiked(result.updatedPost.isLiked)
-      props.updatePostsState?.();
-    } catch (e) {
-      console.error(e);
-    }
+    const result = await handleLikeAPI(post?._id, "post");
+    if (result) props.updatePostsState?.();
   };
   const handleCommentClick = () => {
     setIsCommentBarDisplay(true);
@@ -145,7 +139,6 @@ const PostInformationCard: React.FC<Props> = (props) => {
   const handleNavigateToProfile = () => {
     navigate(`/profile/${post?.userId}`);
   };
-
   return (
     <Card
       sx={{
@@ -199,7 +192,7 @@ const PostInformationCard: React.FC<Props> = (props) => {
               {post?.userInfo._id === localStorage.getItem("userId") ? (
                 <MenuItem
                   sx={{ justifyContent: "flex-start" }}
-                  onClick={handleDelete}
+                  onClick={handleShowDeleteConfirmation}
                 >
                   <Delete />
                   Delete
@@ -218,7 +211,11 @@ const PostInformationCard: React.FC<Props> = (props) => {
             </Menu>
           </>
         }
-        title={<p className={style.userName} onClick={handleNavigateToProfile}>{post?.userInfo.firstname + " " + post?.userInfo.lastname}</p>}
+        title={
+          <p className={style.userName} onClick={handleNavigateToProfile}>
+            {post?.userInfo.firstname + " " + post?.userInfo.lastname}
+          </p>
+        }
         subheader={post?.createdAt && getTimeAgo(post.createdAt)}
       />
       <CardContent>
@@ -238,12 +235,47 @@ const PostInformationCard: React.FC<Props> = (props) => {
                   <img
                     src={`${url}?w=248&fit=crop&auto=format&dpr=2`}
                     loading="lazy"
+                    className={clsx(style.image)}
+                    onClick={() => {
+                      setOpenDetaiExplorePost(true);
+                    }}
                   />
                 </ImageListItem>
               );
             })}
           </ImageList>
         )}
+        <Modal
+          open={openDetaiExplorePost}
+          onClose={handleClose}
+          sx={{ backdropFilter: "blur(2px)" }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              height: "100%",
+              width: "100%",
+              transform: "translate(-50%, -50%)",
+              bgcolor: "background.paper",
+              outline: "none",
+              border: "0px",
+              boxShadow: 24,
+              borderRadius: "9px",
+            }}
+          >
+            {openDetaiExplorePost && (
+              <DetailPostExploreModal
+                post={post}
+                onClose={() => {
+                  setOpenDetaiExplorePost(false);
+                }}
+              />
+            )}
+          </Box>
+        </Modal>
       </CardContent>
       <CardActions disableSpacing>
         <Stack direction="row" spacing={1} alignItems="center">
@@ -303,7 +335,11 @@ const PostInformationCard: React.FC<Props> = (props) => {
         </Stack>
       </CardActions>
       <CardContent
-        sx={{ paddingBottom: "0px !important", position: "relative",justifySelf:"left" }}
+        sx={{
+          paddingBottom: "0px !important",
+          position: "relative",
+          justifySelf: "left",
+        }}
       >
         <ProposalCommentContainer
           newComment={bonusComment}
@@ -326,6 +362,22 @@ const PostInformationCard: React.FC<Props> = (props) => {
         handleClose={handleCloseModal}
         handleLike={handleLike}
         handleSave={handleSavePost}
+      />
+      <Confirmation
+        title={propsConfirmation.title}
+        open={propsConfirmation.open}
+        message={propsConfirmation.message}
+        onClose={() =>
+          setPropsConfirmation((prev) => ({ ...prev, open: false }))
+        }
+        onConfirm={handleDelete}
+      />
+      <EditPostTool
+        isOpen={openEditModal}
+        onClose={() => {
+          setOpenEditModal(false);
+        }}
+        onUpdated={props.updatePostsState}
       />
     </Card>
   );

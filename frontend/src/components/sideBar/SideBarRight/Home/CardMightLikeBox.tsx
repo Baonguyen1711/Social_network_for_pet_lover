@@ -4,6 +4,7 @@ import { Avatar, AvatarGroup, Button } from "@mui/material";
 
 import style from "./cssCardMightLike.module.css";
 import { User } from "../../../../types";
+import { useNavigate } from "react-router-dom";
 
 type CardMightLikeBoxProps = {
   notFollowUser: User;
@@ -15,7 +16,7 @@ const CardMightLikeBox: React.FC<CardMightLikeBoxProps> = ({
   const currentUserId = localStorage.getItem("userId");
   const [isFollowing, setIsFollowing] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
-
+  const navigate = useNavigate();
   async function handleFollow(followingId: string) {
     try {
       const response = await fetch(
@@ -80,7 +81,7 @@ const CardMightLikeBox: React.FC<CardMightLikeBoxProps> = ({
   return (
     <>
       {isVisible && (
-        <div className={clsx(style.cardYouMightLike)}>
+        <div className={clsx(style.cardYouMightLike)} onClick={()=>{navigate(`/profile/${notFollowUser._id}`)}}>
           <div className={clsx(style.mightLikeBox)}>
             <Avatar
               sx={{ minHeight: 50, minWidth: 50, objectFit: "cover" }}
