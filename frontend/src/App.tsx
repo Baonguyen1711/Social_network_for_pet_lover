@@ -41,7 +41,7 @@ const App = () => {
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
 
-                <Route path="/message" element={<ProtectedRoutes element={<MessagePage />} />}/>
+                <Route path="/message/:userEmail?" element={<ProtectedRoutes element={<MessagePage />} />}/>
                 <Route path="/explore" element={<ProtectedRoutes element={<ExplorePage />} />}/>
                 <Route path="/home" element={<ProtectedRoutes element={<HomePage />} />}/>
                 <Route path="/favourite" element={<ProtectedRoutes element={<FavouritePage />} />}>

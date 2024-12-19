@@ -8,6 +8,7 @@ import { useSocket } from './SocketContext'
 import { useBackground } from './BackgroundContext'
 import { useState } from 'react'
 import { lightTheme } from '../../themes/theme'
+import { useParams } from 'react-router-dom'
 
 
 interface MessageComponentArray {
@@ -19,10 +20,11 @@ const MessageDisplay: React.FC<MessageComponentArray> = ({ isChatbot }) => {
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const recipentEmail = localStorage.getItem("email")
-  const { selectedUserEmail } = useSelectedUser()
+  //const { selectedUserEmail } = useSelectedUser()
   const [recentMessages, setRecentMessages] = useState<MessageComponentType[]>([])
   const { messages, setMessages, chatbotMessages, setChatbotMessages } = useSocket();
   const { backgroundImageOver, setPalette } = useBackground()
+  const selectedUserEmail = useParams().userEmail
 
   const imgRef = useRef<HTMLImageElement>(null);
   const [messageColor, setMessageColor] = useState<string>("#f0f0f0");
@@ -69,7 +71,7 @@ const MessageDisplay: React.FC<MessageComponentArray> = ({ isChatbot }) => {
         const data = await response.json()
         setRecentMessages(data.chatHistory.reverse())
 
-
+        console.log("messages",messages)
       } catch (e) {
         console.log("Some errors happen", e)
       }

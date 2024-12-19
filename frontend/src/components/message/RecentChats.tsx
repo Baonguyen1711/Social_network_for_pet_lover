@@ -10,6 +10,8 @@ import { useSocket } from './SocketContext'
 import { useBackground } from './BackgroundContext'
 import { lightTheme } from '../../themes/theme'
 import uploadToCloudinary from '../profile/UploadImage';
+import { useNavigate, useParams } from 'react-router-dom';
+import { RecentChat } from '../../types';
 
 interface message {
   _id: string,
@@ -93,19 +95,46 @@ const SideBar = () => {
 
 
   const email = localStorage.getItem("email")
-  const { selectedUserEmail, setSelectedUserEmail, selectedUserAvatar, setSelectedUserAvatar, selectedUserName, setSelectedUserName } = useSelectedUser()
-  const { recentChats, setRecentChats } = useSocket()
+  const selectedUserEmail = useParams().userEmail
+  const { setSelectedUserEmail } = useSelectedUser()
+  const [recentChats, setRecentChats ] = useState<RecentChat[]>([])
   const { setBackgroundImageOver, isPaletteOpen, setIsPaletteOpen, setSelectedTheme } = useBackground()
   const [imageData, setImageData] = useState<image[]>([])
   const [dataArray, setDataArray] = useState<message[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedId, setSelectedId] = useState<string>("")
   const [backgroundColor, setBackgroundColor] = useState<string>(lightTheme.colors.background)
+  const nav = useNavigate()
+  const [selectedUserAvatar, setSelectedUserAvatar] = useState<string>("")
+  const [selectedUserFirstName, setSelectedUserFirstName] = useState<string>("")
+  const [selectedUserLastName, setSelectedUserLastName] = useState<string>("")
+  useEffect(() => {
+    const fetchData = async () => {
+      debugger;
+      const url = `http://localhost:5000/api/v1/user/info?email=${selectedUserEmail}`;
+      try {
+        const response = await fetch(url, {
+          method: "GET",
+        });
+        if (!response.ok) {
+          throw new Error("Error in getting user");
+        }
+        const data = await response.json();
+        setSelectedUserAvatar(data.userInfo.avatar)
+        setSelectedUserFirstName(data.userInfo.firstname)
+        setSelectedUserLastName(data.userInfo.lastname)
+      } catch (e) {
+        console.error("Error fetching data:", e);
+      }
+    };
+
+    fetchData(); // Call fetchData inside useEffect
+  }, [selectedUserEmail]);
 
   const handleFileChangeBackground = async (event: React.ChangeEvent<HTMLInputElement>) => {
     debugger;
     const file = event.target.files?.[0]
-    if(file) {
+    if (file) {
       const imageLink = await uploadToCloudinary(file)
       const imageName = file.name
       const newImage = {
@@ -127,25 +156,67 @@ const SideBar = () => {
         body: JSON.stringify({
           "senderEmail": email,
           "recipentEmail": selectedUserEmail,
-          "link":imageLink,
+          "link": imageLink,
           "name": imageName
         })
       })
 
-      if(!response.ok) {
+      if (!response.ok) {
         console.log("fail to upload image to server")
       }
 
       console.log("link", imageLink)
-    } else {  
+    } else {
       console.log("no file selected")
     }
-    
+
     if (file) {
       console.log("File selected:", file);
     }
   };
 
+
+  // useEffect(() => {
+
+  //   const getMessagesHistory = async () => {
+
+  //     if (!selectedUserEmail) {
+  //       return
+  //     }
+      
+  //     const url = `http://localhost:5000/api/v1/message/history?senderEmail=${email}&recipentEmail=${selectedUserEmail}`
+
+  //     try {
+  //       const response = await fetch(url)
+
+  //       if (!response.ok) {
+  //         console.log("get history fail")
+  //         throw new Error("get history fail")
+
+
+  //       }
+
+  //       const data = await response.json()
+
+  //       if (data.chatHistory.length === 0) {
+  //         debugger;
+          
+  //         setRecentChats((prev) => [...prev, newRecentChat])
+  //       }
+
+  //     } catch (e) {
+  //       console.log("Some errors happen", e)
+  //     }
+
+
+  //   }
+
+  //   getMessagesHistory()
+  //   return (() => {
+
+  //   })
+
+  // }, [selectedUserEmail])
 
 
   useEffect(() => {
@@ -171,7 +242,47 @@ const SideBar = () => {
         console.log("data", data)
         console.log("recentMessages", recentMessages)
         const selectedUserAvatar = recentMessages[0].userInfo.avatar
+        const emailExists = recentChats.some(chat => chat._id === selectedUserEmail);
+        if(!emailExists && selectedUserEmail) {
+          var firstname = ''
+          var lastname=''
+          var avatar =''
+          const fetchData = async () => {
+            debugger;
+            const url = `http://localhost:5000/api/v1/user/info?email=${selectedUserEmail}`;
+            try {
+              const response = await fetch(url, {
+                method: "GET",
+              });
+              if (!response.ok) {
+                throw new Error("Error in getting user");
+              }
+              const data = await response.json();
+              avatar= data.userInfo.avatar
+              firstname= data.userInfo.firstname
+              lastname = data.userInfo.lastname
+            } catch (e) {
+              console.error("Error fetching data:", e);
+            }
+          };
+      
+          await fetchData(); // Call fetchData inside useEffect
+          const newRecentChat: RecentChat = {
+            _id: selectedUserEmail,
+            latestMessage: "",
+            timeStamp: Date(),
+            userInfo: {
+              firstname: lastname,
+              lastname: firstname,
+              avatar: avatar,
+              email: selectedUserEmail,
+              phone: undefined
+            }
+          }
 
+
+          recentMessages.push(newRecentChat)
+        }
         console.log("selectedUserAvatar", selectedUserAvatar)
         setSelectedUserAvatar(selectedUserAvatar)
         setRecentChats(recentMessages)
@@ -193,7 +304,7 @@ const SideBar = () => {
     fetchData();
 
 
-  }, [selectedUserAvatar]);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -216,7 +327,7 @@ const SideBar = () => {
         const data = await response.json()
         const backgroundImage = data.image
         const theme = data.theme
-        
+
         setBackgroundImageOver(backgroundImage)
         setSelectedTheme(theme)
       } catch (e) {
@@ -239,10 +350,10 @@ const SideBar = () => {
       }
       var newArray = []
       const data = await response.json()
-      if(data.backgroundImages.length >0 ) {
-        newArray = data.backgroundImages.map((item: JsonImage) => ({ "img":item.link, "title": item.name}));
+      if (data.backgroundImages.length > 0) {
+        newArray = data.backgroundImages.map((item: JsonImage) => ({ "img": item.link, "title": item.name }));
       }
-      
+
       setImageData(newArray)
       console.log(newArray)
     }
@@ -299,8 +410,7 @@ const SideBar = () => {
                 key={message._id}
 
                 onClick={() => {
-                  setSelectedUserEmail(message._id)
-                  setSelectedUserName(`${message.userInfo?.firstname} ${message.userInfo?.lastname}`)
+                  nav(`/message/${message._id}`)
 
                 }
                 }
@@ -320,7 +430,7 @@ const SideBar = () => {
                 }}
               >
                 <ListItemAvatar>
-                  <Avatar src={selectedUserAvatar}>
+                  <Avatar src={message.userInfo?.avatar}>
                   </Avatar>
                 </ListItemAvatar>
                 <ListItemText primary={`${message.userInfo?.firstname}${message.userInfo?.lastname}`} secondary={<span
@@ -386,16 +496,16 @@ const SideBar = () => {
                     width: "100%",
                     height: "100%",
                     objectFit: "cover",
-                    
+
                   }}
 
                   onMouseEnter={(e) => {
                     e.currentTarget.style.cursor = "pointer";
                     e.currentTarget.style.opacity = "0.8";
-                }}
-                onMouseLeave={(e) => {
+                  }}
+                  onMouseLeave={(e) => {
                     e.currentTarget.style.opacity = "1";
-                }}
+                  }}
 
                   onClick={
                     () => {
@@ -404,7 +514,7 @@ const SideBar = () => {
                       setIsPaletteOpen(!isPaletteOpen)
                     }}
 
-                  
+
                 />
               </ImageListItem>
             ))}

@@ -10,6 +10,7 @@ import { MessageComponentType } from '../../types'
 import { Recipent } from '../../types';
 import { useSelectedUser } from './SelectedUserContext'
 import { useSocket } from './SocketContext'
+import { useParams } from 'react-router-dom'
 
 interface MessageComponentArray {
     messages: MessageComponentType[]
@@ -32,14 +33,19 @@ const messages = [
 ]
 
 const MainMessage = () => {
+    const selectedUserEmail = useParams().userEmail
+    //const [selectedUserEmail, setSelectedUserEmail] = useState<string>("")
 
     //const [messages, setMessages] = useState<MessageComponentType[]>([])
     //const {messages,setMessages} = useSocket()
     const [isSender, setIsSender] = useState<boolean | undefined>(undefined)
     const currentEmail = localStorage.getItem("email")
-    const { selectedUserEmail } = useSelectedUser()
+    
+    
+    //console.log("selectedUserEmails", selectedUserEmails)
+    //const { selectedUserEmail, setSelectedUserEmail } = useSelectedUser()
     const selectedUser: Recipent = {
-        senderEmail: currentEmail,
+        senderEmail: currentEmail || undefined,
         recipentEmail: selectedUserEmail,
         content: null
     }
