@@ -35,8 +35,8 @@ export interface RecentChatInSideBar {
 }
 
 export interface Recipent {
-  recipentEmail: string | null;
-  senderEmail: string | null;
+  recipentEmail: string | undefined;
+  senderEmail: string | undefined;
   content: string | null;
 }
 
@@ -64,11 +64,6 @@ export interface RecentChat {
   } | null;
 }
 
-export interface Recipent {
-  recipentEmail: string | null;
-  senderEmail: string | null;
-  content: string | null;
-}
 
 export interface AuthState {
   isAuthenticated: boolean;

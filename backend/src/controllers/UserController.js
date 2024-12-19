@@ -80,7 +80,7 @@ class UserController {
         return res.status(400).send({ error: 'Invalid userId format',userId });
     }
       await connectToDb();
-      const user = await User.findOne({ _id: new ObjectId(`${userId}`) },{avatar:1,description:1,firstname:1,lastname:1,location:1});
+      const user = await User.findOne({ _id: new ObjectId(`${userId}`) },{avatar:1,description:1,firstname:1,lastname:1,location:1, email:1});
       if (user) {
         const petCount = await Pet.countDocuments({userId:new ObjectId(`${userId}`),isDeleted:false})
         const result ={

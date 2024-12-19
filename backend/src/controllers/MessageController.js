@@ -49,7 +49,7 @@ class MessageController {
             // const message = new Message({
             //     recipentEmail: "Baonguyen1@gmail.com",
             //     senderEmail: "Baonguyen2@gmail.com",
-                
+
             //     content: "MU Vodoiiiiiii",
             //     sendAt:Date(),
             //     isDeleted: false
@@ -109,14 +109,14 @@ class MessageController {
                         "userInfo.lastname": 1,
                         "userInfo.avatar": 1,
                         "userInfo.location": 1
+                    }
                 }
-            }
                 ,
                 {
                     '$lookup': {
-                        'from': 'users',  
-                        'localField': '_id',  
-                        'foreignField': 'email',  
+                        'from': 'users',
+                        'localField': '_id',
+                        'foreignField': 'email',
                         'as': 'userInfo'
                     }
                 },
@@ -131,10 +131,10 @@ class MessageController {
 
             ])
 
-            const recentMessages = recentMessagesArray.length>0? recentMessagesArray:[]
+            const recentMessages = recentMessagesArray.length > 0 ? recentMessagesArray : []
 
-            
-            console.log("recentMessages",recentMessages)
+
+            console.log("recentMessages", recentMessages)
 
 
             res.json({
@@ -152,42 +152,56 @@ class MessageController {
             const { senderEmail, recipentEmail } = req.query
 
             console.log(typeof email)
-            // const message = new Message({
-            //     recipentEmail: "Baonguyen2@gmail.com",
-            //     senderEmail: "Baonguyen1@gmail.com",
-                
-            //     content: "MU Vodoi 3",
-            //     sendAt:Date(),
-            //     isDeleted: false
-            // })
+            console.log("recipentEmail", recipentEmail)
+            console.log("type", typeof recipentEmail)
 
-            // console.log(message)
 
-            // await message.save()
-            console.log("senderEmail",senderEmail)
-            console.log("type", typeof senderEmail)
-
+            res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+            res.set('Pragma', 'no-cache');
+            res.set('Expires', '0');
+            res.set('Surrogate-Control', 'no-store');
             const chatHistoryArray = await Message.aggregate([
-                //get all recieved messages
                 {
                     '$match': {
-                        '$expr': {
-                            '$or': [
-                                {
-                                    'recipentEmail': recipentEmail,
-                                    'senderEmail': senderEmail,
-                                    'isDeleted': false
-                                },
-                                {
-                                    'recipentEmail': senderEmail,
-                                    'senderEmail': recipentEmail,
-                                    'isDeleted': false
-                                },
+                      '$expr': {
+                        '$or': [
+                          {
+                            '$and': [
+                              {
+                                '$eq': [
+                                  '$recipentEmail', senderEmail
+                                ]
+                              }, {
+                                '$eq': [
+                                  '$senderEmail', recipentEmail
+                                ]
+                              }, {
+                                '$eq': [
+                                  '$isDeleted', false
+                                ]
+                              }
                             ]
-                        }
-                        
+                          }, {
+                            '$and': [
+                              {
+                                '$eq': [
+                                  '$recipentEmail', recipentEmail
+                                ]
+                              }, {
+                                '$eq': [
+                                  '$senderEmail', senderEmail
+                                ]
+                              }, {
+                                '$eq': [
+                                  '$isDeleted', false
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
                     }
-                },
+                  },
                 {
                     '$addFields': {
 
@@ -205,19 +219,11 @@ class MessageController {
                 {
                     '$limit': 10
                 }
-                // {
-                //     '$group': {
-                //         '_id': null,
-                //         'isSender': {'$first': '$isSender'},
-                //         'content': {'$first': '$content'},
-                //         'timeStamp': {'$first': '$sendAt'}
-                //     }
-                // }
             ])
 
-            const chatHistory = chatHistoryArray.length>0? chatHistoryArray:[]
-            
-            console.log("chatHistory",chatHistory)
+            const chatHistory = chatHistoryArray.length > 0 ? chatHistoryArray : []
+
+            console.log("chatHistory", chatHistory)
 
             res.json({
                 'chatHistory': chatHistory
@@ -227,11 +233,11 @@ class MessageController {
         }
     }
 
-    async saveMessage(req,res) {
+    async saveMessage(req, res) {
         try {
 
             connectToDb()
-            const {senderEmail, recipentEmail, content, image} = req.query
+            const { senderEmail, recipentEmail, content, image } = req.query
 
             const newMessage = new Message({
                 senderEmail: senderEmail,
@@ -245,47 +251,47 @@ class MessageController {
             await newMessage.save()
 
             return res.status(200)
-        } catch(e) {
+        } catch (e) {
             console.log("Some erros happen", e)
         }
     }
 
-    async getConversation(req,res) {
+    async getConversation(req, res) {
         try {
 
             connectToDb()
-            const {senderEmail, recipentEmail} = req.query
+            const { senderEmail, recipentEmail } = req.query
 
             const conversation = await Conversation.findOne({
                 'participant': { '$all': [senderEmail, recipentEmail] },
-              });
-            if(!conversation) {
+            });
+            if (!conversation) {
                 return res.status(404).json({
                     message: "no conversation found"
                 })
             }
-            
+
 
             return res.status(200).json({
                 "image": conversation.image,
                 "theme": conversation.theme
             })
-        } catch(e) {
+        } catch (e) {
             console.log("Some erros happen", e)
         }
     }
 
 
-    async postConversation(req,res) {
+    async postConversation(req, res) {
         try {
 
             connectToDb()
-            const {senderEmail, recipentEmail, image, theme} = req.body
+            const { senderEmail, recipentEmail, image, theme } = req.body
 
             const conversation = await Conversation.findOne({
                 'participant': { '$all': [senderEmail, recipentEmail] },
-              });
-            if(conversation) {
+            });
+            if (conversation) {
                 conversation.image = image
                 conversation.theme = theme
 
@@ -296,15 +302,15 @@ class MessageController {
                     image: image,
                     theme: theme
                 })
-    
+
                 await newConversation.save()
             }
-            
+
 
             return res.status(200).json({
                 message: "update background image successfully"
             })
-        } catch(e) {
+        } catch (e) {
             console.log("Some erros happen", e)
         }
     }
@@ -313,7 +319,7 @@ class MessageController {
     //     try {
     //         connectToDb()
 
-            
+
     //     } catch(e) {
     //         console.log("Some errors happen", e)
     //     }

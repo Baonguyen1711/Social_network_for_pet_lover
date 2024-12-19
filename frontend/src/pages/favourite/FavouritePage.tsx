@@ -2,6 +2,7 @@ import React from 'react'
 import { Grid2, Paper } from '@mui/material'
 import SideBarFavourite from '../../components/sideBar/SideBarFavourite/SideBarFavourite'
 import { Outlet } from 'react-router-dom'
+import PublicLayout from "../../Layout";
 
 const FavouritePage = () => {
   return (

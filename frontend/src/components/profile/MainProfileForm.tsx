@@ -7,9 +7,11 @@ import { AccessUrlContext, AccessUrlProvider } from "./AccessUrlContext";
 
 const MainProfileForm: React.FC = () => {
   const { userId } = useParams();
+  const [userEmail, setUserEmail] = useState<string>("")
   const [userData,setUserData] = useState<User>()
   useEffect(() => {
     const fetchData = async () => { 
+      debugger;
       const url = `http://localhost:5000/api/v1/user/getbyid/${userId}`;
       try {
         const response = await fetch(url, {
@@ -20,6 +22,7 @@ const MainProfileForm: React.FC = () => {
         }
         const data = await response.json();
         setUserData(data.user);
+        setUserEmail(data.user.email)
       } catch (e) { 
         console.error("Error fetching data:", e);
       }
@@ -37,6 +40,9 @@ const MainProfileForm: React.FC = () => {
           </a>
           <a>
             <Link to={`/profile/${userId}/pets`} className={style.link}>Pets</Link>
+          </a>
+          <a>
+            <Link to={`/message/${userEmail}`} className={style.link}>Message</Link>
           </a>
         </nav>
         <div className={style.layout}>
