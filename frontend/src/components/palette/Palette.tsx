@@ -13,11 +13,51 @@ interface PaletteProps {
 
 const Palette: React.FC<PaletteProps> = ({ imgSrc }) => {
     const senderEmail = localStorage.getItem("email")
-    const {selectedUserEmail} = useSelectedUser()
+    const { selectedUserEmail } = useSelectedUser()
     const { isPaletteOpen, palette, setIsPaletteOpen, selectedTheme, setSelectedTheme } = useBackground()
-    const {changeBackground} = useSocket()
+    const { changeBackground } = useSocket()
     const [isSelectedColor, setIsSelectedColor] = useState<boolean>(false)
     const [tempSelectedColors, setTempSelectedColors] = useState<number[][]>([])
+
+
+    const handleClick = async () => {
+        debugger;
+        console.log("tempSelectedColors", tempSelectedColors)
+        setSelectedTheme(tempSelectedColors)
+        setTempSelectedColors([])
+        setIsPaletteOpen(false)
+
+        const image = {
+            "src": imgSrc,
+            "theme": tempSelectedColors,
+            "senderEmail": senderEmail,
+            "recipentEmail": selectedUserEmail
+        }
+
+        changeBackground(image)
+
+        const url = `http://localhost:5000/api/v1/message/conversation/post`
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                senderEmail: senderEmail,
+                recipentEmail: selectedUserEmail,
+                image: imgSrc,
+                theme: selectedTheme
+            }),
+        })
+
+        if (!response.ok) {
+            console.log("fail to post background")
+            return
+        }
+
+        console.log("post background successfully")
+    }
     const overlayStyles = {
         width: "100vw",
         height: "100vh",
@@ -165,22 +205,7 @@ const Palette: React.FC<PaletteProps> = ({ imgSrc }) => {
                     style={{ width: "100%", height: "40px", border: "none", backgroundColor: "green", borderRadius: "20px", color: "white", cursor: tempSelectedColors.length === 3 ? "pointer" : "not-allowed" }}
                     onClick={
 
-                        () => {
-                            debugger;
-                            console.log("tempSelectedColors", tempSelectedColors)
-                            setSelectedTheme(tempSelectedColors)
-                            setTempSelectedColors([])
-                            setIsPaletteOpen(false)
-
-                            const image = {
-                                "src": imgSrc,
-                                "theme": tempSelectedColors,
-                                "senderEmail": senderEmail,
-                                "recipentEmail": selectedUserEmail
-                            }
-
-                            changeBackground(image)
-                        }
+                        handleClick
 
                     }
                     disabled={tempSelectedColors.length !== 3}

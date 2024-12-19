@@ -4,26 +4,18 @@ mongoose.set('debug', true)
 
 const FashionSocial = mongoose.connection.useDb('FashionSocial');
 
-const MessageSchema = new mongoose.Schema({
-    senderEmail: {
-        type: String,
-        require: true,
-    },
-
-    recipentEmail: {
-        type: String,
-        require: true,
-    },
-    content: {
-        type: String,
-        require: true
-    },
-    sendAt: {
-        type: Date,
+const ConversationSchema = new mongoose.Schema({
+    participant: {
+        type: [String],
         require: true,
     },
     image: {
-        type: String
+        type: String,
+        require: true
+    },
+    theme: {
+        type: [[Number]],
+        require: true,
     },
     isDeleted: {
         type: Boolean,
@@ -32,9 +24,9 @@ const MessageSchema = new mongoose.Schema({
 })
 
 
-const Message = FashionSocial.model('Message', MessageSchema)
+const Conversation = FashionSocial.model('Conversation', ConversationSchema)
 
-module.exports = Message
+module.exports = Conversation
 
 
 

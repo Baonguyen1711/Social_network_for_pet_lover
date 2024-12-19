@@ -42,7 +42,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     socket.on("newMessage", (message) => {
       const newRecentChat: RecentChat = {
           "_id": message.sendfrom,
-          "latestMessage": message.content,
+          "latestMessage": message.image?"image":message.content,
           "timeStamp": new Date().toISOString(),
           "userInfo": null
       } 
@@ -86,7 +86,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
           "content":message.content,
           "timeStamp": new Date().toISOString(),
           "isSender": true,
-          "isChatbot": false   
+          "isChatbot": false,
+          "image": message.image   
         }
         return [...prevMessageComponent, newMessageComponent]
       })

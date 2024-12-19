@@ -9,7 +9,7 @@ const SideBar_Right = () => {
   return (
     <div className={clsx(style.container)}
     style={{position:'fixed',top:0}}>
-      <SearchBar placeHolderString="Search for chats" /> 
+      {/* <SearchBar placeHolderString="Search for chats" />  */}
       <div className={clsx(style.recent_chats_box)}>
         <h1 className={clsx(style.title)}>Recent Chats</h1>
 
