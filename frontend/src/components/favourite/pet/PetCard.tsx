@@ -39,7 +39,7 @@ const PetCard: React.FC<Props> = ({ data, onDelete }) => {
     <div className={clsx(style.container)}>
       {isDeleting ? (
         <div>
-          <span>Đang xoá, hoàn tác trong 5 giây...</span>
+          <span>Deleting, undo in 5 seconds...</span>
           <button onClick={handleUndo}>Hoàn tác</button>
         </div>
       ) : (

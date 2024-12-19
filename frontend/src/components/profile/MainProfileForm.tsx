@@ -26,7 +26,7 @@ const MainProfileForm: React.FC = () => {
     };
 
     fetchData(); // Call fetchData inside useEffect
-  }, []);
+  }, [userId]);
   return (
     <div className={style.coverContainer}>
       <div className={style.bodyContainer}>

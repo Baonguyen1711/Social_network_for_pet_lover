@@ -27,7 +27,7 @@ class PetUserController {
       });
       if (existingPetUser) {
         existingPetUser.updatedAt = new Date();
-        existingPetUser.isDeleted = false;
+        existingPetUser.isDeleted = !existingPetUser.isDeleted ;
         await existingPetUser.save();
         return res.status(200).json({
           message: "Update petuser successfully",
@@ -98,6 +98,35 @@ class PetUserController {
           },
         },
         {
+          $lookup: {
+            from: "petusers",
+            let: { petId: "$petInfo._id" }, // Tham chiếu đến petId
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ["$petId", "$$petId"] },
+                      { $eq: ["$isDeleted", false] },
+                    ],
+                  },
+                },
+              },
+              {
+                $count: "followerCount", // Đếm số lượt follow
+              },
+            ],
+            as: "followerData",
+          },
+        },
+        {
+          $addFields: {
+           "petInfo.followerCount": {
+              $ifNull: [{ $arrayElemAt: ["$followerData.followerCount", 0] }, 0],
+            },
+          },
+        },
+        {
           $sort: {
             createdAt: -1,
           },
@@ -116,6 +145,7 @@ class PetUserController {
             "petInfo.type": 1,
             "petInfo.breed": 1,
             "petInfo.birthday": 1,
+            "petInfo.followerCount":1,
             "ownerInfo.firstname": 1,
             "ownerInfo.lastname": 1,
             "ownerInfo.location": 1,

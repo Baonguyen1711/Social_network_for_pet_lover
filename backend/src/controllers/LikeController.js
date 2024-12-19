@@ -11,7 +11,7 @@ class LikeController {
     try {
       await connectToDb();
       const { userId, targetId, targetType } = req.body;
-      console.log("userId,xcxc targetId, targetType", userId, targetId, targetType);
+      //console.log("userId,xcxc targetId, targetType", userId, targetId, targetType);
       if (!userId || !targetId || !targetType) {
         return res
           .status(400)
@@ -103,7 +103,10 @@ class LikeController {
               images: 1,
               createdAt: 1,
               userId: 1,
-              userInfo: 1,
+              "userInfo.lastname": 1,
+              "userInfo.firstname": 1,
+              "userInfo._id": 1,
+              "userInfo.avatar": 1,
               "likedUserInfo.lastname": 1,
               "likedUserInfo.firstname": 1,
               "likedUserInfo._id": 1,
@@ -111,10 +114,10 @@ class LikeController {
               isLiked: 1,
             },
           },
-        ]).then((results) => results[0]);
+        ])
         return res.status(200).json({
           message: "update like successfully",
-          updatedPost: post,
+          updatedPost: post[0],
         });
       } else {
         const comment = await Comment.aggregate([

@@ -100,6 +100,54 @@ class PostUserController {
           },
         },
         {
+          $lookup: {
+            from: "follows", // Collection chứa thông tin followers
+            let: { ownerId: "$ownerInfo._id" }, // Biến chứa giá trị _id của owner
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ["$followingId", "$$ownerId"] }, // Điều kiện liên kết
+                      { $eq: ["$isDelete", false] }, // Chỉ lấy followers không bị xóa
+                    ],
+                  },
+                },
+              },
+            ],
+            as: "followersInfo",
+          },
+        },
+        {
+          $addFields: {
+            "ownerInfo.followerCount": { $size: "$followersInfo" }, // Đếm số lượng followers
+          },
+        },
+        {
+          $lookup: {
+            from: "likes", // Collection chứa thông tin likes
+            let: { postId: "$postInfo._id" }, // Biến chứa giá trị _id của bài viết
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ["$targetId", "$$postId"] }, // Điều kiện liên kết với bài viết
+                      { $eq: ["$isDeleted", false] }, // Chỉ lấy likes không bị xóa
+                    ],
+                  },
+                },
+              },
+            ],
+            as: "likesInfo", // Tên trường chứa kết quả nối
+          },
+        },
+        {
+          $addFields: {
+            "postInfo.likeCount": { $size: "$likesInfo" }, // Đếm số lượng likes
+          },
+        },
+        {
           $sort: {
             createdAt: -1,
           },
@@ -115,11 +163,13 @@ class PostUserController {
             "postInfo.updatedAt": 1,
             "postInfo.isDeleted": 1,
             "postInfo.userId": 1,
+            "postInfo.likeCount":1,
             "ownerInfo.firstname": 1,
             "ownerInfo.lastname": 1,
             "ownerInfo.location": 1,
             "ownerInfo.avatar": 1,
             "ownerInfo._id": 1,
+            "ownerInfo.followerCount": 1,
           },
         },
       ]);
