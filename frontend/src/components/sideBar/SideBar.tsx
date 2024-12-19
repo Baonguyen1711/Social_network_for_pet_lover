@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Box, Avatar, Typography, Link, IconButton } from '@mui/material'
 import { HomeOutlined, WindowOutlined, PeopleOutline, TagOutlined, SendOutlined, ExitToAppOutlined } from '@mui/icons-material'
-import { useLocation } from 'react-router-dom'
+import { useLocation, matchPath } from 'react-router-dom'
 import { useSelectedUser } from '../message/SelectedUserContext'
 import { lightTheme } from '../../themes/theme'
 
@@ -12,8 +12,17 @@ interface SideBarProps {
 const SideBar: React.FC<SideBarProps> = ({ isOpened }) => {
 
   const location = useLocation()
+  const userId = localStorage.getItem("userId")
 
-  const isActive = (path: string) => location.pathname.split("/")[1] === path;
+  const isActive = (path: string) => {  
+  // Check if the path is '/profile/:user_id'
+  if (path === "/profile") {
+    return !!matchPath("/profile/:userId", location.pathname); // Match the dynamic profile route
+  }
+
+  // Check for other static routes
+  return location.pathname.split("/")[1] === path;
+  }
   //const {selectedUserAvatar, selectedUserName, selectedUserEmail} = useSelectedUser()
   const [userName, setUserName] = useState<string>("")
   const [userAvatar, setUserAvatar] = useState<string>("")
@@ -179,7 +188,7 @@ const SideBar: React.FC<SideBarProps> = ({ isOpened }) => {
             </Link>
 
 
-            <Link href="/message" underline="none">
+            <Link href={`/profile/${userId}`} underline="none">
               <Box sx={{
                 '&:hover': {
                   backgroundColor: 'rgba(0, 0, 0, 0.08)', // Change background color on hover
@@ -188,7 +197,7 @@ const SideBar: React.FC<SideBarProps> = ({ isOpened }) => {
               }}
                 display="flex" alignItems="center" gap={1} id="group" height="40px" padding="10px" borderRadius="10px" bgcolor={isActive("group") ? lightTheme.colors.primary : lightTheme.colors.background}>
                 <PeopleOutline sx={{ color: lightTheme.colors.text }} />
-                <Typography fontFamily="Inter" color={lightTheme.colors.text} fontWeight="500">Group</Typography>
+                <Typography fontFamily="Inter" color={lightTheme.colors.text} fontWeight="500">Profile</Typography>
 
               </Box>
             </Link>

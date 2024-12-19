@@ -95,14 +95,15 @@ const SideBar = () => {
   const email = localStorage.getItem("email")
   const { selectedUserEmail, setSelectedUserEmail, selectedUserAvatar, setSelectedUserAvatar, selectedUserName, setSelectedUserName } = useSelectedUser()
   const { recentChats, setRecentChats } = useSocket()
-  const { setBackgroundImageOver, isPaletteOpen, setIsPaletteOpen } = useBackground()
+  const { setBackgroundImageOver, isPaletteOpen, setIsPaletteOpen, setSelectedTheme } = useBackground()
   const [imageData, setImageData] = useState<image[]>([])
   const [dataArray, setDataArray] = useState<message[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedId, setSelectedId] = useState<string>("")
   const [backgroundColor, setBackgroundColor] = useState<string>(lightTheme.colors.background)
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChangeBackground = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    debugger;
     const file = event.target.files?.[0]
     if(file) {
       const imageLink = await uploadToCloudinary(file)
@@ -194,10 +195,39 @@ const SideBar = () => {
 
   }, [selectedUserAvatar]);
 
-
-  useEffect(()=> {
+  useEffect(() => {
     const fetchData = async () => {
+
       debugger;
+      const url = `http://127.0.0.1:5000/api/v1/message/conversation/get?senderEmail=${email}&recipentEmail=${selectedUserEmail}`
+      try {
+
+
+
+        const response = await fetch(url, {
+          method: "GET"
+        })
+
+        if (!response.ok) {
+          throw new Error(`Error in getting background`);
+        }
+
+
+        const data = await response.json()
+        const backgroundImage = data.image
+        const theme = data.theme
+        
+        setBackgroundImageOver(backgroundImage)
+        setSelectedTheme(theme)
+      } catch (e) {
+        console.log("Some errors happen", e)
+        return []
+      } finally {
+        setLoading(false)
+      }
+    };
+
+    const getBackgroundImage = async () => {
       const url = `http://localhost:5000/api/v1/image/get?type=messageBackground&senderEmail=${email}&recipentEmail=${selectedUserEmail}`
 
       const response = await fetch(url, {
@@ -217,8 +247,12 @@ const SideBar = () => {
       console.log(newArray)
     }
 
-    fetchData()
-  },[selectedUserEmail])
+    getBackgroundImage()
+
+    fetchData();
+
+
+  }, [selectedUserEmail]);
 
   if (loading) {
     return (
@@ -320,7 +354,7 @@ const SideBar = () => {
         <Divider orientation="horizontal"></Divider>
         <div style={{ width: "100%", height: '450px', overflowY: 'scroll' }}>
           <div>
-            <label htmlFor="file-input">
+            <label htmlFor="file-input-background">
               {/* Round Upload Button */}
               <IconButton component="span">
                 <AddIcon fontSize="large" />
@@ -329,10 +363,10 @@ const SideBar = () => {
 
             {/* Hidden File Input */}
             <Input
-              id="file-input"
+              id="file-input-background"
               type="file"
               style={{ display: "none" }}
-              onChange={handleFileChange}
+              onChange={handleFileChangeBackground}
             />
           </div>
           <ImageList cols={2} rowHeight={100}

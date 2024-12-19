@@ -5,6 +5,7 @@ import { lightTheme } from '../../themes/theme';
 
 const Header: React.FC = () => {
   var avatarSrc = localStorage.getItem("userAvatar")
+  const userId = localStorage.getItem("userId")
   return (
     <>
       <Box
@@ -39,7 +40,7 @@ const Header: React.FC = () => {
     }}
   >
     <Typography>
-      Middle Content
+
     </Typography>
   </Box>
 
@@ -53,7 +54,7 @@ const Header: React.FC = () => {
     }}
   >
     <Notifications />
-    <Link href="/profile" underline="none">
+    <Link href={`/profile/${userId}`}underline="none">
     <Avatar
       src={localStorage.getItem("userAvatar")||undefined}
       sx={{

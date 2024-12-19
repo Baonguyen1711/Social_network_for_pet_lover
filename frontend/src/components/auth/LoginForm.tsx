@@ -19,7 +19,7 @@ const LoginForm: React.FC = () => {
             await login(email, password)
             localStorage.setItem("email", email)
 
-            navigate("/message")
+            navigate("/home")
         } catch (e) {
             console.log("Login failed" , e)
         }

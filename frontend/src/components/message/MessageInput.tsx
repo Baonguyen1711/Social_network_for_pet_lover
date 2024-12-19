@@ -1,13 +1,14 @@
 import React from 'react'
-import { adaptV4Theme, Box, TextField } from '@mui/material'
+import { adaptV4Theme, Box, TextField, Input, IconButton } from '@mui/material'
 import { Abc, EmojiEmotionsOutlined, SendOutlined } from '@mui/icons-material'
+import AddIcon from "@mui/icons-material/Add";
 import { useState, useEffect } from 'react';
 import { Recipent } from '../../types';
 import { useSelectedUser } from './SelectedUserContext';
 import { useSocket } from './SocketContext'
 import { MessageComponentType } from '../../types';
 import { lightTheme } from '../../themes/theme';
-
+import uploadToCloudinary from '../profile/UploadImage';
 
 interface MessageInputProps {
   recipent: Recipent | null,
@@ -44,6 +45,58 @@ const MessageInput: React.FC<MessageInputProps> = ({ recipent, isChatbot }) => {
   const { messages, setMessages, sendMessage, chatbotMessages, setChatbotMessages } = useSocket();
   const currentEmail = localStorage.getItem("email")
   const { selectedUserEmail } = useSelectedUser()
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+
+    const file = event.target.files?.[0]
+    if(file) {
+      const imageLink = await uploadToCloudinary(file)
+      const imageName = file.name
+      const newImage = {
+        "img": imageLink,
+        "title": imageName
+      }
+
+      const sentMessage = recipent
+        if(sentMessage){
+          sentMessage.content = message
+        }
+        console.log("recipent", sentMessage)
+
+      const newMessage: MessageComponentType = {
+        content: "",
+        timeStamp: new Date().toISOString(),
+        isSender: true,
+        isChatbot: false,
+        image: imageLink, // Set the uploaded image link
+      };
+  
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+
+
+      const url = `http://localhost:5000/api/v1/message/post?senderEmail=${currentEmail}&recipentEmail=${selectedUserEmail}&content=${message}&image=${imageLink}`
+        console.log("send Mesage", sentMessage)
+        sendMessage(sentMessage)
+        setMessage("")
+        try {
+          const response = await fetch(url)
+
+          if (!response.ok) {
+            console.log("Fail to post message")
+          }
+        } catch (e) {
+          console.log("Some errors happen", e)
+        }
+
+      console.log("link", imageLink)
+    } else {  
+      console.log("no file selected")
+    }
+    
+    if (file) {
+      console.log("File selected:", file);
+    }
+  };
 
   function convertMarkdownToHtml(input: string) {
     // Convert **bold** to <strong></strong>
@@ -174,7 +227,22 @@ const MessageInput: React.FC<MessageInputProps> = ({ recipent, isChatbot }) => {
 
         sx={{ display: 'flex', justifyContent: "space-around", alignItems: "center", padding: "0px 10px" }}>
         
-        <EmojiEmotionsOutlined sx={{ color: 'action.active', mr: 1, my: 0.5, flexGrow: 1 }} />
+        <div>
+            <label htmlFor="file-input">
+              {/* Round Upload Button */}
+              <IconButton component="span">
+                <AddIcon fontSize="large" />
+              </IconButton>
+            </label>
+
+            {/* Hidden File Input */}
+            <Input
+              id="file-input"
+              type="file"
+              style={{ display: "none" }}
+              onChange={handleFileChange}
+            />
+          </div>
         <TextField value={message}  onChange={(e) => setMessage(e.target.value)} id="input-with-sx" label="Type your message here" variant="standard" sx={{ flexGrow: 5 }} />
         <SendOutlined sx={{ color: 'action.active', mr: 1, my: 0.5, flexGrow: 1 }} />
       </Box>

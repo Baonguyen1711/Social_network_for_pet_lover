@@ -16,11 +16,11 @@ export interface Position {
   x: number;
   y: number;
 }
-export interface MessageComponentType {
-  content: string;
-  timeStamp: string;
-  isSender: boolean | undefined;
-}
+// export interface MessageComponentType {
+//   content: string;
+//   timeStamp: string;
+//   isSender: boolean | undefined;
+// }
 
 export interface RecentChat {
   _id: string;
@@ -41,11 +41,13 @@ export interface Recipent {
 }
 
 export interface MessageComponentType {
-  content: string;
-  timeStamp: string;
-  isSender: boolean | undefined;
-  isChatbot: boolean | undefined;
-}
+
+    content: string,
+    timeStamp: string,
+    isSender: boolean|undefined
+    isChatbot: boolean|undefined
+    image?: string
+  }
 
 export interface RecentChat {
   _id: string;

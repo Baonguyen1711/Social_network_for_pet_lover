@@ -1,6 +1,6 @@
 
 const User = require('../models/user')
-
+const Conversation = require('../models/Conversation')
 const Message = require('../models/Message')
 const mongoose = require('mongoose')
 const connectToDb = require('../../src/config/database/db')
@@ -231,20 +231,79 @@ class MessageController {
         try {
 
             connectToDb()
-            const {senderEmail, recipentEmail, content} = req.query
+            const {senderEmail, recipentEmail, content, image} = req.query
 
             const newMessage = new Message({
                 senderEmail: senderEmail,
                 recipentEmail: recipentEmail,
                 content: content,
                 sendAt: new Date(),
-                isDeleted: false
-
+                isDeleted: false,
+                image: image
             })
 
             await newMessage.save()
 
             return res.status(200)
+        } catch(e) {
+            console.log("Some erros happen", e)
+        }
+    }
+
+    async getConversation(req,res) {
+        try {
+
+            connectToDb()
+            const {senderEmail, recipentEmail} = req.query
+
+            const conversation = await Conversation.findOne({
+                'participant': { '$all': [senderEmail, recipentEmail] },
+              });
+            if(!conversation) {
+                return res.status(404).json({
+                    message: "no conversation found"
+                })
+            }
+            
+
+            return res.status(200).json({
+                "image": conversation.image,
+                "theme": conversation.theme
+            })
+        } catch(e) {
+            console.log("Some erros happen", e)
+        }
+    }
+
+
+    async postConversation(req,res) {
+        try {
+
+            connectToDb()
+            const {senderEmail, recipentEmail, image, theme} = req.body
+
+            const conversation = await Conversation.findOne({
+                'participant': { '$all': [senderEmail, recipentEmail] },
+              });
+            if(conversation) {
+                conversation.image = image
+                conversation.theme = theme
+
+                await conversation.save()
+            } else {
+                const newConversation = new Conversation({
+                    participant: [senderEmail, recipentEmail],
+                    image: image,
+                    theme: theme
+                })
+    
+                await newConversation.save()
+            }
+            
+
+            return res.status(200).json({
+                message: "update background image successfully"
+            })
         } catch(e) {
             console.log("Some erros happen", e)
         }
