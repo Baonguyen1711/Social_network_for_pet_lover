@@ -11,7 +11,9 @@ import { PostComment,IComment ,Post, UserInfo, User } from "../../types";
 import { Share } from "@mui/icons-material";
 import SendIcon from "@mui/icons-material/Send";
 import { getUserByUserId } from "../../sercives/api";
-
+import { handleGetPostByPostId } from "../../sercives/api";
+import { io, Socket } from 'socket.io-client';
+const socket = io('http://localhost:4000');
 interface Props {
   postId:string|undefined|null
   parentId?:string|undefined|null
@@ -56,6 +58,19 @@ const CommentBar = forwardRef<HTMLInputElement, Props>((props, ref) => {
           parentId: fields.parentId,
         }),
       });
+      const res = await handleGetPostByPostId(props.postId, localStorage.getItem("userId"))
+          const postOwnerEmail = res.userInfo.email
+          console.log("res", res)
+          const comment = {
+            "userEmail": localStorage.getItem("email"),
+            "postOwnerEmail": postOwnerEmail,
+            "postId": props.postId,
+            "type": "comment",
+          }
+      
+          socket.emit("newLike", comment)
+          const result = await response.json();
+        
       if (response.ok) {
         const data = await response.json()
         //console.log("dasdkajkasjdksdjasksajask",data.newComment)
