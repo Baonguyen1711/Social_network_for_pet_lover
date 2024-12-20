@@ -13,6 +13,7 @@ import SendIcon from "@mui/icons-material/Send";
 import { getUserByUserId } from "../../sercives/api";
 import { handleGetPostByPostId } from "../../sercives/api";
 import { io, Socket } from 'socket.io-client';
+import clsx from 'clsx'
 const socket = io('http://localhost:4000');
 interface Props {
   postId:string|undefined|null
@@ -42,8 +43,7 @@ const CommentBar = forwardRef<HTMLInputElement, Props>((props, ref) => {
     {
       return;
     }
-    console.log("dsadsajasdskdajkdjsadkjs",fields)
-    //setLoading(true);
+    
     try {
       const url = `http://localhost:5000/api/v1/comment/create`;
       const response = await fetch(url, {
@@ -69,11 +69,11 @@ const CommentBar = forwardRef<HTMLInputElement, Props>((props, ref) => {
           }
       
           socket.emit("newLike", comment)
-          const result = await response.json();
+          //const result = await res.json();
         
       if (response.ok) {
         const data = await response.json()
-        //console.log("dasdkajkasjdksdjasksajask",data.newComment)
+        //console.log("avcdf",data.newComment)
         props.onAddComment?.(data.newComment)
         //console.log("Comment posted successfully");
         setFields((prev)=>({ ...prev,content: "" }));
@@ -94,9 +94,9 @@ const CommentBar = forwardRef<HTMLInputElement, Props>((props, ref) => {
     }));
   };
   return (
-    <div className={style.container}>
+    <div className={clsx(style.container)}>
       <Avatar src={currentUser?.avatar} />
-      <div className={style.inputContent}>
+      <div className={clsx(style.inputContent)}>
         <TextField
           id="content"
           inputRef={ref}

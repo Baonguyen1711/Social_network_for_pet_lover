@@ -3,7 +3,7 @@
 const Pet = require("../models/Pet")
 const mongoose = require("mongoose");
 const { ObjectId } = require("mongodb");
-const User = require('../models/user')
+const User = require('../models/User')
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');//
 const connectToDb = require("../config/database/db");

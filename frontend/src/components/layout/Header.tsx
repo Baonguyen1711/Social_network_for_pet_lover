@@ -3,8 +3,9 @@ import { Box, Typography, Avatar, Link, Modal } from '@mui/material';
 import { Notifications } from '@mui/icons-material';
 import { lightTheme } from '../../themes/theme';
 import { useSocket } from '../message/SocketContext';
-
-
+import clsx from 'clsx'
+import style from './css/header.module.css'
+import { useNavigate } from 'react-router-dom';
 interface Props {
   updatePostsState: () => void;
 }
@@ -13,18 +14,18 @@ const Header: React.FC = () => {
   var avatarSrc = localStorage.getItem("userAvatar")
   const userId = localStorage.getItem("userId")
   const { hasNotification, likePostDetailed, setHasNotification } = useSocket()
-
   // State for modal visibility
   const [open, setOpen] = useState(false);
-  const [openModal, setOpenModal] = useState(false);
-  const handleOpenModal = () => setOpenModal(true);
-  const handleCloseModal = () => setOpenModal(false);
+  const [openDetailPostModal, setOpenDetailPostModal] = useState(false);
+  const handleOpenDetailPostModal = () => setOpenDetailPostModal(true);
+  const handleCloseDetailPostModal = () => setOpenDetailPostModal(false);
   // Modal handlers
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     setHasNotification(false)
     setOpen(false)
   };
+  const navigate = useNavigate();
   return (
     <>
       <Box
@@ -40,14 +41,15 @@ const Header: React.FC = () => {
           zIndex: 1000,
           fontFamily: "Helvetica",
           fontSize: "30px",
-          marginLeft: "50px",
+          paddingLeft: "50px",
           marginRight: "50px",
+          borderBottom:"1px solid #89966B"
         }}
       >
         {/* Left Side */}
-        <Typography>
-          𝓟𝓔𝓣𝓞𝓟𝓗𝓘𝓛𝓔
-        </Typography>
+        <div className={clsx(style.avatarContainer)} onClick={()=>{navigate('/home')}}>
+          <img src='https://res.cloudinary.com/dh6brjozr/image/upload/Brown_Black_Simple_Modern_Pet_Shop_Logo_hizos1.png'/>
+        </div>
 
         {/* Middle Box */}
         <Box
@@ -77,7 +79,6 @@ const Header: React.FC = () => {
               color: hasNotification ? "red" : "inherit", // Change color based on notification
             }}
             onClick={handleOpen} 
-            
           />
 
           <Modal open={open} onClose={handleClose}>

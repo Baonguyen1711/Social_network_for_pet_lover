@@ -143,16 +143,16 @@ const Comment: React.FC<Props> = (props) => {
   return (
     <>
       {!isHideComment ? (
-        <div className={style.container}>
+        <div className={clsx(style.container)}>
           <div onClick={handleNavigateToProfile}>
             <Avatar
               src={currentComment?.userInfo.avatar}
-              className={style.avatar}
+              className={clsx(style.avatar)}
             />
           </div>
-          <div className={style.containerRight}>
-            <div className={style.card}>
-              <div className={style.cardHeader}>
+          <div className={clsx(style.containerRight)}>
+            <div className={clsx(style.card)}>
+              <div className={clsx(style.cardHeader)}>
                 <h4
                   className={clsx(style.userName)}
                   onClick={handleNavigateToProfile}
@@ -162,7 +162,7 @@ const Comment: React.FC<Props> = (props) => {
                     props.comment?.userInfo.lastname}
                 </h4>
               </div>
-              <div className={style.cardBody}>
+              <div className={clsx(style.cardBody)}>
                 {isEditMode ? (
                   <TextField
                     ref={inputRef}
@@ -189,14 +189,14 @@ const Comment: React.FC<Props> = (props) => {
                     placeholder="Comment"
                   />
                 ) : (
-                  <p className={style.content}>{contentComment}</p>
+                  <p className={clsx(style.content)}>{contentComment}</p>
                 )}
               </div>
             </div>
-            <div className={style.cardFooter}>
+            <div className={clsx(style.cardFooter)}>
               {!isEditMode ? (
                 <>
-                  <div className={style.cardFooterActions}>
+                  <div className={clsx(style.cardFooterActions)}>
                     <p style={{ fontSize: "13px", marginTop: "1px" }}>
                       {currentComment?.createdAt &&
                         getTimeAgo(currentComment?.createdAt)}
@@ -210,7 +210,7 @@ const Comment: React.FC<Props> = (props) => {
                       Like
                     </button>
                     <button
-                      className={style.replyBtn + " " + style.btn}
+                      className={clsx(style.replyBtn,style.btn)}
                       onClick={() => {
                         if (props.level !== 3) setShowReplyBar(true);
                         else {

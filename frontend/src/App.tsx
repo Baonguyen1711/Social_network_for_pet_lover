@@ -25,6 +25,7 @@ import FavouritePostsDisplay from "./pages/favourite/FavouritePostsDisplay";
 import FavouritePetsDisplay from "./pages/favourite/FavouritePetsDisplay";
 import FavouriteGeneral from "./pages/favourite/FavouriteGeneralDisplay";
 import PostModal from "./components/favourite/post/PostModal";
+import PostPage from "./pages/post/PostPage";
 
 const App = () => {
   const location = useLocation();
@@ -45,6 +46,7 @@ const App = () => {
                 <Route path="/explore" element={<ProtectedRoutes element={<ExplorePage />} />}/>
                 <Route path="/home" element={<ProtectedRoutes element={<HomePage />} />}/>
                 <Route path="/favourite" element={<ProtectedRoutes element={<FavouritePage />} />}>
+                  <Route index element={<ProtectedRoutes element={<FavouriteGeneral />} />} />
                   <Route path="general" element={<ProtectedRoutes element={<FavouriteGeneral />} />} />
                   <Route path="posts" element={<ProtectedRoutes element={<FavouritePostsDisplay />} />} />
                   <Route path="pets" element={<ProtectedRoutes element={<FavouritePetsDisplay />} />}/>
@@ -54,6 +56,7 @@ const App = () => {
                   <Route path="posts" element={<ProtectedRoutes element={<PostsDisplay />} />} />
                   <Route path="pets" element={<ProtectedRoutes element={<PetsDisplay />} />} />
                 </Route>  
+                <Route path="/post/:postId" element={<ProtectedRoutes element={<PostPage />}/>}/>
               </Routes>
               {location.pathname !== "/login" &&
               location.pathname != "register" ? (

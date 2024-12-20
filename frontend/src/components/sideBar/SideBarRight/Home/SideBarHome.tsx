@@ -50,9 +50,6 @@ const SideBarHome = () => {
       }
     };
 
-
-
-
     const getAllUser = async () => {
       const url = `http://localhost:5000/api/v1/user/getAll`;
 
@@ -84,8 +81,7 @@ const SideBarHome = () => {
     debugger;
     const query = e.target.value;
     setSearchTerm(query);
-    console.log("userList", userList)
-    // Check if userList is not null or undefined
+    //console.log("userList", userList)
     if (userList && Array.isArray(userList)) {
       // Filter users based on search term
       if (query) {
@@ -104,13 +100,8 @@ const SideBarHome = () => {
     }
   };
   return (
-    // <div
-    //   className={clsx(style.container)}
-    //   style={{ position: "fixed", top: 0, height: "100vh", overflowY: "auto" }}
-    // >
-    <>
+    <div style={{padding:"8px 15px"}}>
       <SearchBar
-
         placeHolderString="Search for friend"
         value={searchTerm}
         onChange={handleSearch}
@@ -173,9 +164,7 @@ const SideBarHome = () => {
         </div>
         <CardUpCommingEvent />
       </div>
-    </>
-
-    // </div>
+    </div>
   )
 }
 

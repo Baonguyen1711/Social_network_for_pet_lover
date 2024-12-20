@@ -212,7 +212,7 @@ const PostInformationCard: React.FC<Props> = (props) => {
           </>
         }
         title={
-          <p className={style.userName} onClick={handleNavigateToProfile}>
+          <p className={clsx(style.userName)} onClick={handleNavigateToProfile}>
             {post?.userInfo.firstname + " " + post?.userInfo.lastname}
           </p>
         }
@@ -283,7 +283,7 @@ const PostInformationCard: React.FC<Props> = (props) => {
             {post?.isLiked ? <ThumbUp color="primary" /> : <ThumbUp />}
           </IconButton>
           <div onClick={handleOpenDetailLikes}>
-            <Typography variant="body2" className={style.countLike}>
+            <Typography variant="body2" className={clsx(style.countLike)}>
               {post && post.likedUserInfo.length > 0
                 ? `${
                     post.isLiked

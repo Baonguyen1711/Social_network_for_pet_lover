@@ -464,7 +464,7 @@ class PostController {
   async getPostById(req, res) {
     try {
       const {postId,userAccessId} = req.query;
-      console.log("dsdskdsdsdaddddddskjasdjkdsa",postId,userAccessId)
+      console.log("abcdfzzxx",postId,userAccessId)
       if (!ObjectId.isValid(postId)&&!ObjectId.isValid(userAccessId)) {
         return res.status(400).json({ error: "Invalid userAccessId,postId format", userAccessId,postId });
       }

@@ -69,7 +69,7 @@ const ProposalCommentContainer: React.FC<Props> = (props) => {
           onClick={() => {
             setIsWatchMoreComment(true);
           }}
-          className={style.userName}
+          className={clsx(style.userName)}
         >
           {props.newCommentsArray &&
           props.newCommentsArray.length > 0 &&
@@ -81,8 +81,8 @@ const ProposalCommentContainer: React.FC<Props> = (props) => {
             : ""}
         </div>
       ) : (
-        <div className={style.container}>
-          <div className={style.firstComment}>
+        <div className={clsx(style.container)}>
+          <div className={clsx(style.firstComment)}>
             {comments &&
               comments.map((comment) => (
                 <ProposalComment
