@@ -1,4 +1,7 @@
 import React from "react";
+import { useSocket } from "../components/message/SocketContext"
+import { io, Socket } from 'socket.io-client';
+const socket = io('http://localhost:4000');
 
 export const register = (body: object) => {
   const url = "http://127.0.0.1:5000/api/v1/register";
@@ -67,6 +70,7 @@ export async function checkFollowed(
 }
 export async function handleLikePost(postId: string | undefined) {
   if (postId == undefined) return;
+
   try {
     const response = await fetch("http://localhost:5000/api/v1/like/likepost", {
       method: "POST",
@@ -83,6 +87,8 @@ export async function handleLikePost(postId: string | undefined) {
       throw new Error("Failed to like post");
     }
     const result = await response.json();
+
+
     return result;
   } catch (e) {
     console.error(e);
@@ -102,9 +108,9 @@ export async function handleGetFavouritedPetByUserId() {
       throw new Error("Failed to like post");
     }
     const result = await response.json();
-    if(result.pets.length>0) //FavouritePet
-    return result.pets;
-  return null;
+    if (result.pets.length > 0) //FavouritePet
+      return result.pets;
+    return null;
   } catch (e) {
     console.error(e);
   }
@@ -135,8 +141,7 @@ export async function createPetUserRelationship(
   }
 }
 
-export async function handleDeletePetUserById (petUserId:String|undefined)
-{
+export async function handleDeletePetUserById(petUserId: String | undefined) {
   if (petUserId === undefined) return;
   try {
     const response = await fetch(
@@ -156,9 +161,8 @@ export async function handleDeletePetUserById (petUserId:String|undefined)
   }
 }
 
-export async function isChecked (userId:string|undefined|null,petId:string)
-{
-  if (userId === undefined||petId === undefined) return;
+export async function isChecked(userId: string | undefined | null, petId: string) {
+  if (userId === undefined || petId === undefined) return;
   try {
     const response = await fetch(
       `http://localhost:5000/api/v1/petuser/checksaved?userId=${userId}&petId=${petId}`,
@@ -179,7 +183,7 @@ export async function isChecked (userId:string|undefined|null,petId:string)
 
 //FavvouritePost
 export async function createPostUserRelationship(
-  postId: string | null|undefined
+  postId: string | null | undefined
 ) {
   if (postId === undefined) return;
   try {
@@ -216,16 +220,15 @@ export async function handleGetFavouritedPostByUserId() {
       throw new Error("Failed to like post");
     }
     const result = await response.json();
-    if(result.posts.length > 0) //FavouritePet
-    return result.posts;
-  return null;
+    if (result.posts.length > 0) //FavouritePet
+      return result.posts;
+    return null;
   } catch (e) {
     console.error(e);
   }
 }
 
-export async function handleDeletePostUserById (postUserId:String|undefined)
-{
+export async function handleDeletePostUserById(postUserId: String | undefined) {
   if (postUserId === undefined) return;
   try {
     const response = await fetch(
@@ -245,8 +248,7 @@ export async function handleDeletePostUserById (postUserId:String|undefined)
   }
 }
 
-export async function handleGetPostByPostId(postId:String|null|undefined,userId:string|null)
-{
+export async function handleGetPostByPostId(postId: String | null | undefined, userId: string | null) {
   if (postId === undefined) return;
   try {
     const response = await fetch(
@@ -266,9 +268,7 @@ export async function handleGetPostByPostId(postId:String|null|undefined,userId:
   }
 }
 
-export async function handleLikeAPI(postId:string|undefined,type:string  )
-{
-
+export async function handleLikeAPI(postId: string | undefined, type: string) {
   try {
     const response = await fetch(
       "http://localhost:5000/api/v1/like/likepost",
@@ -287,6 +287,19 @@ export async function handleLikeAPI(postId:string|undefined,type:string  )
     if (!response.ok) {
       throw new Error("Failed to like post");
     }
+
+    debugger;
+    const res = await handleGetPostByPostId(postId, localStorage.getItem("userId"))
+    const postOwnerEmail = res.userInfo.email
+    console.log("res", res)
+    const like = {
+      "userEmail": localStorage.getItem("email"),
+      "postOwnerEmail": postOwnerEmail,
+      "postId": postId,
+      "type": "like",
+    }
+
+    socket.emit("newLike", like)
     const result = await response.json();
     //setCurrentPost(result.updatedPost);
     //setPost(result.updatedPost);
@@ -297,8 +310,7 @@ export async function handleLikeAPI(postId:string|undefined,type:string  )
   }
 }
 
-export async function handleDeleteCommentAPI(commentId:string|undefined)
-{
+export async function handleDeleteCommentAPI(commentId: string | undefined) {
   try {
     const response = await fetch(
       `http://localhost:5000/api/v1/comment/delete?commentId=${commentId}`,
@@ -307,7 +319,7 @@ export async function handleDeleteCommentAPI(commentId:string|undefined)
         headers: {
           "Content-Type": "application/json",
         },
-        
+
       }
     );
     if (!response.ok) {
@@ -320,8 +332,7 @@ export async function handleDeleteCommentAPI(commentId:string|undefined)
   }
 }
 
-export async function handleUpdateNameAPI(lastName:String|undefined,firstName:String|undefined,userId:String|undefined)
-{
+export async function handleUpdateNameAPI(lastName: String | undefined, firstName: String | undefined, userId: String | undefined) {
   try {
     const response = await fetch(
       `http://localhost:5000/api/v1/user/updatename`,
@@ -347,8 +358,7 @@ export async function handleUpdateNameAPI(lastName:String|undefined,firstName:St
   }
 }
 
-export async function handleUpdateDescriptionAPI(description:String|undefined,userId:String|undefined)
-{
+export async function handleUpdateDescriptionAPI(description: String | undefined, userId: String | undefined) {
   try {
     const response = await fetch(
       `http://localhost:5000/api/v1/user/updatedescription`,
@@ -373,8 +383,7 @@ export async function handleUpdateDescriptionAPI(description:String|undefined,us
   }
 }
 
-export async function handleUpdateAvatarAPI(imageUrl:String|undefined,userId:String|undefined)
-{
+export async function handleUpdateAvatarAPI(imageUrl: String | undefined, userId: String | undefined) {
   try {
     const response = await fetch(
       `http://localhost:5000/api/v1/user/updateAvatar`,
@@ -399,8 +408,7 @@ export async function handleUpdateAvatarAPI(imageUrl:String|undefined,userId:Str
   }
 }
 
-export async function handleUpdatePostAPI(title:String|undefined,content:String|undefined,images:String[],postId:String|undefined)
-{
+export async function handleUpdatePostAPI(title: String | undefined, content: String | undefined, images: String[], postId: String | undefined) {
   //console.log("images",images)
   try {
     const response = await fetch(
@@ -413,8 +421,8 @@ export async function handleUpdatePostAPI(title:String|undefined,content:String|
         body: JSON.stringify({
           postId: postId,
           title: title,
-          content:content,
-          images:images
+          content: content,
+          images: images
         }),
       }
     );
@@ -428,8 +436,7 @@ export async function handleUpdatePostAPI(title:String|undefined,content:String|
   }
 }
 
-export async function handleUpdateCommentAPI(content:String|undefined,commentId:String|undefined)
-{
+export async function handleUpdateCommentAPI(content: String | undefined, commentId: String | undefined) {
   //console.log("images",images)
   try {
     const response = await fetch(
@@ -440,8 +447,8 @@ export async function handleUpdateCommentAPI(content:String|undefined,commentId:
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          contentComment:content,
-          commentId:commentId
+          contentComment: content,
+          commentId: commentId
         }),
       }
     );

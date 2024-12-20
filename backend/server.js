@@ -57,6 +57,20 @@ io.on("connection", (socket) => {
         })
 
     })
+
+    socket.on("newLike", (like) => {
+      console.log("new Like", like)
+      const recipentId = userRegistration[like.postOwnerEmail]
+      console.log("userRegistration", userRegistration)
+      console.log("like.postOwnerEmail", like.postOwnerEmail)
+      console.log("new like recipent id", recipentId)
+      socket.to(recipentId).emit("newLikeOnPost", {
+          "user": like.userEmail,
+          "postId": like.postId,
+          "type": like.type
+      })
+
+  })
   
     socket.on('disconnect', () => {
       console.log('A user disconnected');
