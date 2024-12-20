@@ -13,12 +13,11 @@ const Header: React.FC = () => {
   var avatarSrc = localStorage.getItem("userAvatar")
   const userId = localStorage.getItem("userId")
   const { hasNotification, likePostDetailed, setHasNotification } = useSocket()
-
   // State for modal visibility
   const [open, setOpen] = useState(false);
-  const [openModal, setOpenModal] = useState(false);
-  const handleOpenModal = () => setOpenModal(true);
-  const handleCloseModal = () => setOpenModal(false);
+  const [openDetailPostModal, setOpenDetailPostModal] = useState(false);
+  const handleOpenDetailPostModal = () => setOpenDetailPostModal(true);
+  const handleCloseDetailPostModal = () => setOpenDetailPostModal(false);
   // Modal handlers
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
@@ -40,8 +39,9 @@ const Header: React.FC = () => {
           zIndex: 1000,
           fontFamily: "Helvetica",
           fontSize: "30px",
-          marginLeft: "50px",
+          paddingLeft: "50px",
           marginRight: "50px",
+          borderBottom:"1px solid #89966B"
         }}
       >
         {/* Left Side */}

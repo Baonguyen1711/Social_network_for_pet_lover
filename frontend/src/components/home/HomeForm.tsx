@@ -22,13 +22,13 @@ const HomeForm = () => {
     const userId = localStorage.getItem("userId")
     setUserData(await getUserByUserId(userId));
   };
-  const updatePostsState = async (returnPost: Post | undefined) => {
-    try {
-      await fetchData();
-    } catch (error) {
-      console.error("Error updating post state:", error);
-    }
-  };
+  // const updatePostsState = async (returnPost: Post | undefined) => {
+  //   try {
+  //     await fetchData();
+  //   } catch (error) {
+  //     console.error("Error updating post state:", error);
+  //   }
+  // };
   return (
     <div className={style.coverContainer}>
       <div className={style.bodyContainer}>
