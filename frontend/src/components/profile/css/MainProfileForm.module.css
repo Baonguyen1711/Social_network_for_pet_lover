@@ -1,7 +1,6 @@
 .coverContainer {
     display: flex;
     top: 0;
-    height: 100%;
     width:100%;
     background-color: #89966B;
 }
@@ -47,6 +46,10 @@
 }
 
 .navbar a:hover::before {
+    width: 100%;
+}
+
+.navbar .active::before {
     width: 100%;
 }
 

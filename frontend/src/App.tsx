@@ -24,8 +24,9 @@ import { Favorite } from "@mui/icons-material";
 import FavouritePostsDisplay from "./pages/favourite/FavouritePostsDisplay";
 import FavouritePetsDisplay from "./pages/favourite/FavouritePetsDisplay";
 import FavouriteGeneral from "./pages/favourite/FavouriteGeneralDisplay";
-import PostModal from "./components/favourite/post/PostModal";
 import PostPage from "./pages/post/PostPage";
+import FollowingDisplay from "./components/profile/Following/FollowingDisplay";
+import FollowerDisplay from "./components/profile/Following/FollowerDisplay";
 
 const App = () => {
   const location = useLocation();
@@ -55,6 +56,8 @@ const App = () => {
                   <Route index element={<ProtectedRoutes element={<PostsDisplay />} />} />
                   <Route path="posts" element={<ProtectedRoutes element={<PostsDisplay />} />} />
                   <Route path="pets" element={<ProtectedRoutes element={<PetsDisplay />} />} />
+                  <Route path="following" element={<ProtectedRoutes element={<FollowingDisplay />} />} />
+                  <Route path="follower" element={<ProtectedRoutes element={<FollowerDisplay />} />} />
                 </Route>  
                 <Route path="/post/:postId" element={<ProtectedRoutes element={<PostPage />}/>}/>
               </Routes>

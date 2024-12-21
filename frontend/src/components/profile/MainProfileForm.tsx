@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from "react";
 import ProfileContainer from "./ProfileContainer";
+import clsx from 'clsx'
 import style from "./css/MainProfileForm.module.css";
-import { Outlet, Link,useParams } from "react-router-dom";
+import { Outlet, Link, useParams, useLocation } from "react-router-dom";
 import { User } from "../../types";
 import { AccessUrlContext, AccessUrlProvider } from "./AccessUrlContext";
 
 const MainProfileForm: React.FC = () => {
   const { userId } = useParams();
-  const [userEmail, setUserEmail] = useState<string>("")
-  const [userData,setUserData] = useState<User>()
+  const [userEmail, setUserEmail] = useState<string>("");
+  const [userData, setUserData] = useState<User>();
+  const location = useLocation();
+  const pathParts = location.pathname.split('/');
+  const lastPart = pathParts[pathParts.length - 1];
   useEffect(() => {
-    const fetchData = async () => { 
+    const fetchData = async () => {
       debugger;
       const url = `http://localhost:5000/api/v1/user/getbyid/${userId}`;
       try {
@@ -22,8 +26,8 @@ const MainProfileForm: React.FC = () => {
         }
         const data = await response.json();
         setUserData(data.user);
-        setUserEmail(data.user.email)
-      } catch (e) { 
+        setUserEmail(data.user.email);
+      } catch (e) {
         console.error("Error fetching data:", e);
       }
     };
@@ -36,18 +40,49 @@ const MainProfileForm: React.FC = () => {
         <ProfileContainer userData={userData} />
         <nav className={style.navbar}>
           <a>
-            <Link to={`/profile/${userId}/posts`} className={style.link}>Posts</Link>
+            <Link to={`/profile/${userId}/posts`} className={clsx(style.link,{
+              [style.active]: lastPart === 'posts',
+            })}>
+              Posts
+            </Link>
           </a>
           <a>
-            <Link to={`/profile/${userId}/pets`} className={style.link}>Pets</Link>
+            <Link to={`/profile/${userId}/pets`} className={clsx(style.link,{
+              [style.active]: lastPart === 'pets',
+            })}>
+              Pets
+            </Link>
+          </a>
+          {userId !== localStorage.getItem("userId") ? (
+            <a>
+              <Link to={`/message/${userEmail}`} className={clsx(style.link,{
+              [style.active]: lastPart === 'pets',
+            })}>
+                Message
+              </Link>
+            </a>
+          ) : (
+            ""
+          )}
+
+          <a>
+            <Link to={`/profile/${userId}/following`} className={clsx(style.link,{
+              [style.active]: lastPart === 'following',
+            })}>
+              Following
+            </Link>
           </a>
           <a>
-            <Link to={`/message/${userEmail}`} className={style.link}>Message</Link>
+            <Link to={`/profile/${userId}/follower`} className={clsx(style.link,{
+              [style.active]: lastPart === 'follower',
+            })}>
+              UserFollower
+            </Link>
           </a>
         </nav>
         <div className={style.layout}>
-          <AccessUrlProvider type="profile"  TargetUserId={userId}>
-          <Outlet />
+          <AccessUrlProvider type="profile" TargetUserId={userId}>
+            <Outlet />
           </AccessUrlProvider>
         </div>
       </div>

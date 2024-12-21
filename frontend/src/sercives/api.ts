@@ -1,7 +1,7 @@
 import React from "react";
-import { useSocket } from "../components/message/SocketContext"
-import { io, Socket } from 'socket.io-client';
-const socket = io('http://localhost:4000');
+import { useSocket } from "../components/message/SocketContext";
+import { io, Socket } from "socket.io-client";
+const socket = io("http://localhost:4000");
 
 export const register = (body: object) => {
   const url = "http://127.0.0.1:5000/api/v1/register";
@@ -88,7 +88,6 @@ export async function handleLikePost(postId: string | undefined) {
     }
     const result = await response.json();
 
-
     return result;
   } catch (e) {
     console.error(e);
@@ -108,7 +107,8 @@ export async function handleGetFavouritedPetByUserId() {
       throw new Error("Failed to like post");
     }
     const result = await response.json();
-    if (result.pets.length > 0) //FavouritePet
+    if (result.pets.length > 0)
+      //FavouritePet
       return result.pets;
     return null;
   } catch (e) {
@@ -116,21 +116,22 @@ export async function handleGetFavouritedPetByUserId() {
   }
 }
 
-export async function createPetUserRelationship(
-  petId: string | null
-) {
+export async function createPetUserRelationship(petId: string | null) {
   if (petId === undefined) return;
   try {
-    const response = await fetch("http://localhost:5000/api/v1/petuser/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userId: localStorage.getItem("userId"),
-        petId: petId,
-      }),
-    });
+    const response = await fetch(
+      "http://localhost:5000/api/v1/petuser/create",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: localStorage.getItem("userId"),
+          petId: petId,
+        }),
+      }
+    );
     if (!response.ok) {
       throw new Error("Failed to create petuser");
     }
@@ -161,7 +162,10 @@ export async function handleDeletePetUserById(petUserId: String | undefined) {
   }
 }
 
-export async function isChecked(userId: string | undefined | null, petId: string) {
+export async function isChecked(
+  userId: string | undefined | null,
+  petId: string
+) {
   if (userId === undefined || petId === undefined) return;
   try {
     const response = await fetch(
@@ -187,16 +191,19 @@ export async function createPostUserRelationship(
 ) {
   if (postId === undefined) return;
   try {
-    const response = await fetch("http://localhost:5000/api/v1/postuser/toggleSave", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userId: localStorage.getItem("userId"),
-        postId: postId,
-      }),
-    });
+    const response = await fetch(
+      "http://localhost:5000/api/v1/postuser/toggleSave",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: localStorage.getItem("userId"),
+          postId: postId,
+        }),
+      }
+    );
     if (!response.ok) {
       throw new Error("Failed to create postuser");
     }
@@ -208,7 +215,7 @@ export async function createPostUserRelationship(
 }
 export async function handleGetFavouritedPostByUserId() {
   const userId = localStorage.getItem("userId");
-  console.log("sdsda")
+  console.log("sdsda");
   try {
     const response = await fetch(
       `http://localhost:5000/api/v1/postuser/favourited/getbyuserid?userId=${userId}`,
@@ -220,7 +227,8 @@ export async function handleGetFavouritedPostByUserId() {
       throw new Error("Failed to like post");
     }
     const result = await response.json();
-    if (result.posts.length > 0) //FavouritePet
+    if (result.posts.length > 0)
+      //FavouritePet
       return result.posts;
     return null;
   } catch (e) {
@@ -248,7 +256,10 @@ export async function handleDeletePostUserById(postUserId: String | undefined) {
   }
 }
 
-export async function handleGetPostByPostId(postId: String | null | undefined, userId: string | null) {
+export async function handleGetPostByPostId(
+  postId: String | null | undefined,
+  userId: string | null
+) {
   if (postId === undefined) return;
   try {
     const response = await fetch(
@@ -270,41 +281,41 @@ export async function handleGetPostByPostId(postId: String | null | undefined, u
 
 export async function handleLikeAPI(postId: string | undefined, type: string) {
   try {
-    const response = await fetch(
-      "http://localhost:5000/api/v1/like/likepost",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: localStorage.getItem("userId"),
-          targetId: postId,
-          targetType: type,
-        }),
-      }
-    );
+    const response = await fetch("http://localhost:5000/api/v1/like/likepost", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: localStorage.getItem("userId"),
+        targetId: postId,
+        targetType: type,
+      }),
+    });
     if (!response.ok) {
       throw new Error("Failed to like post");
     }
 
     debugger;
-    const res = await handleGetPostByPostId(postId, localStorage.getItem("userId"))
-    const postOwnerEmail = res.userInfo.email
-    console.log("res", res)
+    const res = await handleGetPostByPostId(
+      postId,
+      localStorage.getItem("userId")
+    );
+    const postOwnerEmail = res.userInfo.email;
+    console.log("res", res);
     const like = {
-      "userEmail": localStorage.getItem("email"),
-      "postOwnerEmail": postOwnerEmail,
-      "postId": postId,
-      "type": "like",
-    }
+      userEmail: localStorage.getItem("email"),
+      postOwnerEmail: postOwnerEmail,
+      postId: postId,
+      type: "like",
+    };
 
-    socket.emit("newLike", like)
+    socket.emit("newLike", like);
     const result = await response.json();
     //setCurrentPost(result.updatedPost);
     //setPost(result.updatedPost);
     //setIsLiked(result.updatedPost.isLiked)
-    return result
+    return result;
   } catch (e) {
     console.error(e);
   }
@@ -319,20 +330,23 @@ export async function handleDeleteCommentAPI(commentId: string | undefined) {
         headers: {
           "Content-Type": "application/json",
         },
-
       }
     );
     if (!response.ok) {
       throw new Error("Failed to comment post");
     }
     const result = await response.json();
-    return result
+    return result;
   } catch (e) {
     console.error(e);
   }
 }
 
-export async function handleUpdateNameAPI(lastName: String | undefined, firstName: String | undefined, userId: String | undefined) {
+export async function handleUpdateNameAPI(
+  lastName: String | undefined,
+  firstName: String | undefined,
+  userId: String | undefined
+) {
   try {
     const response = await fetch(
       `http://localhost:5000/api/v1/user/updatename`,
@@ -352,13 +366,16 @@ export async function handleUpdateNameAPI(lastName: String | undefined, firstNam
       throw new Error("Failed to comment post");
     }
     const result = await response.json();
-    return result
+    return result;
   } catch (e) {
     console.error(e);
   }
 }
 
-export async function handleUpdateDescriptionAPI(description: String | undefined, userId: String | undefined) {
+export async function handleUpdateDescriptionAPI(
+  description: String | undefined,
+  userId: String | undefined
+) {
   try {
     const response = await fetch(
       `http://localhost:5000/api/v1/user/updatedescription`,
@@ -377,13 +394,16 @@ export async function handleUpdateDescriptionAPI(description: String | undefined
       throw new Error("Failed to comment post");
     }
     const result = await response.json();
-    return result
+    return result;
   } catch (e) {
     console.error(e);
   }
 }
 
-export async function handleUpdateAvatarAPI(imageUrl: String | undefined, userId: String | undefined) {
+export async function handleUpdateAvatarAPI(
+  imageUrl: String | undefined,
+  userId: String | undefined
+) {
   try {
     const response = await fetch(
       `http://localhost:5000/api/v1/user/updateAvatar`,
@@ -402,13 +422,18 @@ export async function handleUpdateAvatarAPI(imageUrl: String | undefined, userId
       throw new Error("Failed to comment post");
     }
     const result = await response.json();
-    return result
+    return result;
   } catch (e) {
     console.error(e);
   }
 }
 
-export async function handleUpdatePostAPI(title: String | undefined, content: String | undefined, images: String[], postId: String | undefined) {
+export async function handleUpdatePostAPI(
+  title: String | undefined,
+  content: String | undefined,
+  images: String[],
+  postId: String | undefined
+) {
   //console.log("images",images)
   try {
     const response = await fetch(
@@ -422,7 +447,7 @@ export async function handleUpdatePostAPI(title: String | undefined, content: St
           postId: postId,
           title: title,
           content: content,
-          images: images
+          images: images,
         }),
       }
     );
@@ -430,13 +455,16 @@ export async function handleUpdatePostAPI(title: String | undefined, content: St
       throw new Error("Failed to comment post");
     }
     const result = await response.json();
-    return result
+    return result;
   } catch (e) {
     console.error(e);
   }
 }
 
-export async function handleUpdateCommentAPI(content: String | undefined, commentId: String | undefined) {
+export async function handleUpdateCommentAPI(
+  content: String | undefined,
+  commentId: String | undefined
+) {
   //console.log("images",images)
   try {
     const response = await fetch(
@@ -448,7 +476,7 @@ export async function handleUpdateCommentAPI(content: String | undefined, commen
         },
         body: JSON.stringify({
           contentComment: content,
-          commentId: commentId
+          commentId: commentId,
         }),
       }
     );
@@ -456,8 +484,73 @@ export async function handleUpdateCommentAPI(content: String | undefined, commen
       throw new Error("Failed to updateComment");
     }
     const result = await response.json();
-    return result
+    return result;
   } catch (e) {
     console.error(e);
   }
 }
+
+export async function handleGetFollowingByUserId(userId: string|null|undefined,searchString:string|null="") {
+  try {
+    const response = await fetch(
+      `http://localhost:5000/api/v1/follow/getfollowingbyuserid?followerId=${userId}&searchString=${searchString}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        }
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to getFollowingUsers");
+    }
+    const result = await response.json();
+    return result.followingUsers;
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+export async function handleGetFollowerByUserId(userId: string|null|undefined,searchString:string|null="") {
+  try {
+    const response = await fetch(
+      `http://localhost:5000/api/v1/follow/getfollowerbyuserid?followingId=${userId}&searchString=${searchString}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        }
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to getFollowingUsers");
+    }
+    const result = await response.json();
+    return result.followerUsers;
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+export async function handleDeleteFollow(followerId: string|undefined,followingId:string|undefined)
+{
+  try {
+    const response = await fetch(
+      `http://localhost:5000/api/v1/follow/deletefollow?followerId=${followerId}&followingId=${followingId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        }
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to getFollowingUsers");
+    }
+    const result = await response.json();
+    return result.unfollowInfo;
+  } catch (e) {
+    console.error(e);
+  }
+}
+

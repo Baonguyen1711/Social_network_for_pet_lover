@@ -21,10 +21,10 @@ const FollowsSchema = new mongoose.Schema({
         type:Boolean,
         require:true
     },
-    isIgnore: {
-        type:Boolean,
-        require:true
-    }
+    // isIgnore: {
+    //     type:Boolean,
+    //     require:true
+    // }
 })
 
 
