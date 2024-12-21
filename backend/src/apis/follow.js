@@ -9,6 +9,8 @@ router.use(express.json())
 router.use('/create', followController.createFollow)
 router.use('/ignore', followController.createIgnore)
 router.use('/isfollowed', followController.isFollowed)
-
+router.use('/getfollowingbyuserid', followController.getFollowingByUserId)
+router.use('/getfollowerbyuserid', followController.getFollowerByUserId)
+router.use('/deletefollow',followController.deleteFollow)
 router.use('/recommentfollow/:followerId', followController.getNotFollows)
 module.exports = router

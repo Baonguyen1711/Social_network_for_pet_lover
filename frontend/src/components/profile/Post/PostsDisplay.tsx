@@ -53,9 +53,9 @@ const PostsDisplay = () => {
       console.error("Error fetching data:", e);
     }
   };
-  const handleHide = () => {
-    console.log("Hide clicked");
-  };
+  // const handleHide = () => {
+  //   console.log("Hide clicked");
+  // };
   return (
     <Box sx={{ width: "100", mx: "auto", mt: 4 }}>
       {/* Top post input area */}
