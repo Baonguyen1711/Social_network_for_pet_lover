@@ -1,29 +1,31 @@
-import React, { useState } from 'react';
-import { Box, Typography, Avatar, Link, Modal } from '@mui/material';
-import { Notifications } from '@mui/icons-material';
-import { lightTheme } from '../../themes/theme';
-import { useSocket } from '../message/SocketContext';
-import clsx from 'clsx'
-import style from './css/header.module.css'
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { Box, Typography, Avatar, Link, Modal } from "@mui/material";
+import { Notifications } from "@mui/icons-material";
+import { lightTheme } from "../../themes/theme";
+import { useSocket } from "../message/SocketContext";
+import clsx from "clsx";
+import style from "./css/header.module.css";
+import { useNavigate } from "react-router-dom";
+import SearchHeader from "../search/SearchHeader";
 interface Props {
   updatePostsState: () => void;
 }
 
 const Header: React.FC = () => {
-  var avatarSrc = localStorage.getItem("userAvatar")
-  const userId = localStorage.getItem("userId")
-  const { hasNotification, likePostDetailed, setHasNotification } = useSocket()
+  var avatarSrc = localStorage.getItem("userAvatar");
+  const userId = localStorage.getItem("userId");
+  const { hasNotification, likePostDetailed, setHasNotification } = useSocket();
   // State for modal visibility
   const [open, setOpen] = useState(false);
   const [openDetailPostModal, setOpenDetailPostModal] = useState(false);
   const handleOpenDetailPostModal = () => setOpenDetailPostModal(true);
   const handleCloseDetailPostModal = () => setOpenDetailPostModal(false);
+  
   // Modal handlers
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
-    setHasNotification(false)
-    setOpen(false)
+    setHasNotification(false);
+    setOpen(false);
   };
   const navigate = useNavigate();
   return (
@@ -41,28 +43,30 @@ const Header: React.FC = () => {
           zIndex: 1000,
           fontFamily: "Helvetica",
           fontSize: "30px",
-          paddingLeft: "50px",
-          marginRight: "50px",
-          borderBottom:"1px solid #89966B"
+          paddingLeft: "15px",
+          marginRight: "30px",
+          borderBottom: "1px solid #89966B",
         }}
       >
         {/* Left Side */}
-        <div className={clsx(style.avatarContainer)} onClick={()=>{navigate('/home')}}>
-          <img src='https://res.cloudinary.com/dh6brjozr/image/upload/Brown_Black_Simple_Modern_Pet_Shop_Logo_hizos1.png'/>
+        <div
+          className={clsx(style.avatarContainer)}
+          onClick={() => {
+            navigate("/home");
+          }}
+        >
+          <img src="https://res.cloudinary.com/dh6brjozr/image/upload/Brown_Black_Simple_Modern_Pet_Shop_Logo_hizos1.png" />
         </div>
-
         {/* Middle Box */}
         <Box
           sx={{
             flexGrow: 1, // Allows it to expand and take up the middle space
             display: "flex",
-            justifyContent: "center", // Centers content horizontally
+            justifyContent: "left", // Centers content horizontally
             alignItems: "center", // Centers content vertically
           }}
         >
-          <Typography>
-
-          </Typography>
+          <SearchHeader/>
         </Box>
 
         {/* Right Side */}
@@ -71,14 +75,14 @@ const Header: React.FC = () => {
             display: "flex",
             alignItems: "center",
             gap: "20px",
-            minWidth: "200px" // Add spacing between notifications and avatar
+            minWidth: "200px", // Add spacing between notifications and avatar
           }}
         >
           <Notifications
             sx={{
               color: hasNotification ? "red" : "inherit", // Change color based on notification
             }}
-            onClick={handleOpen} 
+            onClick={handleOpen}
           />
 
           <Modal open={open} onClose={handleClose}>
@@ -99,12 +103,11 @@ const Header: React.FC = () => {
                 Notifications
               </Typography>
               {likePostDetailed ? (
-
                 <Box
                   sx={{
                     display: "flex",
                     alignItems: "center",
-                    mb: 2
+                    mb: 2,
                   }}
                 >
                   {/* User Avatar */}
@@ -114,7 +117,7 @@ const Header: React.FC = () => {
                     sx={{
                       width: 40,
                       height: 40,
-                      mr: 2 
+                      mr: 2,
                     }}
                   />
 
@@ -127,10 +130,7 @@ const Header: React.FC = () => {
                       {new Date(likePostDetailed.time).toLocaleString()}
                     </Typography>
                   </Box>
-
-
                 </Box>
-                
               ) : (
                 <Typography>No new notifications.</Typography>
               )}
@@ -145,14 +145,9 @@ const Header: React.FC = () => {
               }}
             />
           </Link>
-
         </Box>
       </Box>
-
-
     </>
-
-
   );
 };
 

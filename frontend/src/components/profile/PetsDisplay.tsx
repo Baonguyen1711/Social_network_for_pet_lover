@@ -38,7 +38,7 @@ const PetsDisplay = () => {
   };
   useEffect(() => {
     fetchData(); // Call fetchData inside useEffect
-  }, []);
+  }, [userId]);
   const fetchData = async () => {
     //console.log("sdsksjsj",userId)
     const url = `http://localhost:5000/api/v1/pet/getbyuserid?userId=${userId}`;

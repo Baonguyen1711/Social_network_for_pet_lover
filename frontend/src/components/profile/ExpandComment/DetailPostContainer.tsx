@@ -30,12 +30,15 @@ import {
   Comment,
 } from "@mui/icons-material";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
-
+import clsx from "clsx";
 import { getTimeAgo } from "../../../helper";
 import { IComment, Post } from "../../../types";
 import CommentBar from "../CommentBar";
 import EditPostTool from "../Post/EditPostTool";
 import Confirmation from "../../comfirmation/Confirmation";
+import DetaiLikesModal from "../Post/DetailLikesModal";
+
+import style from "../css/DetailPostContainer.module.css";
 interface props {
   open: boolean;
   handleClose?: () => void;
@@ -62,6 +65,10 @@ const DetailPostContainer: React.FC<props> = ({
     message: "",
     open: false,
   });
+  const [openDetailLikes, setOpenDetailLikes] = useState(false);
+  const handleCloseDetailLikes = () => {
+    setOpenDetailLikes(false);
+  };
   //const [bonusComment, setBonusComment] = useState<IComment>();
   const handleAddComment = (newComment: IComment | undefined) => {
     if (!newComment) return;
@@ -270,16 +277,20 @@ const DetailPostContainer: React.FC<props> = ({
                   <IconButton onClick={handleLike}>
                     {post?.isLiked ? <ThumbUp color="primary" /> : <ThumbUp />}
                   </IconButton>
-                  <Typography variant="body2">
-                    {post && post.likedUserInfo.length > 0
-                      ? post.isLiked
-                        ? post.likedUserInfo.length > 1
-                          ? `You and ${post.likedUserInfo.length - 1} other${
-                              post.likedUserInfo.length - 1 > 1 ? "s" : ""
-                            }`
-                          : "You"
-                        : `${post.likedUserInfo[0]?.firstname} ${
-                            post.likedUserInfo[0]?.lastname
+                  <div
+                    onClick={() => {
+                      setOpenDetailLikes(true);
+                    }}
+                  >
+                    <Typography
+                      variant="body2"
+                      className={clsx(style.countLike)}
+                    >
+                      {post && post.likedUserInfo.length > 0
+                        ? `${
+                            post.isLiked
+                              ? "You"
+                              : `${post.likedUserInfo[0]?.firstname} ${post.likedUserInfo[0]?.lastname}`
                           }${
                             post.likedUserInfo.length > 1
                               ? ` and ${post.likedUserInfo.length - 1} other${
@@ -287,8 +298,14 @@ const DetailPostContainer: React.FC<props> = ({
                                 }`
                               : ""
                           }`
-                      : ""}
-                  </Typography>
+                        : ""}
+                    </Typography>
+                  </div>
+                  <DetaiLikesModal
+                    open={openDetailLikes}
+                    onClose={handleCloseDetailLikes}
+                    likedUserInfo={post?.likedUserInfo}
+                  />
                 </Stack>
                 <Stack
                   direction="row"

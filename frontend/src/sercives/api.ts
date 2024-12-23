@@ -554,3 +554,105 @@ export async function handleDeleteFollow(followerId: string|undefined,followingI
   }
 }
 
+export async function handleSearchUserByUsername(searchString:string|null)
+{
+  try {
+    const response = await fetch(
+      `http://localhost:5000/api/v1/user/searchuserbyusername?searchString=${searchString}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        }
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to getFollowingUsers");
+    }
+    const result = await response.json();
+    return result.usersResult;
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+
+export async function handleWriteHistoryAPI(userId:string|null,targetId:string,type:string)
+{
+  console.log("handleWriteHistory",userId,targetId,type)
+  try {
+    const response = await fetch(
+      `http://localhost:5000/api/v1/history/create`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: userId,
+          targetId: targetId,
+          type:type
+        }),
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to getFollowingUsers");
+    }
+    const result = await response.json();
+    return result.searchHistory;
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+export async function handleDeleteHistoryByIdAPI(userId:string|null,targetId:string,type:string)
+{
+  try {
+    const response = await fetch(
+      `http://localhost:5000/api/v1/history/delete`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: userId,
+          targetId: targetId,
+          type:type
+        }),
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to getFollowingUsers");
+    }
+    const result = await response.json();
+    return result.deleteHistory;
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+export async function handleGetSearchListByIdAPI(userId:string|null)
+{
+  try {
+    const response = await fetch(
+      `http://localhost:5000/api/v1/history/gethistorysearch`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: userId,
+        }),
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to getFollowingUsers");
+    }
+    const result = await response.json();
+    return result.searchHistoryUsers;
+  } catch (e) {
+    console.error(e);
+  }
+}

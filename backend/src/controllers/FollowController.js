@@ -206,10 +206,13 @@ class FollowController {
       let query = { _id: { $in: followingId } };
 
       if (searchString && searchString.trim() !== "") {
-        query.$or = [
-          { firstname: { $regex: searchString, $options: "i" } },
-          { lastname: { $regex: searchString, $options: "i" } },
-        ];
+        query.$expr = {
+          $regexMatch: {
+            input: { $concat: ["$firstname", " ", "$lastname"] },
+            regex: searchString,
+            options: "i",
+          },
+        };
       }
 
       const followingUsers = await User.find(query);
@@ -253,10 +256,13 @@ class FollowController {
       let query = { _id: { $in: followerId } };
 
       if (searchString && searchString.trim() !== "") {
-        query.$or = [
-          { firstname: { $regex: searchString, $options: "i" } },
-          { lastname: { $regex: searchString, $options: "i" } },
-        ];
+        query.$expr = {
+          $regexMatch: {
+            input: { $concat: ["$firstname", " ", "$lastname"] },
+            regex: searchString,
+            options: "i",
+          },
+        };
       }
 
       const followerUsers = await User.find(query);

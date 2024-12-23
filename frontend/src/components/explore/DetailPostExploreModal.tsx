@@ -26,6 +26,7 @@ import { IComment, Post } from "../../types";
 import { getTimeAgo } from "../../helper";
 import CommentBar from "../profile/CommentBar";
 import { useNavigate } from "react-router-dom";
+import DetaiLikesModal from "../profile/Post/DetailLikesModal";
 interface Props {
   post: Post | null | undefined;
   onClose: () => void;
@@ -35,6 +36,10 @@ const DetailPostExploreModal: React.FC<Props> = ({ post, onClose }) => {
   const [currentPost, setCurrentPost] = useState<Post | null | undefined>(post);
   const commentInputRef = useRef<HTMLInputElement>(null);
   const [newCommentsArray, setNewCommentsArray] = useState<IComment[]>();
+  const [openDetailLikes, setOpenDetailLikes] = useState(false);
+  const handleCloseDetailLikes = () => {
+    setOpenDetailLikes(false);
+  };
   //const [likeCount, setLikeCount] = useState<Number>(post.likedUserInfo.length);
   const navigate = useNavigate();
   const updateComments = (comments: IComment[]) => {
@@ -161,26 +166,33 @@ const DetailPostExploreModal: React.FC<Props> = ({ post, onClose }) => {
                     <ThumbUp />
                   )}
                 </IconButton>
-                <Typography variant="body2">
-                  {/* Hiển thị số lượt thích */}
-                  {currentPost && currentPost.likedUserInfo.length > 0
-                    ? `${
-                        currentPost.isLiked
-                          ? "You"
-                          : `${currentPost.likedUserInfo[0]?.firstname} ${currentPost.likedUserInfo[0]?.lastname}`
-                      }${
-                        currentPost.likedUserInfo.length > 1
-                          ? ` and ${
-                              currentPost.likedUserInfo.length - 1
-                            } other${
-                              currentPost.likedUserInfo.length - 1 > 1
-                                ? "s"
-                                : ""
-                            }`
-                          : ""
-                      }`
-                    : ""}
-                </Typography>
+                <div
+                  onClick={() => {
+                    setOpenDetailLikes(true);
+                  }}
+                >
+                  <Typography variant="body2" className={clsx(style.countLike)}>
+                    {/* Hiển thị số lượt thích */}
+                    {post && post.likedUserInfo.length > 0
+                      ? `${
+                          post.isLiked
+                            ? "You"
+                            : `${post.likedUserInfo[0]?.firstname} ${post.likedUserInfo[0]?.lastname}`
+                        }${
+                          post.likedUserInfo.length > 1
+                            ? ` and ${post.likedUserInfo.length - 1} other${
+                                post.likedUserInfo.length - 1 > 1 ? "s" : ""
+                              }`
+                            : ""
+                        }`
+                      : ""}
+                  </Typography>
+                </div>
+                <DetaiLikesModal
+                  open={openDetailLikes}
+                  onClose={handleCloseDetailLikes}
+                  likedUserInfo={post?.likedUserInfo}
+                />
               </Stack>
               <Stack direction="row" spacing={1} ml="auto" alignItems="center">
                 <IconButton onClick={handleCommentClick}>
@@ -267,7 +279,7 @@ const DetailPostExploreModal: React.FC<Props> = ({ post, onClose }) => {
         <button
           onClick={handleBack}
           disabled={currentImageIndex === 0}
-          className={clsx(style.btn, style['btn-left'])}
+          className={clsx(style.btn, style["btn-left"])}
         >
           <KeyboardArrowLeftIcon style={{ fontSize: "40px" }} />
         </button>
