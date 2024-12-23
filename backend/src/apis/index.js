@@ -10,6 +10,7 @@ const petUserEndPoint = require('./petuser')
 const postUserEndPoint = require('./postuser')
 const likeEndPoint = require('./like')
 const commentEndPoint = require('./comment')
+const historyEndPoint = require('./history')
 
 const userEndPoint = require('./user')
 const chatbotEndpoint = require('./chatbot')
@@ -34,6 +35,7 @@ function api(app) {
     app.use('/api/v1/postuser',postUserEndPoint)
     app.use('/api/v1/like',likeEndPoint)
     app.use('/api/v1/comment',commentEndPoint)
+    app.use('/api/v1/history',historyEndPoint)
 
     app.use('/api/v1/user', userEndPoint)
 

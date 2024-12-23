@@ -32,7 +32,7 @@ const HomeForm = () => {
   return (
     <div className={style.coverContainer}>
       <div className={style.bodyContainer}>
-        <AccessUrlProvider type="home">
+        <AccessUrlProvider type="home" userId={localStorage.getItem("userId")}>
           <PostsDisplay />
         </AccessUrlProvider>
       </div>

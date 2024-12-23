@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Typography, Avatar, Link, Modal } from '@mui/material';
-import { Notifications } from '@mui/icons-material';
-import { lightTheme } from '../../themes/theme';
-import { useSocket } from '../message/SocketContext';
-import clsx from 'clsx'
-import style from './css/header.module.css'
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { Box, Typography, Avatar, Link, Modal } from "@mui/material";
+import { Notifications } from "@mui/icons-material";
+import { lightTheme } from "../../themes/theme";
+import { useSocket } from "../message/SocketContext";
+import clsx from "clsx";
+import style from "./css/header.module.css";
+import { useNavigate } from "react-router-dom";
+import SearchHeader from "../search/SearchHeader";
 interface Props {
   updatePostsState: () => void;
 }
@@ -21,11 +22,12 @@ const Header: React.FC = () => {
   const [detailedNotiList, setDetailedNotiList] = useState<any[]>([])
   const handleOpenDetailPostModal = () => setOpenDetailPostModal(true);
   const handleCloseDetailPostModal = () => setOpenDetailPostModal(false);
+  
   // Modal handlers
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
-    setHasNotification(false)
-    setOpen(false)
+    setHasNotification(false);
+    setOpen(false);
   };
   const navigate = useNavigate();
 
@@ -63,26 +65,23 @@ const Header: React.FC = () => {
           fontSize: "30px",
           paddingLeft: "50px",
           marginRight: "50px",
-          borderBottom: "1px solid #89966B"
+          borderBottom:"1px solid #89966B"
         }}
       >
         {/* Left Side */}
         <div className={clsx(style.avatarContainer)} onClick={() => { navigate('/home') }}>
           <img src='https://res.cloudinary.com/dh6brjozr/image/upload/Brown_Black_Simple_Modern_Pet_Shop_Logo_hizos1.png' />
         </div>
-
         {/* Middle Box */}
         <Box
           sx={{
             flexGrow: 1, // Allows it to expand and take up the middle space
             display: "flex",
-            justifyContent: "center", // Centers content horizontally
+            justifyContent: "left", // Centers content horizontally
             alignItems: "center", // Centers content vertically
           }}
         >
-          <Typography>
-
-          </Typography>
+          <SearchHeader/>
         </Box>
 
         {/* Right Side */}
@@ -91,7 +90,7 @@ const Header: React.FC = () => {
             display: "flex",
             alignItems: "center",
             gap: "20px",
-            minWidth: "200px" // Add spacing between notifications and avatar
+            minWidth: "200px", // Add spacing between notifications and avatar
           }}
         >
           <Notifications
@@ -125,7 +124,7 @@ const Header: React.FC = () => {
                   sx={{
                     display: "flex",
                     alignItems: "center",
-                    mb: 2
+                    mb: 2,
                   }}
                 >
                   {/* User Avatar */}
@@ -135,7 +134,7 @@ const Header: React.FC = () => {
                     sx={{
                       width: 40,
                       height: 40,
-                      mr: 2
+                      mr: 2,
                     }}
                   />
 
@@ -148,8 +147,6 @@ const Header: React.FC = () => {
                       {noti.createdAt.toLocaleString()}
                     </Typography>
                   </Box>
-
-
                 </Box>
                 </Link>
                 
@@ -168,14 +165,9 @@ const Header: React.FC = () => {
               }}
             />
           </Link>
-
         </Box>
       </Box>
-
-
     </>
-
-
   );
 };
 

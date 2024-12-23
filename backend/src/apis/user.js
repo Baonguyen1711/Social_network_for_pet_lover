@@ -14,6 +14,7 @@ router.get('/getAll',userController.getAll)
 router.use('/updatename', userController.updateNameByUserId)
 router.use('/updatedescription', userController.updateDescriptionByUserId)
 router.use('/updateAvatar', userController.updateAvatarByUserId)
+router.use('/searchuserbyusername', userController.getUserByUserName)
 
 module.exports = router
 

@@ -81,7 +81,7 @@ const MainProfileForm: React.FC = () => {
           </a>
         </nav>
         <div className={style.layout}>
-          <AccessUrlProvider type="profile" TargetUserId={userId}>
+          <AccessUrlProvider type="profile" TargetUserId={userId} userId={userId}>
             <Outlet />
           </AccessUrlProvider>
         </div>

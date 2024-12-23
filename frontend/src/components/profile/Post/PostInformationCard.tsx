@@ -302,7 +302,7 @@ const PostInformationCard: React.FC<Props> = (props) => {
                         }`
                       : ""
                   }`
-                : ""}
+                : ""} 
             </Typography>
           </div>
           <DetaiLikesModal
