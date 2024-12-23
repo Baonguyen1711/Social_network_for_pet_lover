@@ -4,10 +4,20 @@ import { Navigate } from 'react-router-dom';
 const useAuth = () => {
     const login = async (user: string, password: string): Promise<void> => {
 
+        debugger;
 
         const url = "http://127.0.0.1:5000/api/v1/login"
         try {
-            const response = await fetch(`${url}?email=${user}&password=${password}`)
+            const response = await fetch(url, {
+                method: "POST", 
+                headers: {
+                    "Content-Type": "application/json" // Add this line to specify that the body contains JSON data
+                },
+                body: JSON.stringify({
+                    "email": user,
+                    "password": password
+                })
+            })
 
             if (!response.ok) {
                 throw new Error(`Login failed`);

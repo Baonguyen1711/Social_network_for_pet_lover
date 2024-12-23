@@ -117,7 +117,7 @@ const PostInformationCard: React.FC<Props> = (props) => {
   const handleHide = () => {
     console.log("Hide clicked");
   };
-  const handleLike = async () => {
+  const handleLike = async (isLiked: boolean) => {
     const result = await handleLikeAPI(post?._id, "post");
     if (result) props.updatePostsState?.();
   };
@@ -279,7 +279,13 @@ const PostInformationCard: React.FC<Props> = (props) => {
       </CardContent>
       <CardActions disableSpacing>
         <Stack direction="row" spacing={1} alignItems="center">
-          <IconButton onClick={handleLike}>
+          <IconButton onClick={()=>
+          {
+            if(post) {
+              handleLike(post.isLiked)
+            }
+          }
+            }>
             {post?.isLiked ? <ThumbUp color="primary" /> : <ThumbUp />}
           </IconButton>
           <div onClick={handleOpenDetailLikes}>
@@ -345,7 +351,7 @@ const PostInformationCard: React.FC<Props> = (props) => {
           newComment={bonusComment}
           postId={post?._id}
           updateComments={updateComments}
-          handleLike={handleLike}
+          handleLike={()=>handleLike(true)}
           handleSave={handleSavePost}
         />
         {post && isCommentBarDisplay && (
@@ -360,7 +366,7 @@ const PostInformationCard: React.FC<Props> = (props) => {
         updatePostsState={props.updatePostsState}
         open={openModal}
         handleClose={handleCloseModal}
-        handleLike={handleLike}
+        handleLike={()=>handleLike(true)}
         handleSave={handleSavePost}
       />
       <Confirmation

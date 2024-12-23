@@ -1,5 +1,6 @@
 import React from "react";
 import { useSocket } from "../components/message/SocketContext";
+import { EventSocket } from "../types";
 import { io, Socket } from "socket.io-client";
 const socket = io("http://localhost:4000");
 
@@ -280,6 +281,31 @@ export async function handleGetPostByPostId(
 }
 
 export async function handleLikeAPI(postId: string | undefined, type: string) {
+
+  const handleSocketEmit = async (eventSocketList: EventSocket[]) => {
+
+    const url = `http://127.0.0.1:5000/api/v1/notification/create`
+
+    try {
+      debugger;
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(eventSocketList)
+      })
+
+      if (!response.ok) {
+        console.log("error in posting event")
+      }
+
+      console.log("posting event successfully")
+    } catch (e) {
+      console.log("error", e)
+    }
+
+  }
   try {
     const response = await fetch("http://localhost:5000/api/v1/like/likepost", {
       method: "POST",
@@ -310,247 +336,275 @@ export async function handleLikeAPI(postId: string | undefined, type: string) {
       type: "like",
     };
 
+
+      const infoUrl = `http://localhost:5000/api/v1/user/info?email=${localStorage.getItem("email")}`;
+      try {
+        const response = await fetch(infoUrl, {
+          method: "GET",
+        });
+        if (!response.ok) {
+          throw new Error("Error in getting user");
+        }
+
+        const data = await response.json();
+
+        const userAvatar = data.userInfo.avatar
+        const userName = `${data.userInfo.firstname} ${data.userInfo.lastname}`
+        const event: EventSocket = {
+          eventType: "like",
+          postId: postId,
+          userName: userName,
+          userAvatar: userAvatar,
+          createdAt: new Date,
+          postOwnerEmail: postOwnerEmail
+        }
+
+        handleSocketEmit([event])
+      } catch(e) {
+        console.log(e)
+      }
+
     socket.emit("newLike", like);
-    const result = await response.json();
-    //setCurrentPost(result.updatedPost);
-    //setPost(result.updatedPost);
-    //setIsLiked(result.updatedPost.isLiked)
-    return result;
-  } catch (e) {
+      const result = await response.json();
+      //setCurrentPost(result.updatedPost);
+      //setPost(result.updatedPost);
+      //setIsLiked(result.updatedPost.isLiked)
+      return result;
+    
+  }catch (e) {
     console.error(e);
   }
 }
 
 export async function handleDeleteCommentAPI(commentId: string | undefined) {
-  try {
-    const response = await fetch(
-      `http://localhost:5000/api/v1/comment/delete?commentId=${commentId}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    if (!response.ok) {
-      throw new Error("Failed to comment post");
-    }
-    const result = await response.json();
-    return result;
-  } catch (e) {
-    console.error(e);
-  }
-}
-
-export async function handleUpdateNameAPI(
-  lastName: String | undefined,
-  firstName: String | undefined,
-  userId: String | undefined
-) {
-  try {
-    const response = await fetch(
-      `http://localhost:5000/api/v1/user/updatename`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: userId,
-          lastName: lastName,
-          firstName: firstName,
-        }),
-      }
-    );
-    if (!response.ok) {
-      throw new Error("Failed to comment post");
-    }
-    const result = await response.json();
-    return result;
-  } catch (e) {
-    console.error(e);
-  }
-}
-
-export async function handleUpdateDescriptionAPI(
-  description: String | undefined,
-  userId: String | undefined
-) {
-  try {
-    const response = await fetch(
-      `http://localhost:5000/api/v1/user/updatedescription`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: userId,
-          description: description,
-        }),
-      }
-    );
-    if (!response.ok) {
-      throw new Error("Failed to comment post");
-    }
-    const result = await response.json();
-    return result;
-  } catch (e) {
-    console.error(e);
-  }
-}
-
-export async function handleUpdateAvatarAPI(
-  imageUrl: String | undefined,
-  userId: String | undefined
-) {
-  try {
-    const response = await fetch(
-      `http://localhost:5000/api/v1/user/updateAvatar`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: userId,
-          imageUrl: imageUrl,
-        }),
-      }
-    );
-    if (!response.ok) {
-      throw new Error("Failed to comment post");
-    }
-    const result = await response.json();
-    return result;
-  } catch (e) {
-    console.error(e);
-  }
-}
-
-export async function handleUpdatePostAPI(
-  title: String | undefined,
-  content: String | undefined,
-  images: String[],
-  postId: String | undefined
-) {
-  //console.log("images",images)
-  try {
-    const response = await fetch(
-      `http://localhost:5000/api/v1/post/updatepost`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          postId: postId,
-          title: title,
-          content: content,
-          images: images,
-        }),
-      }
-    );
-    if (!response.ok) {
-      throw new Error("Failed to comment post");
-    }
-    const result = await response.json();
-    return result;
-  } catch (e) {
-    console.error(e);
-  }
-}
-
-export async function handleUpdateCommentAPI(
-  content: String | undefined,
-  commentId: String | undefined
-) {
-  //console.log("images",images)
-  try {
-    const response = await fetch(
-      `http://localhost:5000/api/v1/comment/update`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          contentComment: content,
-          commentId: commentId,
-        }),
-      }
-    );
-    if (!response.ok) {
-      throw new Error("Failed to updateComment");
-    }
-    const result = await response.json();
-    return result;
-  } catch (e) {
-    console.error(e);
-  }
-}
-
-export async function handleGetFollowingByUserId(userId: string|null|undefined,searchString:string|null="") {
-  try {
-    const response = await fetch(
-      `http://localhost:5000/api/v1/follow/getfollowingbyuserid?followerId=${userId}&searchString=${searchString}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/v1/comment/delete?commentId=${commentId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to comment post");
       }
-    );
-    if (!response.ok) {
-      throw new Error("Failed to getFollowingUsers");
+      const result = await response.json();
+      return result;
+    } catch (e) {
+      console.error(e);
     }
-    const result = await response.json();
-    return result.followingUsers;
-  } catch (e) {
-    console.error(e);
   }
-}
 
-export async function handleGetFollowerByUserId(userId: string|null|undefined,searchString:string|null="") {
-  try {
-    const response = await fetch(
-      `http://localhost:5000/api/v1/follow/getfollowerbyuserid?followingId=${userId}&searchString=${searchString}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+  export async function handleUpdateNameAPI(
+    lastName: String | undefined,
+    firstName: String | undefined,
+    userId: String | undefined
+  ) {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/v1/user/updatename`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: userId,
+            lastName: lastName,
+            firstName: firstName,
+          }),
         }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to comment post");
       }
-    );
-    if (!response.ok) {
-      throw new Error("Failed to getFollowingUsers");
+      const result = await response.json();
+      return result;
+    } catch (e) {
+      console.error(e);
     }
-    const result = await response.json();
-    return result.followerUsers;
-  } catch (e) {
-    console.error(e);
   }
-}
 
-export async function handleDeleteFollow(followerId: string|undefined,followingId:string|undefined)
-{
-  try {
-    const response = await fetch(
-      `http://localhost:5000/api/v1/follow/deletefollow?followerId=${followerId}&followingId=${followingId}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+  export async function handleUpdateDescriptionAPI(
+    description: String | undefined,
+    userId: String | undefined
+  ) {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/v1/user/updatedescription`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: userId,
+            description: description,
+          }),
         }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to comment post");
       }
-    );
-    if (!response.ok) {
-      throw new Error("Failed to getFollowingUsers");
+      const result = await response.json();
+      return result;
+    } catch (e) {
+      console.error(e);
     }
-    const result = await response.json();
-    return result.unfollowInfo;
-  } catch (e) {
-    console.error(e);
   }
-}
+
+  export async function handleUpdateAvatarAPI(
+    imageUrl: String | undefined,
+    userId: String | undefined
+  ) {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/v1/user/updateAvatar`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: userId,
+            imageUrl: imageUrl,
+          }),
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to comment post");
+      }
+      const result = await response.json();
+      return result;
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  export async function handleUpdatePostAPI(
+    title: String | undefined,
+    content: String | undefined,
+    images: String[],
+    postId: String | undefined
+  ) {
+    //console.log("images",images)
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/v1/post/updatepost`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            postId: postId,
+            title: title,
+            content: content,
+            images: images,
+          }),
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to comment post");
+      }
+      const result = await response.json();
+      return result;
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  export async function handleUpdateCommentAPI(
+    content: String | undefined,
+    commentId: String | undefined
+  ) {
+    //console.log("images",images)
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/v1/comment/update`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            contentComment: content,
+            commentId: commentId,
+          }),
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to updateComment");
+      }
+      const result = await response.json();
+      return result;
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  export async function handleGetFollowingByUserId(userId: string | null | undefined, searchString: string | null = "") {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/v1/follow/getfollowingbyuserid?followerId=${userId}&searchString=${searchString}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          }
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to getFollowingUsers");
+      }
+      const result = await response.json();
+      return result.followingUsers;
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  export async function handleGetFollowerByUserId(userId: string | null | undefined, searchString: string | null = "") {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/v1/follow/getfollowerbyuserid?followingId=${userId}&searchString=${searchString}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          }
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to getFollowingUsers");
+      }
+      const result = await response.json();
+      return result.followerUsers;
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  export async function handleDeleteFollow(followerId: string | undefined, followingId: string | undefined) {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/v1/follow/deletefollow?followerId=${followerId}&followingId=${followingId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          }
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to getFollowingUsers");
+      }
+      const result = await response.json();
+      return result.unfollowInfo;
+    } catch (e) {
+      console.error(e);
+    }
+  }
 
