@@ -1,7 +1,7 @@
 // SocketContext.tsx
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { io, Socket } from 'socket.io-client';
-import { MessageComponentType } from '../../types';
+import { MessageComponentType, EventSocket } from '../../types';
 import { RecentChat } from '../../types';
 import { useBackground } from './BackgroundContext';
 import { handleGetPostByPostId } from '../../sercives/api';
@@ -11,6 +11,8 @@ interface SocketContextType {
   socket: Socket;
   messages: MessageComponentType[]
   setMessages: React.Dispatch<React.SetStateAction<MessageComponentType[]>>
+  notiList: EventSocket[]
+  setNotiList: React.Dispatch<React.SetStateAction<EventSocket[]>>
   hasNotification: boolean
   setHasNotification: React.Dispatch<React.SetStateAction<boolean>>
   likePostDetailed: any
@@ -37,6 +39,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const [chatbotMessages, setChatbotMessages] = useState<any[]>([])
   const [hasNotification, setHasNotification] = useState<boolean>(false)
   const [likePostDetailed, setLikePostDetailed] = useState<any>(undefined)
+  const [notiList, setNotiList] = useState<EventSocket[]>([])
   const currentEmail = localStorage.getItem("email")
   const { setBackgroundImageOver, setSelectedTheme } = useBackground()
   useEffect(() => {
@@ -63,15 +66,40 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         const data = await response.json();
 
         const now = new Date()
-        const formattedDate = now.toISOString().slice(0, 10);
+        const formattedDate = now
         setHasNotification(true)
-        const likePostDetailed = {
-          "avatar": data.userInfo.avatar,
+        const likePostDetailed: EventSocket = {
+          "userAvatar": data.userInfo.avatar,
           "userName": `${data.userInfo.firstname} ${data.userInfo.lastname}`,
-          "time": formattedDate,
-          "type": like.type
+          "createdAt": formattedDate,
+          "eventType": like.type,
+          "postId": like.postId
         }
 
+
+        const notiQueueString = localStorage.getItem("NotiQueue");
+
+        let notiQueue: any[] = []; // Default value in case "NotiQueue" is not found
+
+        if (notiQueueString) {
+          notiQueue = JSON.parse(notiQueueString);
+          if (notiQueue?.length === 5) {
+            notiQueue.pop()
+            notiQueue.unshift(likePostDetailed)
+          } else {
+            notiQueue.unshift(likePostDetailed)
+          }
+
+          localStorage.setItem("NotiQueue", JSON.stringify(notiQueue))
+
+          setNotiList(notiQueue)
+        } else {
+          notiQueue.unshift(likePostDetailed)
+          localStorage.setItem("NotiQueue", JSON.stringify(notiQueue))
+
+          setNotiList(notiQueue)
+        }
+        
         setLikePostDetailed(likePostDetailed)
       } catch (e) {
         console.error("Error fetching data:", e);
@@ -159,7 +187,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   }
 
   return (
-    <SocketContext.Provider value={{ messages, setMessages, socket, recentChats, setRecentChats, sendMessage, chatbotMessages, setChatbotMessages, changeBackground, newComment, newLike, hasNotification, setHasNotification, likePostDetailed, setLikePostDetailed }}>
+    <SocketContext.Provider value={{ notiList, setNotiList,messages, setMessages, socket, recentChats, setRecentChats, sendMessage, chatbotMessages, setChatbotMessages, changeBackground, newComment, newLike, hasNotification, setHasNotification, likePostDetailed, setLikePostDetailed }}>
       {children}
     </SocketContext.Provider>
   );

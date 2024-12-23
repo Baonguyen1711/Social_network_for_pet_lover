@@ -15,6 +15,7 @@ const historyEndPoint = require('./history')
 const userEndPoint = require('./user')
 const chatbotEndpoint = require('./chatbot')
 const imageEndpoint = require('./image')
+const notificationEndpoint = require('./notification')
 
 
 function api(app) {
@@ -40,6 +41,7 @@ function api(app) {
 
     app.use('/api/v1/chatbot', chatbotEndpoint)
     app.use('/api/v1/image', imageEndpoint)
+    app.use('/api/v1/notification', notificationEndpoint)
 
 }
 

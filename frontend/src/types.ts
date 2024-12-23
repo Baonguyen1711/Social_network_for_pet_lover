@@ -64,6 +64,15 @@ export interface RecentChat {
   } | null;
 }
 
+export interface  EventSocket {
+  eventType: string,
+  postId: string | null | undefined,
+  createdAt: Date,
+  userName: string,
+  userAvatar: string,
+  postOwnerEmail?: string
+}
+
 
 export interface AuthState {
   isAuthenticated: boolean;

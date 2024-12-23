@@ -12,12 +12,14 @@ interface Props {
 }
 
 const Header: React.FC = () => {
-  var avatarSrc = localStorage.getItem("userAvatar");
-  const userId = localStorage.getItem("userId");
-  const { hasNotification, likePostDetailed, setHasNotification } = useSocket();
+  var avatarSrc = localStorage.getItem("userAvatar")
+  const userId = localStorage.getItem("userId")
+  const userEmail = localStorage.getItem("email")
+  const { hasNotification, likePostDetailed, setHasNotification, notiList, setNotiList } = useSocket()
   // State for modal visibility
   const [open, setOpen] = useState(false);
   const [openDetailPostModal, setOpenDetailPostModal] = useState(false);
+  const [detailedNotiList, setDetailedNotiList] = useState<any[]>([])
   const handleOpenDetailPostModal = () => setOpenDetailPostModal(true);
   const handleCloseDetailPostModal = () => setOpenDetailPostModal(false);
   
@@ -28,6 +30,24 @@ const Header: React.FC = () => {
     setOpen(false);
   };
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const getNoti = async () => {
+      debugger;
+      const url = `http://127.0.0.1:5000/api/v1/notification/get?page=1&limit=5&postOwnerEmail=${userEmail}`
+      try {
+        const response = await fetch(url)
+        const data = await response.json()
+
+        localStorage.setItem("NotiQueue", JSON.stringify(data.noties))
+        setNotiList(data.noties)
+      } catch (e) {
+        console.log(e)
+      }
+
+    }
+    getNoti()
+  }, [])
   return (
     <>
       <Box
@@ -43,19 +63,14 @@ const Header: React.FC = () => {
           zIndex: 1000,
           fontFamily: "Helvetica",
           fontSize: "30px",
-          paddingLeft: "15px",
-          marginRight: "30px",
-          borderBottom: "1px solid #89966B",
+          paddingLeft: "50px",
+          marginRight: "50px",
+          borderBottom:"1px solid #89966B"
         }}
       >
         {/* Left Side */}
-        <div
-          className={clsx(style.avatarContainer)}
-          onClick={() => {
-            navigate("/home");
-          }}
-        >
-          <img src="https://res.cloudinary.com/dh6brjozr/image/upload/Brown_Black_Simple_Modern_Pet_Shop_Logo_hizos1.png" />
+        <div className={clsx(style.avatarContainer)} onClick={() => { navigate('/home') }}>
+          <img src='https://res.cloudinary.com/dh6brjozr/image/upload/Brown_Black_Simple_Modern_Pet_Shop_Logo_hizos1.png' />
         </div>
         {/* Middle Box */}
         <Box
@@ -102,8 +117,10 @@ const Header: React.FC = () => {
               <Typography variant="h6" component="h2" gutterBottom>
                 Notifications
               </Typography>
-              {likePostDetailed ? (
-                <Box
+              {notiList ? notiList.map((noti, index) => (
+
+                <Link href={`/post/${noti.postId}`} underline='none' color='black'>
+                  <Box
                   sx={{
                     display: "flex",
                     alignItems: "center",
@@ -112,8 +129,8 @@ const Header: React.FC = () => {
                 >
                   {/* User Avatar */}
                   <Avatar
-                    src={likePostDetailed.avatar}
-                    alt={likePostDetailed.userName}
+                    src={noti.userAvatar}
+                    alt={noti.userName}
                     sx={{
                       width: 40,
                       height: 40,
@@ -124,14 +141,17 @@ const Header: React.FC = () => {
                   {/* Text Content */}
                   <Box>
                     <Typography variant="body1">
-                      {`${likePostDetailed.userName} ${likePostDetailed.type} your post`}
+                      {`${noti.userName} ${noti.eventType} your post`}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
-                      {new Date(likePostDetailed.time).toLocaleString()}
+                      {noti.createdAt.toLocaleString()}
                     </Typography>
                   </Box>
                 </Box>
-              ) : (
+                </Link>
+                
+
+              )) : (
                 <Typography>No new notifications.</Typography>
               )}
             </Box>
