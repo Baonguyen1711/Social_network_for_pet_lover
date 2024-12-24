@@ -30,7 +30,7 @@ const SideBar: React.FC<SideBarProps> = ({ isOpened }) => {
   const currentEmail = localStorage.getItem("email")
 
   const handleLogout = () => {
-    localStorage.setItem("jwt", "")
+    localStorage.clear()
   }
 
   useEffect(() => {
@@ -167,8 +167,8 @@ const SideBar: React.FC<SideBarProps> = ({ isOpened }) => {
                 }
               }}
                 display="flex" alignItems="center" gap={1} id="home" height="40px" padding="10px" borderRadius="10px" bgcolor={isActive("home") ? lightTheme.colors.primary : lightTheme.colors.background}>
-                <HomeOutlined sx={{ color: lightTheme.colors.text }} />
-                <Typography fontFamily="Inter" color={lightTheme.colors.text} fontWeight="500">Home</Typography>
+                <HomeOutlined sx={{ color: lightTheme.colors.secondary }} />
+                <Typography fontFamily="Inter" color={lightTheme.colors.secondary} fontWeight="500">Home</Typography>
 
               </Box>
             </Link>
@@ -181,8 +181,8 @@ const SideBar: React.FC<SideBarProps> = ({ isOpened }) => {
                 }
               }}
                 display="flex" alignItems="center" gap={1} id="explore" height="40px" padding="10px" borderRadius="10px" bgcolor={isActive("explore") ? lightTheme.colors.primary : lightTheme.colors.background}>
-                <WindowOutlined sx={{ color: lightTheme.colors.text }} />
-                <Typography fontFamily="Inter" color={lightTheme.colors.text} fontWeight="500">Explore</Typography>
+                <WindowOutlined sx={{ color: lightTheme.colors.secondary }} />
+                <Typography fontFamily="Inter" color={lightTheme.colors.secondary} fontWeight="500">Explore</Typography>
 
               </Box>
             </Link>
@@ -196,8 +196,8 @@ const SideBar: React.FC<SideBarProps> = ({ isOpened }) => {
                 }
               }}
                 display="flex" alignItems="center" gap={1} id="group" height="40px" padding="10px" borderRadius="10px" bgcolor={isActive("group") ? lightTheme.colors.primary : lightTheme.colors.background}>
-                <PeopleOutline sx={{ color: lightTheme.colors.text }} />
-                <Typography fontFamily="Inter" color={lightTheme.colors.text} fontWeight="500">Profile</Typography>
+                <PeopleOutline sx={{ color: lightTheme.colors.secondary }} />
+                <Typography fontFamily="Inter" color={lightTheme.colors.secondary} fontWeight="500">Profile</Typography>
 
               </Box>
             </Link>
@@ -211,8 +211,8 @@ const SideBar: React.FC<SideBarProps> = ({ isOpened }) => {
                 }
               }}
                 display="flex" alignItems="center" gap={1} id="favorite" height="40px" padding="10px" borderRadius="10px" bgcolor={isActive("favourite") ? lightTheme.colors.primary : lightTheme.colors.background}>
-                <TagOutlined sx={{ color: lightTheme.colors.text }} />
-                <Typography fontFamily="Inter" color={lightTheme.colors.text} fontWeight="500">Favourite</Typography>
+                <TagOutlined sx={{ color: lightTheme.colors.secondary }} />
+                <Typography fontFamily="Inter" color={lightTheme.colors.secondary} fontWeight="500">Favourite</Typography>
 
               </Box>
             </Link>
@@ -226,8 +226,8 @@ const SideBar: React.FC<SideBarProps> = ({ isOpened }) => {
                 }
               }}
                 display="flex" alignItems="center" gap={1} id="message" height="40px" padding="10px" borderRadius="10px" bgcolor={isActive("message") ? lightTheme.colors.primary : lightTheme.colors.background}>
-                <SendOutlined sx={{ color: lightTheme.colors.text }} />
-                <Typography fontFamily="Inter" color={lightTheme.colors.text} fontWeight="500">Message</Typography>
+                <SendOutlined sx={{ color: lightTheme.colors.secondary }} />
+                <Typography fontFamily="Inter" color={lightTheme.colors.secondary} fontWeight="500">Message</Typography>
 
               </Box>
             </Link>
@@ -255,8 +255,8 @@ const SideBar: React.FC<SideBarProps> = ({ isOpened }) => {
                 handleLogout
               }
                 display="flex" alignItems="center" gap={1} id="logOut" height="40px" padding="10px" borderRadius="10px" >
-                <ExitToAppOutlined sx={{ color: lightTheme.colors.text }} />
-                <Typography fontFamily="Inter" color={lightTheme.colors.text} fontWeight="500">Log out</Typography>
+                <ExitToAppOutlined sx={{ color: lightTheme.colors.secondary }} />
+                <Typography fontFamily="Inter" color={lightTheme.colors.secondary} fontWeight="500">Log out</Typography>
 
               </Box>
             </Link>

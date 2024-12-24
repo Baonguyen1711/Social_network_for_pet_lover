@@ -8,6 +8,7 @@ import {
   AccessUrlProvider,
 } from "../profile/AccessUrlContext";
 import { getUserByUserId } from "../../sercives/api";
+import { lightTheme } from "../../themes/theme";
 
 const HomeForm = () => {
   const [userData, setUserData] = useState<User>();
@@ -22,6 +23,11 @@ const HomeForm = () => {
     const userId = localStorage.getItem("userId")
     setUserData(await getUserByUserId(userId));
   };
+
+  const backgr = {
+    backgroundColor: lightTheme.colors.primary, // Inline background color style
+
+  };
   // const updatePostsState = async (returnPost: Post | undefined) => {
   //   try {
   //     await fetchData();
@@ -30,7 +36,7 @@ const HomeForm = () => {
   //   }
   // };
   return (
-    <div className={style.coverContainer}>
+    <div style={backgr} className={style.coverContainer}>
       <div className={style.bodyContainer}>
         <AccessUrlProvider type="home" userId={localStorage.getItem("userId")}>
           <PostsDisplay />

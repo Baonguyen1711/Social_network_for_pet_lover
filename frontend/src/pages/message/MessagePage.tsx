@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import SideBar from '../../components/sideBar/SideBar'
 import RecentChats from '../../components/message/RecentChats'
 import MainMessage from '../../components/message/MainMessage'
@@ -97,8 +97,19 @@ import { ArrowLeftOutlined, ArrowRightOutlined } from '@mui/icons-material'
 //   );
 // };
 
+  
+
 const MessagePage = () => {
+  debugger;
+
+  const [backgroundImage, setBackgroundImage] = useState<string>("")
   const { backgroundImageOver } = useBackground();
+
+  useEffect(()=> {
+    debugger;
+    setBackgroundImage(backgroundImageOver)
+  },[backgroundImageOver])
+  console.log("backgroundImageOver", backgroundImageOver)
   return (
     <BackgroundProvider>
       <SocketProvider>
@@ -106,7 +117,7 @@ const MessagePage = () => {
           <PublicLayout 
             mainContent={<MainMessage/>}
             recentChatsContent={<RecentChats/>}
-            extraContent={<Palette imgSrc={backgroundImageOver} />}
+            extraContent={<Palette imgSrc={backgroundImage} />}
           />
           {/* <MessagePageContent /> */}
         </SelectedUserProvider>

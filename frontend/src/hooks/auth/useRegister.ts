@@ -1,15 +1,15 @@
 import { User } from '../../types';
 import { useNavigate } from 'react-router-dom'; 
+import { useSnackbar } from '../../components/shared/SnackBarProvider';
+
 
 const useRegister = () => {
-    const navigate = useNavigate();
-    const register = async (email:string, password:string, confirmedPassword: string, firstName:string, lastName:string, phone: string): Promise<void> => {
-
+    const register = async (email:string, password:string, confirmedPassword: string, firstName:string, lastName:string, phone: string): Promise<boolean> => {
         debugger;
 
         
         if (password !== confirmedPassword) {
-            throw new Error("confirmed password not correct")
+            return false
         }
         
 
@@ -30,13 +30,13 @@ const useRegister = () => {
             })
 
             if (!response.ok) {
-                throw new Error(`Register failed`);
+                return false
             }
 
-            console.log("register successfully")
-            navigate("/login")
+            return true
         } catch(e) {
             console.log("Some errors happen", e)
+            return false
         }
             
     }
