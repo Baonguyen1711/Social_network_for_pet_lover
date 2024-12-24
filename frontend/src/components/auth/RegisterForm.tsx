@@ -3,10 +3,14 @@ import { TextField, Button, Box, Typography, Divider, Link } from "@mui/material
 import { APP_NAME } from "../../constants/constants"
 import { User } from "../../types"
 import useRegister from "../../hooks/auth/useRegister"
+import { useSnackbar } from "../shared/SnackBarProvider";
+import { useNavigate } from "react-router-dom"
+
 
 
 const RegisterForm: React.FC = () => {
-
+    const {showSnackBar} = useSnackbar()
+    const navigate = useNavigate()
     const { register } = useRegister();
     const [formData, setFormData] = useState({
         email: '',
@@ -21,7 +25,13 @@ const RegisterForm: React.FC = () => {
         event.preventDefault()
 
         try {
-            await register(formData.email, formData.password, formData.confirmPassword, formData.firstName, formData.lastName, formData.phone)
+            const isRegisterSuccessed = await register(formData.email, formData.password, formData.confirmPassword, formData.firstName, formData.lastName, formData.phone)
+            if(isRegisterSuccessed) {
+                showSnackBar("Register succesfully","success")
+                navigate("/login")
+            } else {
+                showSnackBar("Error in registration!! Try again", "error")
+            }
         } catch (e) {
             console.log("Login failed", e)
         }

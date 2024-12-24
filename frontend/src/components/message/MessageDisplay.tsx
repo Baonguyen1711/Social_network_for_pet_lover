@@ -24,8 +24,8 @@ const MessageDisplay: React.FC<MessageComponentArray> = ({ isChatbot }) => {
   const [recentMessages, setRecentMessages] = useState<MessageComponentType[]>([])
   const { messages, setMessages, chatbotMessages, setChatbotMessages } = useSocket();
   const { backgroundImageOver, setPalette } = useBackground()
+  //const [selectedUserEmail, setSelectedUserEmail] = useState<string|undefined>("")
   const selectedUserEmail = useParams().userEmail
-
   const imgRef = useRef<HTMLImageElement>(null);
   const [messageColor, setMessageColor] = useState<string>("#f0f0f0");
 
@@ -49,6 +49,10 @@ const MessageDisplay: React.FC<MessageComponentArray> = ({ isChatbot }) => {
     }
   }, [messages]);
 
+  useEffect(()=> {
+    debugger;
+    setMessages([])
+  },[selectedUserEmail])
   useEffect(() => {
 
     const getMessagesHistory = async () => {
@@ -104,10 +108,11 @@ const MessageDisplay: React.FC<MessageComponentArray> = ({ isChatbot }) => {
     >
       {
         !isChatbot ?
-          [...recentMessages, ...messages].map((message) => (
-
-            message.image ?
-
+          [...recentMessages, ...messages].map((message) => {
+            debugger;
+            console.log("Message Image URL:", message.image)
+            return message.image ?
+              
               <Box
                 component="div"
                 sx={{
@@ -132,6 +137,7 @@ const MessageDisplay: React.FC<MessageComponentArray> = ({ isChatbot }) => {
 
 
               :
+              message.content!==""?
               <MessageComponent
                 key={message.timeStamp}
                 content={message.content}
@@ -139,8 +145,10 @@ const MessageDisplay: React.FC<MessageComponentArray> = ({ isChatbot }) => {
                 isSender={message.isSender}
                 isChatbot={false}
               />
+              :
+              null
 
-          ))
+})
           :
           [...chatbotMessages].map((message) => (
 
