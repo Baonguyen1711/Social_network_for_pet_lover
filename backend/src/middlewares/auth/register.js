@@ -1,4 +1,4 @@
-const User = require('../../models/user')
+const User = require('../../models/User')
 const connectToDb = require('../../config/database/db')
 
 const validate = (req, res, next) => {
