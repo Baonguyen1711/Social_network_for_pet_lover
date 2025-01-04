@@ -16,7 +16,7 @@ const MessageHeader = () => {
     useEffect(() => {
         const fetchData = async () => {
             debugger;
-            const url = `http://localhost:5000/api/v1/user/info?email=${selectedUserEmail}`;
+            const url = `${process.env.REACT_APP_API_URL}/api/v1/user/info?email=${selectedUserEmail}`;
             try {
                 const response = await fetch(url, {
                     method: "GET",

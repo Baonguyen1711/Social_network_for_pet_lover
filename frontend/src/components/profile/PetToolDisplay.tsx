@@ -149,7 +149,7 @@ const PetToolDisplay: React.FC<PetToolDisplayProps> = ({
       ...fields,
       profilePicture: uploadedImageUrl,
     }));
-    response = await fetch("http://localhost:5000/api/v1/pet/create", {
+    response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/pet/create`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -179,7 +179,7 @@ const PetToolDisplay: React.FC<PetToolDisplayProps> = ({
   useEffect(() => {
     const userId = localStorage.getItem('userId')
     const fetchData = async () => { 
-      const url = `http://localhost:5000/api/v1/user/getbyid/${userId}`;
+      const url = `${process.env.REACT_APP_API_URL}/api/v1/user/getbyid/${userId}`;
       try {
         const response = await fetch(url, {
           method: "GET",

@@ -2,14 +2,14 @@ import React from "react";
 import { useSocket } from "../components/message/SocketContext";
 import { EventSocket } from "../types";
 import { io, Socket } from "socket.io-client";
-const socket = io("http://localhost:4000");
+const socket = io(`${process.env.REACT_APP_API_URL}`);
 
 export const register = (body: object) => {
-  const url = "http://127.0.0.1:5000/api/v1/register";
+  const url = `${process.env.REACT_APP_API_URL}/api/v1/register`;
 };
 
 export const getUserByUserId = async (userId: string | undefined | null) => {
-  const url = `http://localhost:5000/api/v1/user/getbyid/${userId}`;
+  const url = `${process.env.REACT_APP_API_URL}/api/v1/user/getbyid/${userId}`;
   try {
     const response = await fetch(url, {
       method: "GET",
@@ -29,7 +29,7 @@ export async function handleFollow(
   followingId: string | undefined
 ) {
   try {
-    const response = await fetch("http://localhost:5000/api/v1/follow/create", {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/follow/create`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -51,7 +51,7 @@ export async function checkFollowed(
 ) {
   try {
     const response = await fetch(
-      "http://localhost:5000/api/v1/follow/isfollowed",
+      `${process.env.REACT_APP_API_URL}/api/v1/follow/isfollowed`,
       {
         method: "POST",
         headers: {
@@ -73,7 +73,7 @@ export async function handleLikePost(postId: string | undefined) {
   if (postId == undefined) return;
 
   try {
-    const response = await fetch("http://localhost:5000/api/v1/like/likepost", {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/like/likepost`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -99,7 +99,7 @@ export async function handleGetFavouritedPetByUserId() {
   const userId = localStorage.getItem("userId");
   try {
     const response = await fetch(
-      `http://localhost:5000/api/v1/petuser/favourited/getbyuserid?userId=${userId}`,
+      `${process.env.REACT_APP_API_URL}/api/v1/petuser/favourited/getbyuserid?userId=${userId}`,
       {
         method: "Get",
       }
@@ -121,7 +121,7 @@ export async function createPetUserRelationship(petId: string | null) {
   if (petId === undefined) return;
   try {
     const response = await fetch(
-      "http://localhost:5000/api/v1/petuser/create",
+      `${process.env.REACT_APP_API_URL}/api/v1/petuser/create`,
       {
         method: "POST",
         headers: {
@@ -147,7 +147,7 @@ export async function handleDeletePetUserById(petUserId: String | undefined) {
   if (petUserId === undefined) return;
   try {
     const response = await fetch(
-      `http://localhost:5000/api/v1/petuser/delete?petUserId=${petUserId}`,
+      `${process.env.REACT_APP_API_URL}/api/v1/petuser/delete?petUserId=${petUserId}`,
       {
         method: "POST",
       }
@@ -170,7 +170,7 @@ export async function isChecked(
   if (userId === undefined || petId === undefined) return;
   try {
     const response = await fetch(
-      `http://localhost:5000/api/v1/petuser/checksaved?userId=${userId}&petId=${petId}`,
+      `${process.env.REACT_APP_API_URL}/api/v1/petuser/checksaved?userId=${userId}&petId=${petId}`,
       {
         method: "GET",
       }
@@ -193,7 +193,7 @@ export async function createPostUserRelationship(
   if (postId === undefined) return;
   try {
     const response = await fetch(
-      "http://localhost:5000/api/v1/postuser/toggleSave",
+      `${process.env.REACT_APP_API_URL}/api/v1/postuser/toggleSave`,
       {
         method: "POST",
         headers: {
@@ -219,7 +219,7 @@ export async function handleGetFavouritedPostByUserId() {
   console.log("sdsda");
   try {
     const response = await fetch(
-      `http://localhost:5000/api/v1/postuser/favourited/getbyuserid?userId=${userId}`,
+      `${process.env.REACT_APP_API_URL}/api/v1/postuser/favourited/getbyuserid?userId=${userId}`,
       {
         method: "Get",
       }
@@ -241,7 +241,7 @@ export async function handleDeletePostUserById(postUserId: String | undefined) {
   if (postUserId === undefined) return;
   try {
     const response = await fetch(
-      `http://localhost:5000/api/v1/postuser/delete?postUserId=${postUserId}`,
+      `${process.env.REACT_APP_API_URL}/api/v1/postuser/delete?postUserId=${postUserId}`,
       {
         method: "POST",
       }
@@ -264,7 +264,7 @@ export async function handleGetPostByPostId(
   if (postId === undefined) return;
   try {
     const response = await fetch(
-      `http://localhost:5000/api/v1/post/getpostbypostid?postId=${postId}&userAccessId=${userId}`,
+      `${process.env.REACT_APP_API_URL}/api/v1/post/getpostbypostid?postId=${postId}&userAccessId=${userId}`,
       {
         method: "POST",
       }
@@ -284,7 +284,7 @@ export async function handleLikeAPI(postId: string | undefined, type: string) {
 
   const handleSocketEmit = async (eventSocketList: EventSocket[]) => {
 
-    const url = `http://127.0.0.1:5000/api/v1/notification/create`
+    const url = `${process.env.REACT_APP_API_URL}/api/v1/notification/create`
 
     try {
       debugger;
@@ -307,7 +307,7 @@ export async function handleLikeAPI(postId: string | undefined, type: string) {
 
   }
   try {
-    const response = await fetch("http://localhost:5000/api/v1/like/likepost", {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/like/likepost`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -337,7 +337,7 @@ export async function handleLikeAPI(postId: string | undefined, type: string) {
     };
 
 
-      const infoUrl = `http://localhost:5000/api/v1/user/info?email=${localStorage.getItem("email")}`;
+      const infoUrl = `${process.env.REACT_APP_API_URL}/api/v1/user/info?email=${localStorage.getItem("email")}`;
       try {
         const response = await fetch(infoUrl, {
           method: "GET",
@@ -379,7 +379,7 @@ export async function handleLikeAPI(postId: string | undefined, type: string) {
 export async function handleDeleteCommentAPI(commentId: string | undefined) {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/comment/delete?commentId=${commentId}`,
+        `${process.env.REACT_APP_API_URL}/api/v1/comment/delete?commentId=${commentId}`,
         {
           method: "POST",
           headers: {
@@ -404,7 +404,7 @@ export async function handleDeleteCommentAPI(commentId: string | undefined) {
   ) {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/user/updatename`,
+        `${process.env.REACT_APP_API_URL}/api/v1/user/updatename`,
         {
           method: "POST",
           headers: {
@@ -433,7 +433,7 @@ export async function handleDeleteCommentAPI(commentId: string | undefined) {
   ) {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/user/updatedescription`,
+        `${process.env.REACT_APP_API_URL}/api/v1/user/updatedescription`,
         {
           method: "POST",
           headers: {
@@ -461,7 +461,7 @@ export async function handleDeleteCommentAPI(commentId: string | undefined) {
   ) {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/user/updateAvatar`,
+        `${process.env.REACT_APP_API_URL}/api/v1/user/updateAvatar`,
         {
           method: "POST",
           headers: {
@@ -492,7 +492,7 @@ export async function handleDeleteCommentAPI(commentId: string | undefined) {
     //console.log("images",images)
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/post/updatepost`,
+        `${process.env.REACT_APP_API_URL}/api/v1/post/updatepost`,
         {
           method: "POST",
           headers: {
@@ -523,7 +523,7 @@ export async function handleDeleteCommentAPI(commentId: string | undefined) {
     //console.log("images",images)
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/comment/update`,
+        `${process.env.REACT_APP_API_URL}/api/v1/comment/update`,
         {
           method: "POST",
           headers: {
@@ -548,7 +548,7 @@ export async function handleDeleteCommentAPI(commentId: string | undefined) {
   export async function handleGetFollowingByUserId(userId: string | null | undefined, searchString: string | null = "") {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/follow/getfollowingbyuserid?followerId=${userId}&searchString=${searchString}`,
+        `${process.env.REACT_APP_API_URL}/api/v1/follow/getfollowingbyuserid?followerId=${userId}&searchString=${searchString}`,
         {
           method: "POST",
           headers: {
@@ -569,7 +569,7 @@ export async function handleDeleteCommentAPI(commentId: string | undefined) {
   export async function handleGetFollowerByUserId(userId: string | null | undefined, searchString: string | null = "") {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/follow/getfollowerbyuserid?followingId=${userId}&searchString=${searchString}`,
+        `${process.env.REACT_APP_API_URL}/api/v1/follow/getfollowerbyuserid?followingId=${userId}&searchString=${searchString}`,
         {
           method: "POST",
           headers: {
@@ -590,7 +590,7 @@ export async function handleDeleteCommentAPI(commentId: string | undefined) {
   export async function handleDeleteFollow(followerId: string | undefined, followingId: string | undefined) {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/follow/deletefollow?followerId=${followerId}&followingId=${followingId}`,
+        `${process.env.REACT_APP_API_URL}/api/v1/follow/deletefollow?followerId=${followerId}&followingId=${followingId}`,
         {
           method: "POST",
           headers: {
@@ -612,7 +612,7 @@ export async function handleSearchUserByUsername(searchString:string|null)
 {
   try {
     const response = await fetch(
-      `http://localhost:5000/api/v1/user/searchuserbyusername?searchString=${searchString}`,
+      `${process.env.REACT_APP_API_URL}/api/v1/user/searchuserbyusername?searchString=${searchString}`,
       {
         method: "POST",
         headers: {
@@ -636,7 +636,7 @@ export async function handleWriteHistoryAPI(userId:string|null,targetId:string,t
   console.log("handleWriteHistory",userId,targetId,type)
   try {
     const response = await fetch(
-      `http://localhost:5000/api/v1/history/create`,
+      `${process.env.REACT_APP_API_URL}/api/v1/history/create`,
       {
         method: "POST",
         headers: {
@@ -663,7 +663,7 @@ export async function handleDeleteHistoryByIdAPI(userId:string|null,targetId:str
 {
   try {
     const response = await fetch(
-      `http://localhost:5000/api/v1/history/delete`,
+      `${process.env.REACT_APP_API_URL}/api/v1/history/delete`,
       {
         method: "POST",
         headers: {
@@ -690,7 +690,7 @@ export async function handleGetSearchListByIdAPI(userId:string|null)
 {
   try {
     const response = await fetch(
-      `http://localhost:5000/api/v1/history/gethistorysearch`,
+      `${process.env.REACT_APP_API_URL}/api/v1/history/gethistorysearch`,
       {
         method: "POST",
         headers: {

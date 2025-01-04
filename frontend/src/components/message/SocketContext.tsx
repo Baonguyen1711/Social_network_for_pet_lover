@@ -5,7 +5,7 @@ import { MessageComponentType, EventSocket } from '../../types';
 import { RecentChat } from '../../types';
 import { useBackground } from './BackgroundContext';
 import { handleGetPostByPostId } from '../../sercives/api';
-const socket = io('http://localhost:4000');
+const socket = io(`${process.env.REACT_APP_API_URL}`);
 
 interface SocketContextType {
   socket: Socket;
@@ -54,7 +54,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     socket.on("newLikeOnPost", async (like) => {
       debugger;
       const res = await handleGetPostByPostId(like.postId, localStorage.getItem("userId"))
-      const url = `http://localhost:5000/api/v1/user/info?email=${like.user}`;
+      const url = `${process.env.REACT_APP_API_URL}/api/v1/user/info?email=${like.user}`;
       try {
         const response = await fetch(url, {
           method: "GET",
@@ -116,7 +116,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         "image": message.image
       }
 
-      const url = `http://localhost:5000/api/v1/message/post?senderEmail=${message.sendfrom}&recipentEmail=${currentEmail}&content=${message.content}`
+      const url = `${process.env.REACT_APP_API_URL}/api/v1/message/post?senderEmail=${message.sendfrom}&recipentEmail=${currentEmail}&content=${message.content}`
       const postMessage = async () => {
         try {
           const response = await fetch(url)

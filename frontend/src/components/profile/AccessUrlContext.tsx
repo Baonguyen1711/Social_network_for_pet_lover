@@ -17,10 +17,10 @@ export const AccessUrlProvider: React.FC<{ children: ReactNode;type:String,Targe
   useEffect(()=>{
     if(type==="profile")
       {
-        url = `http://localhost:5000/api/v1/post/getpostsbyuserid?targetId=${TargetUserId}&userAccessId=${userId}`;
+        url = `${process.env.REACT_APP_API_URL}/api/v1/post/getpostsbyuserid?targetId=${TargetUserId}&userAccessId=${userId}`;
       } else 
       { 
-        url = `http://localhost:5000/api/v1/post/getposthome/${userId}`;
+        url = `${process.env.REACT_APP_API_URL}/api/v1/post/getposthome/${userId}`;
       }
     setUrl(url)    
   },[userId])

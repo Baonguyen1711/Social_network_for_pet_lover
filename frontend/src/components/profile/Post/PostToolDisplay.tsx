@@ -60,7 +60,7 @@ const PostToolDisplay: React.FC<PostToolDisplayProps> = ({
   useEffect(() => {
     const userId = localStorage.getItem('userId')
     const fetchData = async () => { 
-      const url = `http://localhost:5000/api/v1/user/getbyid/${userId}`;
+      const url = `${process.env.REACT_APP_API_URL}/api/v1/user/getbyid/${userId}`;
       try {
         const response = await fetch(url, {
           method: "GET",
@@ -122,7 +122,7 @@ const PostToolDisplay: React.FC<PostToolDisplayProps> = ({
         ...fields,
         images: [uploadedImageUrl], // Update the images field
       }));
-      response = await fetch("http://localhost:5000/api/v1/post/create", {
+      response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/post/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -135,7 +135,7 @@ const PostToolDisplay: React.FC<PostToolDisplayProps> = ({
         }),
       });
     } else {
-      response = await fetch("http://localhost:5000/api/v1/post/create", {
+      response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/post/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

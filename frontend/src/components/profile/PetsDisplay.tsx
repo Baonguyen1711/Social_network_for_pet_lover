@@ -41,7 +41,7 @@ const PetsDisplay = () => {
   }, [userId]);
   const fetchData = async () => {
     //console.log("sdsksjsj",userId)
-    const url = `http://localhost:5000/api/v1/pet/getbyuserid?userId=${userId}`;
+    const url = `${process.env.REACT_APP_API_URL}/api/v1/pet/getbyuserid?userId=${userId}`;
     try {
       const response = await fetch(url, {
         method: "GET",

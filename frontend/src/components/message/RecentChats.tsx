@@ -111,7 +111,7 @@ const SideBar = () => {
   useEffect(() => {
     const fetchData = async () => {
       debugger;
-      const url = `http://localhost:5000/api/v1/user/info?email=${selectedUserEmail}`;
+      const url = `${process.env.REACT_APP_API_URL}/api/v1/user/info?email=${selectedUserEmail}`;
       try {
         const response = await fetch(url, {
           method: "GET",
@@ -146,7 +146,7 @@ const SideBar = () => {
       const newImageArray = [...prevImageArray, newImage]
       setImageData(newImageArray)
 
-      const url = `http://localhost:5000/api/v1/image/upload?type=messageBackground`
+      const url = `${process.env.REACT_APP_API_URL}/api/v1/image/upload?type=messageBackground`
 
       const response = await fetch(url, {
         method: "POST",
@@ -184,7 +184,7 @@ const SideBar = () => {
   //       return
   //     }
       
-  //     const url = `http://localhost:5000/api/v1/message/history?senderEmail=${email}&recipentEmail=${selectedUserEmail}`
+  //     const url = `${process.env.REACT_APP_API_URL}/api/v1/message/history?senderEmail=${email}&recipentEmail=${selectedUserEmail}`
 
   //     try {
   //       const response = await fetch(url)
@@ -223,7 +223,7 @@ const SideBar = () => {
     const fetchData = async () => {
 
 
-      const url = `http://127.0.0.1:5000/api/v1/message/recent?email=${email}`
+      const url = `${process.env.REACT_APP_API_URL}/api/v1/message/recent?email=${email}`
 
       try {
 
@@ -254,7 +254,7 @@ const SideBar = () => {
           var avatar =''
           const fetchData = async () => {
             debugger;
-            const url = `http://localhost:5000/api/v1/user/info?email=${selectedUserEmail}`;
+            const url = `${process.env.REACT_APP_API_URL}/api/v1/user/info?email=${selectedUserEmail}`;
             try {
               const response = await fetch(url, {
                 method: "GET",
@@ -314,7 +314,7 @@ const SideBar = () => {
     const fetchData = async () => {
 
       debugger;
-      const url = `http://127.0.0.1:5000/api/v1/message/conversation/get?senderEmail=${email}&recipentEmail=${selectedUserEmail}`
+      const url = `${process.env.REACT_APP_API_URL}/api/v1/message/conversation/get?senderEmail=${email}&recipentEmail=${selectedUserEmail}`
       try {
 
 
@@ -343,7 +343,7 @@ const SideBar = () => {
     };
 
     const getBackgroundImage = async () => {
-      const url = `http://localhost:5000/api/v1/image/get?type=messageBackground&senderEmail=${email}&recipentEmail=${selectedUserEmail}`
+      const url = `${process.env.REACT_APP_API_URL}/api/v1/image/get?type=messageBackground&senderEmail=${email}&recipentEmail=${selectedUserEmail}`
 
       const response = await fetch(url, {
         method: "GET"

@@ -20,7 +20,7 @@ const CardMightLikeBox: React.FC<CardMightLikeBoxProps> = ({
   async function handleFollow(followingId: string) {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/v1/follow/create",
+        `${process.env.REACT_APP_API_URL}/api/v1/follow/create`,
         {
           method: "POST",
           headers: {
@@ -51,7 +51,7 @@ const CardMightLikeBox: React.FC<CardMightLikeBoxProps> = ({
   async function handleIgnore(followingId: string) {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/v1/follow/ignore",
+        `${process.env.REACT_APP_API_URL}/api/v1/follow/ignore`,
         {
           method: "POST",
           headers: {

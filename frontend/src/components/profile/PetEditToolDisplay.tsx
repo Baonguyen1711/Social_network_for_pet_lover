@@ -168,7 +168,7 @@ const PetEditToolDisplay: React.FC<PetEditToolDisplayProps> = ({
       ...fields,
       profilePicture: uploadedImageUrl,
     }));
-    response = await fetch("http://localhost:5000/api/v1/pet/update", {
+    response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/pet/update`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

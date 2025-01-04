@@ -70,7 +70,7 @@ const PetInfomationCard: React.FC<Props> = (props) => {
   const handleDelete = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/pet/delete?petId=${pet._id}`,
+        `${process.env.REACT_APP_API_URL}/api/v1/pet/delete?petId=${pet._id}`,
         { method: "DELETE" }
       );
       if (!response.ok) {

@@ -9,7 +9,7 @@ const CardUpCommingEvent = () => {
   const [chatsList, setChatsList] = useState<Event[]>();
   useEffect(() => {
     const fetchData = async () => {
-      const url = `http://localhost:5000/api/v1/event/all`;
+      const url = `${process.env.REACT_APP_API_URL}/api/v1/event/all`;
 
       try {
         const response = await fetch(url, {

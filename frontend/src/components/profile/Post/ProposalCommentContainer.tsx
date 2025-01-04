@@ -29,7 +29,7 @@ const ProposalCommentContainer: React.FC<props> = (props) => {
   const fetchData = async () => {
     const postId = props.postId;
     const userId = localStorage.getItem("userId");
-    const url = `http://localhost:5000/api/v1/comment/getCommentsByPostId?postId=${postId}&userId=${userId}`;
+    const url = `${process.env.REACT_APP_API_URL}/api/v1/comment/getCommentsByPostId?postId=${postId}&userId=${userId}`;
     try {
       const response = await fetch(url, {
         method: "GET",

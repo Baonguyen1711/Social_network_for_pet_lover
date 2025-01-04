@@ -60,7 +60,7 @@ const MessageDisplay: React.FC<MessageComponentArray> = ({ isChatbot }) => {
         return
       }
       debugger;
-      const url = `http://localhost:5000/api/v1/message/history?senderEmail=${selectedUserEmail}&recipentEmail=${recipentEmail}`
+      const url = `${process.env.REACT_APP_API_URL}/api/v1/message/history?senderEmail=${selectedUserEmail}&recipentEmail=${recipentEmail}`
 
       try {
         const response = await fetch(url)

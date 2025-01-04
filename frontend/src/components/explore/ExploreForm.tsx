@@ -14,7 +14,7 @@ const Explore = () => {
   useEffect(() => {
     const fetchData = async () => {
       const userId = localStorage.getItem("userId")
-      const url = `http://localhost:5000/api/v1/post/posts?userId=${userId}`;
+      const url = `${process.env.REACT_APP_API_URL}/api/v1/post/posts?userId=${userId}`;
       try {
         const response = await fetch(url, {
           method: "GET",

@@ -34,7 +34,7 @@ const Header: React.FC = () => {
   useEffect(() => {
     const getNoti = async () => {
       debugger;
-      const url = `http://127.0.0.1:5000/api/v1/notification/get?page=1&limit=5&postOwnerEmail=${userEmail}`
+      const url = `${process.env.REACT_APP_API_URL}/api/v1/notification/get?page=1&limit=5&postOwnerEmail=${userEmail}`
       try {
         const response = await fetch(url)
         const data = await response.json()

@@ -68,7 +68,7 @@ const PostToolDisplay: React.FC<PostToolDisplayProps> = ({
   useEffect(() => {
     const userId = localStorage.getItem("userId");
     const fetchData = async () => {
-      const url = `http://localhost:5000/api/v1/user/getbyid/${userId}`;
+      const url = `${process.env.REACT_APP_API_URL}/api/v1/user/getbyid/${userId}`;
       try {
         const response = await fetch(url, {
           method: "GET",

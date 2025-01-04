@@ -29,7 +29,7 @@ const SideBarHome = () => {
   const nav = useNavigate()
   useEffect(() => {
     const fetchData = async () => {
-      const url = `http://localhost:5000/api/v1/message/recent?email=${currentEmail}`;
+      const url = `${process.env.REACT_APP_API_URL}/api/v1/message/recent?email=${currentEmail}`;
 
       try {
         const response = await fetch(url, {
@@ -51,7 +51,7 @@ const SideBarHome = () => {
     };
 
     const getAllUser = async () => {
-      const url = `http://localhost:5000/api/v1/user/getAll`;
+      const url = `${process.env.REACT_APP_API_URL}/api/v1/user/getAll`;
 
       try {
         const response = await fetch(url, {

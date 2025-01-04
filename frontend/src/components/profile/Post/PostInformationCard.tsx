@@ -101,7 +101,7 @@ const PostInformationCard: React.FC<Props> = (props) => {
   const handleDelete = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/post/delete?postId=${post?._id}`,
+        `${process.env.REACT_APP_API_URL}/api/v1/post/delete?postId=${post?._id}`,
         { method: "DELETE" }
       );
       if (!response.ok) {

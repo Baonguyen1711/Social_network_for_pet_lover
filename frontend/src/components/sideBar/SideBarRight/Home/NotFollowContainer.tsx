@@ -9,7 +9,7 @@ const NotFollowContainer = () => {
   useEffect(() => {
   const currentUserId = localStorage.getItem("userId");
     const fetchData = async () => {
-      const url = `http://localhost:5000/api/v1/follow/recommentfollow/${currentUserId}`;
+      const url = `${process.env.REACT_APP_API_URL}/api/v1/follow/recommentfollow/${currentUserId}`;
 
       try {
         const response = await fetch(url, {

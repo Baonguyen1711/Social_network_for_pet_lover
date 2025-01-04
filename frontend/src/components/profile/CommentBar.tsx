@@ -15,7 +15,7 @@ import { handleGetPostByPostId } from "../../sercives/api";
 import { io, Socket } from 'socket.io-client';
 import clsx from 'clsx'
 import createBatchProcessor from "../../sercives/debounce";
-const socket = io('http://localhost:4000');
+const socket = io(`${process.env.REACT_APP_API_URL}`);
 interface Props {
   postId: string | undefined | null
   parentId?: string | undefined | null
@@ -28,7 +28,7 @@ const CommentBar = forwardRef<HTMLInputElement, Props>((props, ref) => {
 
   const handleSocketEmit = async () => {
 
-    const url = `http://127.0.0.1:5000/api/v1/notification/create`
+    const url = `${process.env.REACT_APP_API_URL}/api/v1/notification/create`
     if(eventSocketList.length >=3) {
       try {
         debugger;
@@ -78,7 +78,7 @@ const CommentBar = forwardRef<HTMLInputElement, Props>((props, ref) => {
     }
 
     try {
-      const url = `http://localhost:5000/api/v1/comment/create`;
+      const url = `${process.env.REACT_APP_API_URL}/api/v1/comment/create`;
       const response = await fetch(url, {
         method: "POST",
         headers: {
@@ -120,7 +120,7 @@ const CommentBar = forwardRef<HTMLInputElement, Props>((props, ref) => {
       console.log("Error: ", e);
     }
 
-    const infoUrl = `http://localhost:5000/api/v1/user/info?email=${localStorage.getItem("email")}`;
+    const infoUrl = `${process.env.REACT_APP_API_URL}/api/v1/user/info?email=${localStorage.getItem("email")}`;
     try {
       const response = await fetch(infoUrl, {
         method: "GET",

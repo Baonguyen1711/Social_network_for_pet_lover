@@ -49,7 +49,7 @@ const Comment: React.FC<Props> = (props) => {
   const handleLikeComment = async () => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/v1/like/likepost",
+        `${process.env.REACT_APP_API_URL}/api/v1/like/likepost`,
         {
           method: "POST",
           headers: {

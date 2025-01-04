@@ -40,7 +40,7 @@ const Palette: React.FC<PaletteProps> = ({ }) => {
 
         changeBackground(image)
 
-        const url = `http://localhost:5000/api/v1/message/conversation/post`
+        const url = `${process.env.REACT_APP_API_URL}/api/v1/message/conversation/post`
 
         const response = await fetch(url, {
             method: 'POST',

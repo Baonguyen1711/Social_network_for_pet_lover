@@ -30,7 +30,7 @@ const SideBarFavourite: React.FC<SideBarProps> = ({ isOpened }) => {
 //     const getUserInfo = async () => {
 //       debugger;
 //       try {
-//         const url = `http://127.0.0.1:5000/api/v1/user/info?email=${currentEmail}`;
+//         const url = `${process.env.REACT_APP_API_URL}/api/v1/user/info?email=${currentEmail}`;
 
 //         const response = await fetch(url, {
 //           method: "GET",
