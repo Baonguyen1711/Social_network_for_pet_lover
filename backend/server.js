@@ -5,8 +5,8 @@ const cors = require("cors");
 const app = express();
 const http = require("http");
 const socketIo = require("socket.io");
-const port = 5000;
-const socketPort = 4000;
+const port = process.env.PORT || 5000;
+const socketPort = process.env.PORT || 4000;
 
 app.use(cors());
 //app.use(express.json())
