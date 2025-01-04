@@ -105,7 +105,7 @@ const SideBar = () => {
   const [selectedId, setSelectedId] = useState<string>("")
   const [backgroundColor, setBackgroundColor] = useState<string>(lightTheme.colors.background)
   const nav = useNavigate()
-  const [selectedUserAvatar, setSelectedUserAvatar] = useState<string>("")
+  const [selectedUserAvatar, setSelectedUserAvatar] = useState<string|undefined>("")
   const [selectedUserFirstName, setSelectedUserFirstName] = useState<string>("")
   const [selectedUserLastName, setSelectedUserLastName] = useState<string>("")
   useEffect(() => {
@@ -224,6 +224,7 @@ const SideBar = () => {
 
 
       const url = `http://127.0.0.1:5000/api/v1/message/recent?email=${email}`
+
       try {
 
 
@@ -236,13 +237,17 @@ const SideBar = () => {
           throw new Error(`Error in getting message`);
         }
 
-
+        debugger;
         const data = await response.json()
-        const recentMessages = data.recentMessages
+        const recentMessages:RecentChat[] = data.recentMessages
         console.log("data", data)
         console.log("recentMessages", recentMessages)
-        const selectedUserAvatar = recentMessages[0].userInfo.avatar
-        const emailExists = recentChats.some(chat => chat._id === selectedUserEmail);
+        if (recentMessages.length > 0) {
+          const selectedUserAvatar = recentMessages[0]?.userInfo?.avatar; // Use optional chaining
+          setSelectedUserAvatar(selectedUserAvatar)
+          console.log("Selected User Avatar:", selectedUserAvatar);
+        }
+        const emailExists = recentMessages.some(chat => chat.userInfo?.email === selectedUserEmail);
         if(!emailExists && selectedUserEmail) {
           var firstname = ''
           var lastname=''
@@ -284,7 +289,6 @@ const SideBar = () => {
           recentMessages.push(newRecentChat)
         }
         console.log("selectedUserAvatar", selectedUserAvatar)
-        setSelectedUserAvatar(selectedUserAvatar)
         setRecentChats(recentMessages)
 
 
@@ -405,8 +409,9 @@ const SideBar = () => {
 
         <List sx={{ width: '100%', maxWidth: 360, bgcolor: lightTheme.colors.background }}>
           {
-            recentChats.map((message) => (
-              <ListItem
+            recentChats.map((message) => {
+              console.log("recent message", message)
+              return <ListItem
                 key={message._id}
 
                 onClick={() => {
@@ -456,7 +461,7 @@ const SideBar = () => {
 
                 </Typography>
               </ListItem>
-            ))
+})
           }
 
         </List>
@@ -510,6 +515,7 @@ const SideBar = () => {
                   onClick={
                     () => {
                       debugger;
+                      console.log("item.img", item.img)
                       setBackgroundImageOver(item.img)
                       setIsPaletteOpen(!isPaletteOpen)
                     }}

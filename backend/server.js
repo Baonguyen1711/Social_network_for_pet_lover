@@ -36,6 +36,7 @@ io.on("connection", (socket) => {
     socket.to(recipentId).emit("newMessage", {
       sendfrom: sendMessage.senderEmail,
       content: sendMessage.content,
+      image: sendMessage.image
     });
   });
 

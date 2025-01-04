@@ -47,7 +47,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ recipent, isChatbot }) => {
   const { selectedUserEmail } = useSelectedUser()
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-
+    debugger;
     const file = event.target.files?.[0]
     if(file) {
       const imageLink = await uploadToCloudinary(file)
@@ -60,13 +60,14 @@ const MessageInput: React.FC<MessageInputProps> = ({ recipent, isChatbot }) => {
       const sentMessage = recipent
         if(sentMessage){
           sentMessage.content = message
+          sentMessage.image = imageLink
         }
         console.log("recipent", sentMessage)
 
       const newMessage: MessageComponentType = {
         content: "",
         timeStamp: new Date().toISOString(),
-        isSender: true,
+        isSender: false,
         isChatbot: false,
         image: imageLink, // Set the uploaded image link
       };
@@ -74,9 +75,12 @@ const MessageInput: React.FC<MessageInputProps> = ({ recipent, isChatbot }) => {
       setMessages((prevMessages) => [...prevMessages, newMessage]);
 
 
-      const url = `http://localhost:5000/api/v1/message/post?senderEmail=${currentEmail}&recipentEmail=${selectedUserEmail}&content=${message}&image=${imageLink}`
+      const url = `http://localhost:5000/api/v1/message/post?senderEmail=${currentEmail}&recipentEmail=${sentMessage?.recipentEmail}&content=${message}&image=${imageLink}`
         console.log("send Mesage", sentMessage)
         sendMessage(sentMessage)
+        if(sentMessage){
+          sentMessage.image = undefined
+        }
         setMessage("")
         try {
           const response = await fetch(url)

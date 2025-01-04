@@ -112,7 +112,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         "_id": message.sendfrom,
         "latestMessage": message.image ? "image" : message.content,
         "timeStamp": new Date().toISOString(),
-        "userInfo": null
+        "userInfo": null,
+        "image": message.image
       }
 
       const url = `http://localhost:5000/api/v1/message/post?senderEmail=${message.sendfrom}&recipentEmail=${currentEmail}&content=${message.content}`

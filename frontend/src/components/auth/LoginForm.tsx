@@ -4,8 +4,12 @@ import { APP_NAME } from "../../constants/constants"
 import useAuth from "../../hooks/auth/useAuth"
 import { User } from "../../types"
 import { useNavigate } from "react-router-dom"
+import { useSnackbar } from "../shared/SnackBarProvider";
+import { SnackbarProvider } from "../shared/SnackBarProvider"
 
 const LoginForm: React.FC = () => {
+
+    const { showSnackBar } = useSnackbar(); // Access snackbar functions
 
     const { login } = useAuth();
     const [email, setEmail] = useState("")
@@ -16,10 +20,13 @@ const LoginForm: React.FC = () => {
         event.preventDefault()
 
         try {
-            await login(email, password)
-            localStorage.setItem("email", email)
-
-            navigate("/home")
+            const isLoginSuccess = await login(email, password)
+            if(isLoginSuccess) {
+                showSnackBar("Login successful!", "success"); // Show success alert
+                navigate("/home"); // Navigate to the dashboard or desired page
+            } else {
+                showSnackBar("Login failed. Please check your credentials.", "error"); // Show error alert
+         }
         } catch (e) {
             console.log("Login failed" , e)
         }
@@ -56,7 +63,7 @@ const LoginForm: React.FC = () => {
                 <Typography
                     variant="h6" color="#ACBAA4" margin={3} gutterBottom
                 >
-                    Sign in to begin your adventure in discovering the fashion world
+                    Sign in to begin your adventure in discovering the pet lover world
                 </Typography>
                 <form onSubmit={handleSubmit}>
                     <TextField

@@ -1,8 +1,10 @@
+
+
 .coverContainer {
     display: flex;
     top: 0;
     width:100%;
-    background-color: #708258;
+    /* background-color: #708258; */
 }
 
 .bodyContainer {

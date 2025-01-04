@@ -5,22 +5,26 @@ import { Height } from '@mui/icons-material'
 import { reverse } from 'dns'
 import { useSocket } from '../message/SocketContext'
 import { useSelectedUser } from '../message/SelectedUserContext'
+import { useParams } from 'react-router-dom'
 
 
 interface PaletteProps {
     imgSrc: string
 }
 
-const Palette: React.FC<PaletteProps> = ({ imgSrc }) => {
+const Palette: React.FC<PaletteProps> = ({ }) => {
+    debugger;
     const senderEmail = localStorage.getItem("email")
-    const { selectedUserEmail } = useSelectedUser()
-    const { isPaletteOpen, palette, setIsPaletteOpen, selectedTheme, setSelectedTheme } = useBackground()
+    //const { selectedUserEmail } = useSelectedUser()
+    const selectedUserEmail = useParams().userEmail
+    const { isPaletteOpen, palette, setIsPaletteOpen, selectedTheme, setSelectedTheme, backgroundImageOver } = useBackground()
     const { changeBackground } = useSocket()
     const [isSelectedColor, setIsSelectedColor] = useState<boolean>(false)
     const [tempSelectedColors, setTempSelectedColors] = useState<number[][]>([])
 
 
     const handleClick = async () => {
+        console.log("imgSrc", backgroundImageOver)
         debugger;
         console.log("tempSelectedColors", tempSelectedColors)
         setSelectedTheme(tempSelectedColors)
@@ -28,7 +32,7 @@ const Palette: React.FC<PaletteProps> = ({ imgSrc }) => {
         setIsPaletteOpen(false)
 
         const image = {
-            "src": imgSrc,
+            "src": backgroundImageOver,
             "theme": tempSelectedColors,
             "senderEmail": senderEmail,
             "recipentEmail": selectedUserEmail
@@ -46,7 +50,7 @@ const Palette: React.FC<PaletteProps> = ({ imgSrc }) => {
             body: JSON.stringify({
                 senderEmail: senderEmail,
                 recipentEmail: selectedUserEmail,
-                image: imgSrc,
+                image: backgroundImageOver,
                 theme: selectedTheme
             }),
         })
@@ -127,7 +131,7 @@ const Palette: React.FC<PaletteProps> = ({ imgSrc }) => {
                     x
                 </button>
                 <img
-                    src={imgSrc}
+                    src={backgroundImageOver}
                     style={{
                         width: "100%",
                         height: "100%",

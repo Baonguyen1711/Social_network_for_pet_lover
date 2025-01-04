@@ -16,6 +16,8 @@ import { ThemeProvider, Box } from "@mui/material";
 import { SelectedUserProvider } from "./components/message/SelectedUserContext";
 import { SocketProvider } from "./components/message/SocketContext";
 import { BackgroundProvider } from "./components/message/BackgroundContext";
+import { SnackbarProvider } from "./components/shared/SnackBarProvider";
+
 import HomePage from "./pages/home/HomePage";
 import ProtectedRoutes from "./pages/auth/ProtectedRoute";
 //import { ProfileProvider } from "./components/profile/ProfileContext";
@@ -35,6 +37,7 @@ const App = () => {
     <BackgroundProvider>
       <SocketProvider>
         <SelectedUserProvider>
+          <SnackbarProvider>
           <ThemeProvider theme={theme}>
             <Box component="div" minHeight="100vh">
               
@@ -67,6 +70,8 @@ const App = () => {
               ) : null}
             </Box>
           </ThemeProvider>
+          </SnackbarProvider>
+
         </SelectedUserProvider>
       </SocketProvider>
     </BackgroundProvider>

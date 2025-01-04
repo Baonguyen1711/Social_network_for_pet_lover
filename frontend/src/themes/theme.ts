@@ -11,8 +11,8 @@ const theme = createTheme({
 
 export const lightTheme = {
   colors: {
-    primary: '#845162',
-    secondary: '#E3B6B1',
+    primary: "#CBD9C4",
+    secondary: "#89966B",
     background: '#FFFFFF',
     text: '#000000',
   },

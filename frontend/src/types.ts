@@ -38,6 +38,7 @@ export interface Recipent {
   recipentEmail: string | undefined;
   senderEmail: string | undefined;
   content: string | null;
+  image?: string
 }
 
 export interface MessageComponentType {
@@ -53,6 +54,7 @@ export interface RecentChat {
   _id: string;
   latestMessage: string;
   timeStamp: string;
+  image?: string,
   userInfo: {
     email: string | undefined;
 
