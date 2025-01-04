@@ -6,7 +6,7 @@ const app = express();
 const http = require("http");
 const socketIo = require("socket.io");
 const port = process.env.PORT || 5000;
-const socketPort = process.env.PORT || 4000;
+const socketPort = process.env.SOCKET_PORT || 4000;
 
 app.use(cors());
 //app.use(express.json())
@@ -88,7 +88,7 @@ io.on("connection", (socket) => {
 //     credentials: true, // Allow credentials (cookies, authorization headers, etc.)
 // };
 
-server.listen(socketPort, () => {
+server.listen(socketPort,"0.0.0.0", () => {
   console.log(`Listening on port ${socketPort}`);
 });
 
