@@ -1,5 +1,5 @@
 
-const User = require('../models/user')
+const User = require('../models/User')
 const Image = require('../models/Image')
 const Message = require('../models/Message')
 const mongoose = require('mongoose')
