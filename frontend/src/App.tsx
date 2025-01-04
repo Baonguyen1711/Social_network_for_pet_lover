@@ -38,38 +38,39 @@ const App = () => {
       <SocketProvider>
         <SelectedUserProvider>
           <SnackbarProvider>
-          <ThemeProvider theme={theme}>
-            <Box component="div" minHeight="100vh">
-              
+            <ThemeProvider theme={theme}>
+              <Box component="div" minHeight="100vh">
 
-              <Routes>
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/register" element={<RegisterPage />} />
+                
+                <Routes>
+                  
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/register" element={<RegisterPage />} />
 
-                <Route path="/message/:userEmail?" element={<ProtectedRoutes element={<MessagePage />} />}/>
-                <Route path="/explore" element={<ProtectedRoutes element={<ExplorePage />} />}/>
-                <Route path="/home" element={<ProtectedRoutes element={<HomePage />} />}/>
-                <Route path="/favourite" element={<ProtectedRoutes element={<FavouritePage />} />}>
-                  <Route index element={<ProtectedRoutes element={<FavouriteGeneral />} />} />
-                  <Route path="general" element={<ProtectedRoutes element={<FavouriteGeneral />} />} />
-                  <Route path="posts" element={<ProtectedRoutes element={<FavouritePostsDisplay />} />} />
-                  <Route path="pets" element={<ProtectedRoutes element={<FavouritePetsDisplay />} />}/>
-                </Route>
-                <Route path="/profile/:userId" element={<ProtectedRoutes element={<ProfilePage />} />}>
-                  <Route index element={<ProtectedRoutes element={<PostsDisplay />} />} />
-                  <Route path="posts" element={<ProtectedRoutes element={<PostsDisplay />} />} />
-                  <Route path="pets" element={<ProtectedRoutes element={<PetsDisplay />} />} />
-                  <Route path="following" element={<ProtectedRoutes element={<FollowingDisplay />} />} />
-                  <Route path="follower" element={<ProtectedRoutes element={<FollowerDisplay />} />} />
-                </Route>  
-                <Route path="/post/:postId" element={<ProtectedRoutes element={<PostPage />}/>}/>
-              </Routes>
-              {location.pathname !== "/login" &&
-              location.pathname != "register" ? (
-                <ChatBot />
-              ) : null}
-            </Box>
-          </ThemeProvider>
+                  <Route path="/message/:userEmail?" element={<ProtectedRoutes element={<MessagePage />} />} />
+                  <Route path="/explore" element={<ProtectedRoutes element={<ExplorePage />} />} />
+                  <Route path="/home" element={<ProtectedRoutes element={<HomePage />} />} />
+                  <Route path="/favourite" element={<ProtectedRoutes element={<FavouritePage />} />}>
+                    <Route index element={<ProtectedRoutes element={<FavouriteGeneral />} />} />
+                    <Route path="general" element={<ProtectedRoutes element={<FavouriteGeneral />} />} />
+                    <Route path="posts" element={<ProtectedRoutes element={<FavouritePostsDisplay />} />} />
+                    <Route path="pets" element={<ProtectedRoutes element={<FavouritePetsDisplay />} />} />
+                  </Route>
+                  <Route path="/profile/:userId" element={<ProtectedRoutes element={<ProfilePage />} />}>
+                    <Route index element={<ProtectedRoutes element={<PostsDisplay />} />} />
+                    <Route path="posts" element={<ProtectedRoutes element={<PostsDisplay />} />} />
+                    <Route path="pets" element={<ProtectedRoutes element={<PetsDisplay />} />} />
+                    <Route path="following" element={<ProtectedRoutes element={<FollowingDisplay />} />} />
+                    <Route path="follower" element={<ProtectedRoutes element={<FollowerDisplay />} />} />
+                  </Route>
+                  <Route path="/post/:postId" element={<ProtectedRoutes element={<PostPage />} />} />
+                </Routes>
+                {location.pathname !== "/login" &&
+                  location.pathname != "register" ? (
+                  <ChatBot />
+                ) : null}
+              </Box>
+            </ThemeProvider>
           </SnackbarProvider>
 
         </SelectedUserProvider>
