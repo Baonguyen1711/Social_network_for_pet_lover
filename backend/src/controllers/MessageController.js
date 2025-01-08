@@ -248,6 +248,8 @@ class MessageController {
                 image: image
             })
 
+            
+
             await newMessage.save()
 
             return res.status(200)

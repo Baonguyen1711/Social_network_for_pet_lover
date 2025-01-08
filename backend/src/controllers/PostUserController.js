@@ -16,6 +16,7 @@ class PostUserController {
           .status(400)
           .json({ message: "Not enougddddh required information!" });
       }
+
       if (!ObjectId.isValid(userId) || !ObjectId.isValid(userId)) {
         return res
           .status(400)

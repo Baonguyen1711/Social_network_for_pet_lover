@@ -121,6 +121,7 @@ class LikeController {
           message: "update like successfully",
           updatedPost: post[0],
         });
+        
       } else {
         const comment = await Comment.aggregate([
           { $match: { _id: new ObjectId(`${targetId}`) } },

@@ -3,6 +3,8 @@ import { Routes, Route, useLocation } from "react-router-dom";
 
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
+import ForgetPasswordPage from "./pages/auth/ForgetPasswordPage";
+import ChangePasswordPage from "./pages/auth/ChangePasswordPage";
 import MessagePage from "./pages/message/MessagePage";
 import ChatBot from "./components/chatBot/ChatBot";
 import theme from "./themes/theme";
@@ -46,6 +48,9 @@ const App = () => {
                   
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/register" element={<RegisterPage />} />
+                  <Route path="/forget_password" element={<ForgetPasswordPage />} />
+                  <Route path="/change_password" element={<ChangePasswordPage />} />
+
 
                   <Route path="/message/:userEmail?" element={<ProtectedRoutes element={<MessagePage />} />} />
                   <Route path="/explore" element={<ProtectedRoutes element={<ExplorePage />} />} />

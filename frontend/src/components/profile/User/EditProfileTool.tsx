@@ -12,6 +12,7 @@ import {
   Stack,
   TextField,
   Typography,
+  Link
 } from "@mui/material";
 import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
 import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
@@ -55,8 +56,15 @@ const EditProfileTool: React.FC<PostToolDisplayProps> = ({
   const [isDisabledEditDescription, setIsDisabledEditDescription] =
     useState(true);
 
+    const [isDisabledChangePasswordDescription, setIsDisabledChangePasswordDescription] =
+    useState(true);
+
   const handleUnDisableDescription = () => {
     setIsDisabledEditDescription(false);
+  };
+
+  const handleUnDisableChangePassword = () => {
+    setIsDisabledChangePasswordDescription(false);
   };
   const handleCancelUpdateName = () => {
     setFields({
@@ -100,6 +108,7 @@ const EditProfileTool: React.FC<PostToolDisplayProps> = ({
   const [isChanged, setIsChanged] = useState(false);
   const [_message, setMessage] = useState("");
   const [userData, setUserData] = useState<User>();
+
   const [isDisableSaveEditNameButton, setIsDisableSaveEditNameButton] =
     useState(true);
   const [isDisableSaveDescriptonButton, setIsDisableSaveDescriptionButton] =
@@ -410,7 +419,14 @@ const EditProfileTool: React.FC<PostToolDisplayProps> = ({
                 ) : (
                   ""
                 )}
+                
               </Stack>
+
+              <Link href="/change_password">
+                <Button>
+                  Change password
+                </Button>
+              </Link>
             </CardContent>
           </Stack>
         </Card>

@@ -16,6 +16,14 @@ router.use('/updatedescription', userController.updateDescriptionByUserId)
 router.use('/updateAvatar', userController.updateAvatarByUserId)
 router.use('/searchuserbyusername', userController.getUserByUserName)
 
+router.use('/reset_password/send', userController.sendResetLink)
+router.use('/reset_password/post', userController.resetPassword)
+router.use('/reset_password/:token', userController.resetPasswordForm)
+
+router.use("/change_password/:user_id", userController.changePassword);
+
+router.use("/delete", userController.deleteUser);
+
 module.exports = router
 
 //end_point

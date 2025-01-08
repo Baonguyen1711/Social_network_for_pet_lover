@@ -7,6 +7,8 @@ const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken"); //
 const connectToDb = require("../config/database/db");
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
 mongoose.set("debug", true);
 
 class UserController {
@@ -14,6 +16,7 @@ class UserController {
   async getAll(req, res) {
     await connectToDb();
     const userInfo = await User.find(
+
       {},
       { avatar: 1, location: 1, firstname: 1, lastname: 1 }
     );
@@ -292,6 +295,240 @@ class UserController {
       }
     } catch (e) {
       console.log(e);
+    }
+  }
+
+  async sendResetLink(req, res) {
+    try {
+      connectToDb();
+
+      const { user_email } = req.query;
+      const user = await User.findOne({ email: user_email });
+
+      const transporter = nodemailer.createTransport({
+        service: "Gmail",
+        auth: {
+          user: process.env.EMAIL,
+          pass: process.env.PASSWORD,
+        },
+      });
+
+      const resetToken = crypto.randomBytes(32).toString("hex");
+
+      user.resetPasswordToken = resetToken;
+
+      await user.save();
+
+      const resetUrl = `http://127.0.0.1:5000/api/v1/user/reset_password/${resetToken}`;
+
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: user_email,
+        subject: "Password Reset Request",
+        html: `<p>Hi ${user.email},</p>
+                   <p>We received a request to reset your password. Click the link below to set a new password:</p>
+                   <a href="${resetUrl}">Reset your password</a>
+                   <p>If you did not request this, you can ignore this email.</p>`,
+      };
+
+      transporter.sendMail(mailOptions);
+
+      res.status(200).json({
+        message: "send mail successfully",
+      });
+    } catch (e) {
+      res.status(400).send("Fail to send reset link");
+      console.log("Error", e);
+    }
+  }
+
+  async resetPassword(req, res) {
+    try {
+      connectToDb();
+
+      const { newPassword, token  } = req.body;
+
+      const user = await User.findOne({ resetPasswordToken: token });
+
+      if (!user) {
+        res.status(400).send("Invalid token");
+      }
+
+
+      user.password = newPassword;
+      user.resetPasswordToken = undefined;
+
+      await user.save();
+
+      res.status(200).send("Reset password successfully");
+    } catch (e) {
+      console.error("Error resetting password:", e);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
+  async resetPasswordForm(req, res) {
+    try {
+      connectToDb();
+
+      const { token } = req.params;
+
+      res.send(`
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Reset Password</title>
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            margin: 0;
+                            padding: 0;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            height: 100vh;
+                            background-color: #f4f4f9;
+                        }
+                        .form-container {
+                            background: #fff;
+                            padding: 20px;
+                            border-radius: 8px;
+                            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                            width: 300px;
+                            text-align: center;
+                        }
+                        input {
+                            width: calc(100% - 20px);
+                            padding: 10px;
+                            margin: 10px 0;
+                            border: 1px solid #ccc;
+                            border-radius: 4px;
+                        }
+                        button {
+                            width: 100%;
+                            padding: 10px;
+                            background: #007bff;
+                            color: #fff;
+                            border: none;
+                            border-radius: 4px;
+                            cursor: pointer;
+                        }
+                        button:hover {
+                            background: #0056b3;
+                        }
+                        .error-message, .success-message {
+                            color: red;
+                            margin-top: 10px;
+                            display: none;
+                        }
+                        .success-message {
+                            color: green;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="form-container">
+                        <h2>Reset Password</h2>
+                        <form id="resetPasswordForm">
+                            <input type="password" id="newPassword" name="newPassword" placeholder="Enter new password" required />
+                            <input type="hidden" id="resetToken" name="token" value="${token}" />
+                            <button type="submit">Reset Password</button>
+                        </form>
+                        <p id="responseMessage" class="error-message"></p>
+                        <p id="successMessage" class="success-message"></p>
+                    </div>
+                    <script>
+                        document.getElementById('resetPasswordForm').addEventListener('submit', async function (event) {
+                            event.preventDefault();
+    
+                            const newPassword = document.getElementById('newPassword').value;
+                            const token = document.getElementById('resetToken').value;
+                            const responseMessage = document.getElementById('responseMessage');
+                            const successMessage = document.getElementById('successMessage');
+    
+                            try {
+                                const response = await fetch('http://127.0.0.1:5000/api/v1/user/reset_password/post', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ token, newPassword })
+                                });
+    
+                                if (response.ok) {
+                                    responseMessage.style.display = 'none';
+                                    successMessage.textContent = "Password reset successfully!";
+                                    successMessage.style.display = 'block';
+                                } else {
+                                    const errorData = await response.json();
+                                    responseMessage.textContent = errorData.message || 'Failed to reset password.';
+                                    responseMessage.style.display = 'block';
+                                    successMessage.style.display = 'none';
+                                }
+                            } catch (error) {
+                                responseMessage.textContent = 'Something went wrong. Please try again later.';
+                                responseMessage.style.display = 'block';
+                                successMessage.style.display = 'none';
+                            }
+                        });
+                    </script>
+                </body>
+                </html>
+            `);
+    } catch (e) {
+      console.error("Error resetting password:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
+  async changePassword(req, res) {
+    // debugger;
+    connectToDb()
+    const { user_id } = req.params;
+    const { oldPassword, newPassword } = req.body;
+    console.log("oldPassword", oldPassword);
+    console.log("newPassword", newPassword);
+    const setNewPassword = async (user) => {
+      user.password = newPassword;
+      await user.save();
+    };
+    try {
+      const user = await User.findOne({ _id: user_id });
+      if (!user) {
+        return res.status(204).json({ message: "User not found" });
+      }
+
+      // Compare old password
+      const isMatched = await bcrypt.compare(oldPassword, user.password); // Use the Promise version
+      if (!isMatched) {
+        return res.status(201).json({ message: "Wrong old password" });
+      }
+
+      // Update to new password
+      await setNewPassword(user);
+
+      // Send success response
+      return res.status(200).json({
+        status: "success",
+        code: 200,
+        message: "Password changed successfully",
+        errors: null,
+      });
+    } catch (e) {
+      console.log("Error", e);
+      return res.status(500).send("Internal server error");
+    }
+  }
+
+  async deleteUser(req,res) {
+    connectToDb()
+    try {
+      const deleted = await User.deleteMany({firstname: "John"})
+      console.log(deleted)
+    } catch (e) {
+      console.log(e)
     }
   }
 }

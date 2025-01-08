@@ -15,14 +15,48 @@ class ChatbotController {
         const { input } = req.query
         var generatedText = ""
 
-        const petKeywords = [
-            "dog", "puppy", "cat", "kitten", "bird", "parrot", "fish", "rabbit",
-            "hamster", "turtle", "snake", "vet", "grooming", "adoption", "shelter",
-            "pet food", "kennel", "obedience", "leash", "litter box", "paw", "vet", "continue", "pet",
-            "chó", "cún con", "mèo", "mèo con", "chim", "vẹt", "cá", "thỏ",
-            "chuột","hamster", "rùa", "rắn", "thú y", "chăm sóc", "nhận nuôi", "trại động vật", "thú cưng", "chuồng", "vâng lời", "dây xích", "hộp cát", "chân thú cưng", "thú y", "tiếp", "tiếp tục", "chúng", "chúng nó"
-        ];
+        // const petKeywords = [
+        //     "dog", "puppy", "cat", "kitten", "bird", "parrot", "fish", "rabbit",
+        //     "hamster", "turtle", "snake", "vet", "grooming", "adoption", "shelter",
+        //     "pet food", "kennel", "obedience", "leash", "litter box", "paw", "vet", "continue", "pet",
+        //     "chó", "cún con", "mèo", "mèo con", "chim", "vẹt", "cá", "thỏ",
+        //     "chuột","hamster", "rùa", "rắn", "thú y", "chăm sóc", "nhận nuôi", "trại động vật", "thú cưng", "chuồng", "vâng lời", "dây xích", "hộp cát", "chân thú cưng", "thú y", "tiếp", "tiếp tục", "chúng", "chúng nó"
+        // ];
 
+
+        const petKeywords = [
+            "clothing", "fashion", "style", "outfit", "wardrobe", "accessories", "shoes", "heels",
+            "sneakers", "boots", "sandals", "jewelry", "necklace", "bracelet", "ring", "earrings",
+            "watch", "hat", "cap", "scarf", "gloves", "belt", "handbag", "purse", "backpack", "sunglasses",
+            "jacket", "coat", "blazer", "suit", "dress", "gown", "skirt", "jeans", "trousers",
+            "pants", "shorts", "shirt", "blouse", "t-shirt", "top", "tank top", "sweater", "hoodie",
+            "cardigan", "vest", "lingerie", "swimsuit", "bikini", "fashion show", "runway", "designer",
+            "couture", "trendy", "chic", "elegant", "casual", "formal", "streetwear", "vintage",
+            "retro", "luxury", "brand", "pattern", "fabric", "textile", "sewing", "embroidery", "tailoring",
+            "fashionista", "model", "couturier", "fashion week", "wardrobe essentials", "color palette",
+            "monochrome", "accessorize", "fit", "oversized", "slim-fit", "athleisure", "boho", "preppy",
+            "minimalist", "bold", "print", "lace", "leather", "denim", "silk", "cotton", "wool", "satin",
+            "velvet", "suede", "faux fur", "knitwear", "haute couture", "ready-to-wear", "trend", "iconic",
+            "sustainable", "eco-friendly", "fast fashion", "personal style", "fashion blog", "capsule wardrobe",
+            "thrift", "runway looks", "high heels", "fashion influencer", "wardrobe stylist", "tailor-made",
+            "mix and match",
+            // Tiếng Việt
+            "quần áo", "thời trang", "phong cách", "trang phục", "tủ đồ", "phụ kiện", "giày", "giày cao gót",
+            "giày thể thao", "ủng", "dép", "trang sức", "dây chuyền", "vòng tay", "nhẫn", "bông tai",
+            "đồng hồ", "mũ", "nón", "khăn choàng", "găng tay", "thắt lưng", "túi xách", "ví", "ba lô", "kính râm",
+            "áo khoác", "áo choàng", "áo vest", "bộ vest", "váy", "váy dạ hội", "chân váy", "quần jean", "quần âu",
+            "quần dài", "quần short", "áo sơ mi", "áo kiểu", "áo thun", "áo ba lỗ", "áo len", "áo hoodie",
+            "áo cardigan", "áo ghi lê", "đồ lót", "đồ bơi", "bikini", "trình diễn thời trang", "sàn diễn", "nhà thiết kế",
+            "thời trang cao cấp", "thời trang xu hướng", "thanh lịch", "casual", "formal", "thời trang đường phố", "cổ điển",
+            "retro", "sang trọng", "thương hiệu", "họa tiết", "vải", "chất liệu", "may đo", "thêu", "thiết kế",
+            "tín đồ thời trang", "người mẫu", "thợ may", "tuần lễ thời trang", "món đồ thiết yếu", "bảng màu",
+            "đơn sắc", "phụ kiện hóa", "vừa vặn", "oversized", "slim-fit", "thời trang thể thao", "boho", "preppy",
+            "tối giản", "nổi bật", "họa tiết", "ren", "da", "denim", "lụa", "cotton", "len", "satin",
+            "nhung", "da lộn", "lông giả", "len đan", "thời trang cao cấp", "hàng may sẵn", "xu hướng", "biểu tượng",
+            "bền vững", "thân thiện môi trường", "thời trang nhanh", "phong cách cá nhân", "blog thời trang", "tủ đồ capsule",
+            "mua đồ second-hand", "phong cách runway", "giày cao gót", "người ảnh hưởng thời trang", "stylist", "may đo theo ý",
+            "phối đồ"
+        ];
         // Function to check if input contains pet-related keywords
         const containsPetKeywords = (input) => {
             const lowerInput = input.toLowerCase();
