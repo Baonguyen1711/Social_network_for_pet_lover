@@ -63,7 +63,7 @@ const PostsDisplay = () => {
       }
       const data = await response.json();
       setPostsData(data.posts);
-        setUser(data.user);
+      setUser(data.user);
     } catch (e) {
       console.error("Error fetching data:", e);
     }

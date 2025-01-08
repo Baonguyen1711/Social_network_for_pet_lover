@@ -83,7 +83,6 @@ const Header: React.FC = () => {
         >
           <SearchHeader/>
         </Box>
-
         {/* Right Side */}
         <Box
           sx={{
