@@ -28,7 +28,7 @@ class PostController {
         isDelete: false,
       });
       await newPost.save();
-      
+
       return res.status(200).json({
         message: "create post successfully",
         newpost: newPost,
@@ -85,15 +85,19 @@ class PostController {
               },
             },
             isLiked: {
-              $arrayElemAt: [
+              $gt: [
                 {
-                  $filter: {
-                    input: "$likeInfo", // Dữ liệu cần lọc
-                    as: "like", // Biến đại diện cho từng phần tử trong mảng
-                    cond: {
-                      $eq: ["$$like.userId", new ObjectId(`${userId}`)],
-                      $eq: ["$$like.isDeleted", false],
-                    }, // Điều kiện lọc
+                  $size: {
+                    $filter: {
+                      input: "$likeInfo",
+                      as: "like",
+                      cond: {
+                        $and: [
+                          { $eq: ["$$like.userId", new ObjectId(`${userId}`)] },
+                          { $eq: ["$$like.isDeleted", false] },
+                        ],
+                      },
+                    },
                   },
                 },
                 0,
@@ -139,13 +143,11 @@ class PostController {
     try {
       const { targetId, userAccessId } = req.query;
       if (!ObjectId.isValid(targetId) && !ObjectId.isValid(userAccessId)) {
-        return res
-          .status(400)
-          .send({
-            error: "Invalid userAccessId, targetId format",
-            targetId,
-            userAccessId,
-          });
+        return res.status(400).send({
+          error: "Invalid userAccessId, targetId format",
+          targetId,
+          userAccessId,
+        });
       }
       connectToDb();
 
@@ -283,9 +285,9 @@ class PostController {
             "likedUserInfo.lastname": 1,
             "likedUserInfo.firstname": 1,
             "likedUserInfo._id": 1,
-            "likedUserInfo.avatar": 1,  
+            "likedUserInfo.avatar": 1,
             isSaved: 1,
-            isLiked:1
+            isLiked: 1,
           },
         },
       ]);
@@ -449,9 +451,9 @@ class PostController {
             "likedUserInfo.lastname": 1,
             "likedUserInfo.firstname": 1,
             "likedUserInfo._id": 1,
-            "likedUserInfo.avatar": 1,  
+            "likedUserInfo.avatar": 1,
             isSaved: 1,
-            isLiked:1
+            isLiked: 1,
           },
         },
       ]);
@@ -463,10 +465,16 @@ class PostController {
 
   async getPostById(req, res) {
     try {
-      const {postId,userAccessId} = req.query;
-      console.log("abcdfzzxx",postId,userAccessId)
-      if (!ObjectId.isValid(postId)&&!ObjectId.isValid(userAccessId)) {
-        return res.status(400).json({ error: "Invalid userAccessId,postId format", userAccessId,postId });
+      const { postId, userAccessId } = req.query;
+      console.log("abcdfzzxx", postId, userAccessId);
+      if (!ObjectId.isValid(postId) && !ObjectId.isValid(userAccessId)) {
+        return res
+          .status(400)
+          .json({
+            error: "Invalid userAccessId,postId format",
+            userAccessId,
+            postId,
+          });
       }
       connectToDb();
       const posts = await Post.aggregate([
@@ -607,13 +615,13 @@ class PostController {
             "likedUserInfo.firstname": 1,
             "likedUserInfo._id": 1,
             "likedUserInfo.avatar": 1,
-            "likedUserInfo.email": 1,   
+            "likedUserInfo.email": 1,
             isSaved: 1,
-            isLiked:1
+            isLiked: 1,
           },
         },
       ]);
-      res.status(200).json({ post: posts[0]});
+      res.status(200).json({ post: posts[0] });
     } catch (e) {
       console.log(e);
     }
@@ -738,10 +746,10 @@ class PostController {
           },
         },
         {
-          $limit: 1, 
+          $limit: 1,
         },
       ]);
-      res.status(200).json({ post: post});
+      res.status(200).json({ post: post });
     } catch (e) {
       console.log(e);
     }
@@ -749,29 +757,26 @@ class PostController {
 
   async updateTitleAndContentAndImagesPostByPostId(req, res) {
     try {
-      const { postId,title,content,images } = req.body;
+      const { postId, title, content, images } = req.body;
       if (!ObjectId.isValid(postId)) {
         return res.status(400).send({ error: "Invalid postId format", postId });
       }
-      if (!postId || !title|| !content) {
+      if (!postId || !title || !content) {
         return res
           .status(400)
           .json({ message: "Not enough required information!" });
       }
       connectToDb();
 
-      const post = await Post.findById(postId)
-      if(post) 
-      {
-        post.title=title
-        post.content = content
-        post.images = images
+      const post = await Post.findById(postId);
+      if (post) {
+        post.title = title;
+        post.content = content;
+        post.images = images;
         post.save();
-        return res.status(200).json({message:"Update post successfully"})
-      } 
-      else
-      {
-        return res.status(404).json({message:"Post is not found"})
+        return res.status(200).json({ message: "Update post successfully" });
+      } else {
+        return res.status(404).json({ message: "Post is not found" });
       }
     } catch (e) {
       return res.status(500).send({ message: "Server error" });

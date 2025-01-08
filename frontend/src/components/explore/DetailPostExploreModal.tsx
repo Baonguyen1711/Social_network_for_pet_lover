@@ -161,7 +161,7 @@ const DetailPostExploreModal: React.FC<Props> = ({ post, onClose }) => {
               <Stack direction="row" spacing={1} alignItems="center">
                 <IconButton onClick={handleLike}>
                   {currentPost?.isLiked ? (
-                    <ThumbUp color="primary" />
+                    <ThumbUp color="primary"/>
                   ) : (
                     <ThumbUp />
                   )}
@@ -173,15 +173,15 @@ const DetailPostExploreModal: React.FC<Props> = ({ post, onClose }) => {
                 >
                   <Typography variant="body2" className={clsx(style.countLike)}>
                     {/* Hiển thị số lượt thích */}
-                    {post && post.likedUserInfo.length > 0
+                    {currentPost && currentPost.likedUserInfo.length > 0
                       ? `${
-                          post.isLiked
+                        currentPost.isLiked
                             ? "You"
-                            : `${post.likedUserInfo[0]?.firstname} ${post.likedUserInfo[0]?.lastname}`
+                            : `${currentPost.likedUserInfo[0]?.firstname} ${currentPost.likedUserInfo[0]?.lastname}`
                         }${
-                          post.likedUserInfo.length > 1
-                            ? ` and ${post.likedUserInfo.length - 1} other${
-                                post.likedUserInfo.length - 1 > 1 ? "s" : ""
+                          currentPost.likedUserInfo.length > 1
+                            ? ` and ${currentPost.likedUserInfo.length - 1} other${
+                                currentPost.likedUserInfo.length - 1 > 1 ? "s" : ""
                               }`
                             : ""
                         }`
@@ -191,7 +191,7 @@ const DetailPostExploreModal: React.FC<Props> = ({ post, onClose }) => {
                 <DetaiLikesModal
                   open={openDetailLikes}
                   onClose={handleCloseDetailLikes}
-                  likedUserInfo={post?.likedUserInfo}
+                  likedUserInfo={currentPost?.likedUserInfo}
                 />
               </Stack>
               <Stack direction="row" spacing={1} ml="auto" alignItems="center">
