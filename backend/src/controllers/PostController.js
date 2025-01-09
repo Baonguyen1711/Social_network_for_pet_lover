@@ -138,6 +138,7 @@ class PostController {
   async getPostsByUserId(req, res) {
     try {
       const { targetId, userAccessId } = req.query;
+      
       if (!ObjectId.isValid(targetId) && !ObjectId.isValid(userAccessId)) {
         return res
           .status(400)
@@ -297,10 +298,13 @@ class PostController {
 
   async getPostsByFollowedUsers(req, res) {
     try {
-      const { userId } = req.params;
+      const { userId } = req.query;
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
       if (!ObjectId.isValid(userId)) {
         return res.status(400).send({ error: "Invalid userId format", userId });
       }
+      const skip = (page - 1) * limit;
       connectToDb();
 
       const followedUsers = await Follow.find(
@@ -328,6 +332,8 @@ class PostController {
             createdAt: -1,
           },
         },
+        { $skip: skip },
+        { $limit: limit },
         {
           $lookup: {
             from: "users",

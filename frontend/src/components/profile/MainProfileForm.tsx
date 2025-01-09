@@ -81,7 +81,7 @@ const MainProfileForm: React.FC = () => {
           </a>
         </nav>
         <div className={style.layout}>
-          <AccessUrlProvider type="profile" TargetUserId={userId} userId={userId}>
+          <AccessUrlProvider type="profile" TargetUserId={userId} userId={localStorage.getItem("userId")}>
             <Outlet />
           </AccessUrlProvider>
         </div>

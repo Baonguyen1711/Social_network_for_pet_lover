@@ -23,6 +23,7 @@ const LoginForm: React.FC = () => {
             const isLoginSuccess = await login(email, password)
             if(isLoginSuccess) {
                 showSnackBar("Login successful!", "success"); // Show success alert
+                //localStorage.setItem("email", email)
                 navigate("/home"); // Navigate to the dashboard or desired page
             } else {
                 showSnackBar("Login failed. Please check your credentials.", "error"); // Show error alert

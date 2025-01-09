@@ -39,7 +39,7 @@ class LoginController {
             })
         } catch (e) {
             console.log("error", e)
-            res.json({
+            res.status(404).json({
                 message: "user not existed"
             })
         }
