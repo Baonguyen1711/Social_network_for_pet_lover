@@ -13,6 +13,7 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  Link
 } from "@mui/material";
 import { blue, green, pink } from "@mui/material/colors";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
@@ -24,6 +25,7 @@ import MaleIcon from "@mui/icons-material/Male";
 import PetEditToolDisplay from "./PetEditToolDisplay";
 import { createPetUserRelationship, isChecked } from "../../sercives/api";
 import Confirmation from "../comfirmation/Confirmation";
+import { useSocket } from "../message/SocketContext";
 
 interface Props {
   pet: Pet;
@@ -35,6 +37,7 @@ const PetInfomationCard: React.FC<Props> = (props) => {
   const [isSaved, setIdSaved] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const {initialInput, setInitialInput} = useSocket()
   const handleOpenConfirmModal = () => setIsOpenModal(true);
   const handleCloseConfirmModal = () => setIsOpenModal(false);
   const handleConfirmDelete = () => {
@@ -67,6 +70,11 @@ const PetInfomationCard: React.FC<Props> = (props) => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const handleExplorePetClick = (message:string) => {
+    debugger;
+    setInitialInput(message)
+  }
   const handleDelete = async () => {
     try {
       const response = await fetch(
@@ -101,9 +109,8 @@ const PetInfomationCard: React.FC<Props> = (props) => {
       months += 12;
     }
 
-    return `${years > 0 ? `${years} years` : ""} ${
-      months > 0 ? `${months} months` : ""
-    } ${days > 0 ? `${days} days` : ""}`.trim();
+    return `${years > 0 ? `${years} years` : ""} ${months > 0 ? `${months} months` : ""
+      } ${days > 0 ? `${days} days` : ""}`.trim();
   };
   const onUpdatedPet = (newPet: Pet | undefined) => {
     if (newPet != undefined) {
@@ -234,6 +241,7 @@ const PetInfomationCard: React.FC<Props> = (props) => {
                   >
                     {pet.breed.toUpperCase()}
                   </Typography>
+
                 )}
               </Stack>
               <Typography
@@ -297,6 +305,17 @@ const PetInfomationCard: React.FC<Props> = (props) => {
                       />
                     </Box>
                   </Stack>
+
+                  <Stack direction="row" spacing={1} sx={{ marginY: 1 }}>
+
+                    <Button
+                      onClick={()=> handleExplorePetClick(pet.breed)}
+                    >
+                      Explore this pet
+                    </Button>
+
+                    
+                  </Stack>
                 </Stack>
                 <Stack direction="column">
                   <Typography
@@ -320,11 +339,11 @@ const PetInfomationCard: React.FC<Props> = (props) => {
                   </ul>
                 </Stack>
                 <IconButton onClick={handleSave}>
-            {isSaved ? (
-              <BookmarkIcon style={{ color: "#F17826" }} />
-            ) : (
-              <BookmarkBorder />
-            )}
+                  {isSaved ? (
+                    <BookmarkIcon style={{ color: "#F17826" }} />
+                  ) : (
+                    <BookmarkBorder />
+                  )}
                 </IconButton>
               </Stack>
             </Stack>

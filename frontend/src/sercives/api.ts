@@ -2,7 +2,7 @@ import React from "react";
 import { useSocket } from "../components/message/SocketContext";
 import { EventSocket } from "../types";
 import { io, Socket } from "socket.io-client";
-const socket = io(`http://127.0.0.1:4000`);
+const socket = io(process.env.REACT_APP_API_URL);
 
 export const register = (body: object) => {
   const url = `${process.env.REACT_APP_API_URL}/api/v1/register`;

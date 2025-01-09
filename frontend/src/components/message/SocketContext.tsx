@@ -5,7 +5,7 @@ import { MessageComponentType, EventSocket } from '../../types';
 import { RecentChat } from '../../types';
 import { useBackground } from './BackgroundContext';
 import { handleGetPostByPostId } from '../../sercives/api';
-const socket = io(`http://127.0.0.1:4000`);
+const socket = io(process.env.REACT_APP_API_URL);
 
 interface SocketContextType {
   socket: Socket;
@@ -25,6 +25,8 @@ interface SocketContextType {
   changeBackground: (image: any) => void
   newComment: (image: any) => void
   newLike: (image: any) => void
+  initialInput: string
+  setInitialInput: React.Dispatch<React.SetStateAction<string>>
 }
 
 const SocketContext = createContext<SocketContextType | undefined>(undefined);
@@ -40,6 +42,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const [hasNotification, setHasNotification] = useState<boolean>(false)
   const [likePostDetailed, setLikePostDetailed] = useState<any>(undefined)
   const [notiList, setNotiList] = useState<EventSocket[]>([])
+  const [initialInput, setInitialInput] = useState<string>("")
   const currentEmail = localStorage.getItem("email")
   const { setBackgroundImageOver, setSelectedTheme } = useBackground()
   useEffect(() => {
@@ -188,7 +191,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   }
 
   return (
-    <SocketContext.Provider value={{ notiList, setNotiList,messages, setMessages, socket, recentChats, setRecentChats, sendMessage, chatbotMessages, setChatbotMessages, changeBackground, newComment, newLike, hasNotification, setHasNotification, likePostDetailed, setLikePostDetailed }}>
+    <SocketContext.Provider value={{ initialInput, setInitialInput, notiList, setNotiList,messages, setMessages, socket, recentChats, setRecentChats, sendMessage, chatbotMessages, setChatbotMessages, changeBackground, newComment, newLike, hasNotification, setHasNotification, likePostDetailed, setLikePostDetailed }}>
       {children}
     </SocketContext.Provider>
   );

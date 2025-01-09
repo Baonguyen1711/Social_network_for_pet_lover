@@ -56,8 +56,7 @@ const PostsDisplay = () => {
         throw new Error("Error in getting posts");
       }
       const data = await response.json();
-      console.log("fetchFirst",data.posts)
-      setPostsData(data.posts); // Thêm bài viết mới vào bài viết cũ
+      setPostsData(data.posts);
       setUser(data.user);
     } catch (e) {
       console.error("Error fetching data:", e);

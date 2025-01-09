@@ -10,9 +10,11 @@ import { MessageComponentType } from '../../types';
 import { lightTheme } from '../../themes/theme';
 import uploadToCloudinary from '../profile/UploadImage';
 
+
 interface MessageInputProps {
   recipent: Recipent | null,
-  isChatbot: boolean
+  isChatbot: boolean,
+  petFavourites: string | null
 }
 
 
@@ -39,12 +41,22 @@ interface message {
 //     name: "Baonguyen"
 // }
 
-const MessageInput: React.FC<MessageInputProps> = ({ recipent, isChatbot }) => {
+const MessageInput: React.FC<MessageInputProps> = ({ recipent, isChatbot, petFavourites}) => {
 
   const [message, setMessage] = useState<string>("");
-  const { messages, setMessages, sendMessage, chatbotMessages, setChatbotMessages } = useSocket();
+  const { messages, setMessages, sendMessage, chatbotMessages, setChatbotMessages, initialInput, setInitialInput } = useSocket();
   const currentEmail = localStorage.getItem("email")
+
   const { selectedUserEmail } = useSelectedUser()
+
+
+
+  useEffect(() => {
+    if (initialInput) {
+      // Simulate submitting the initial message
+      handleSubmit(undefined, `Cho tôi thông tin về giống thú cưng này: ${initialInput}`);
+    }
+  }, [initialInput]);
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     debugger;
@@ -116,9 +128,14 @@ const MessageInput: React.FC<MessageInputProps> = ({ recipent, isChatbot }) => {
   console.log(recipent)
 
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (
+    e?: React.FormEvent<HTMLFormElement>,
+    initialMessage?: string) => {
     debugger;
-    e.preventDefault();
+    if(e) {
+      e.preventDefault();
+    }
+    
     if (!isChatbot) {
       if (message) {
         debugger;
@@ -159,9 +176,28 @@ const MessageInput: React.FC<MessageInputProps> = ({ recipent, isChatbot }) => {
         isSender: false,
         isChatbot: true
       }
-      setChatbotMessages((prevMessages) => [...prevMessages, newMessage])
+      
+      var url = ""
+      if(initialMessage) {
+        const newInitialMessage: MessageComponentType = {
+          content: initialMessage,
+          timeStamp: new Date().toISOString(),
+          isSender: false,
+          isChatbot: true
+        }
+        setChatbotMessages((prevMessages) => [...prevMessages, newInitialMessage])
+        url = `${process.env.REACT_APP_API_URL}/api/v1/chatbot/?input=You are a friendly pet assistant. The user loves pets, especially ${petFavourites}.
+Here's what the user asked: ${initialMessage}
 
-      const url = `${process.env.REACT_APP_API_URL}/api/v1/chatbot/?input=${message}`
+You don't need to mention those favourites dogs for every response but keep that in mind. Respond conversationally, as if you're their pet-loving friend. Keep it casual and warm. If the question is Vietnamese, answer in vietnamese`
+      } else {
+        setChatbotMessages((prevMessages) => [...prevMessages, newMessage])
+        url = `${process.env.REACT_APP_API_URL}/api/v1/chatbot/?input=You are a friendly pet assistant. The user loves pets, especially ${petFavourites}.
+Here's what the user asked: ${message}
+
+You don't need to mention those favourites dogs for every response but keep that in mind. Respond conversationally, as if you're their pet-loving friend. Keep it casual and warm. If the question is Vietnamese, answer in vietnamese`
+      }
+      
       try {
         debugger;
         const response = await fetch(url)

@@ -105,6 +105,7 @@ export interface Event {
   createdBy: string;
   createdAt: string;
   isDelete: boolean;
+  link: string
 }
 
 export interface Post {

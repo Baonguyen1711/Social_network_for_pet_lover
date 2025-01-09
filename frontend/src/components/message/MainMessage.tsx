@@ -12,6 +12,7 @@ import { useSelectedUser } from './SelectedUserContext'
 import { useSocket } from './SocketContext'
 import { useParams } from 'react-router-dom'
 
+
 interface MessageComponentArray {
     messages: MessageComponentType[]
 }
@@ -55,7 +56,7 @@ const MainMessage = () => {
         <>
             <MessageHeader />
             <MessageDisplay isChatbot={false} />
-            <MessageInput recipent={selectedUser} isChatbot={false} />
+            <MessageInput recipent={selectedUser} isChatbot={false} petFavourites={null}/>
         </>
     )
 

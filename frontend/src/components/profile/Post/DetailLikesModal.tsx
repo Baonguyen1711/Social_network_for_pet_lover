@@ -124,21 +124,6 @@ const DetaiLikesModal: React.FC<Props> = ({ open, onClose, likedUserInfo }) => {
                       >
                         <Avatar
                           src={userlike.avatar}
-                          onMouseEnter={() => {
-                            if (avatarRef.current) {
-                              const rect =
-                                avatarRef.current.getBoundingClientRect(); // Lấy vị trí avatar
-                              setPositionToolTip({
-                                x: rect.left + rect.width / 2,
-                                y: rect.top,
-                              }); // Tooltip căn giữa theo chiều ngang
-                            }
-                            setHoveredUser(userlike);
-                          }}
-                          onMouseLeave={(e) => {
-                            setHoveredUser(null);
-                            setPositionToolTip({ x: e.clientX, y: e.clientY });
-                          }}
                           ref={avatarRef}
                         />
                       </div>
@@ -156,21 +141,6 @@ const DetaiLikesModal: React.FC<Props> = ({ open, onClose, likedUserInfo }) => {
                           }}
                           ref={userNameRef}
                           className={style.likedUserName}
-                          onMouseEnter={() => {
-                            if (userNameRef.current) {
-                              const rect =
-                                userNameRef.current.getBoundingClientRect(); // Lấy vị trí avatar
-                              setPositionToolTip({
-                                x: rect.left + rect.width / 2,
-                                y: rect.top,
-                              }); // Tooltip căn giữa theo chiều ngang
-                            }
-                            setHoveredUser(userlike);
-                          }}
-                          onMouseLeave={(e) => {
-                            setHoveredUser(null);
-                            setPositionToolTip({ x: e.clientX, y: e.clientY });
-                          }}
                         >
                           {userlike.firstname + " " + userlike.lastname}
                         </Typography>

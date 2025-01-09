@@ -85,15 +85,19 @@ class PostController {
               },
             },
             isLiked: {
-              $arrayElemAt: [
+              $gt: [
                 {
-                  $filter: {
-                    input: "$likeInfo", // Dữ liệu cần lọc
-                    as: "like", // Biến đại diện cho từng phần tử trong mảng
-                    cond: {
-                      $eq: ["$$like.userId", new ObjectId(`${userId}`)],
-                      $eq: ["$$like.isDeleted", false],
-                    }, // Điều kiện lọc
+                  $size: {
+                    $filter: {
+                      input: "$likeInfo",
+                      as: "like",
+                      cond: {
+                        $and: [
+                          { $eq: ["$$like.userId", new ObjectId(`${userId}`)] },
+                          { $eq: ["$$like.isDeleted", false] },
+                        ],
+                      },
+                    },
                   },
                 },
                 0,

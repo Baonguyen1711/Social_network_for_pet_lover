@@ -49,7 +49,7 @@ const Explore = () => {
       <ImageList variant="masonry" cols={3} gap={8}>
         {itemData.length > 0
           ? itemData.map((item) => {
-              return (
+              return (item.images[0]?
                 <ImageListItem
                   key={item._id}
                   className={style.imageItem}
@@ -65,7 +65,7 @@ const Explore = () => {
                   <div className={style.overlay}>
                     <h3>{item.title}</h3>
                   </div>
-                </ImageListItem>
+                </ImageListItem>:""
               );
             })
           : "Don't have any posts"}

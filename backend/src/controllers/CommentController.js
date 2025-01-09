@@ -155,11 +155,17 @@ class CommentController {
         {
           $match: { parentId: null }, // Chỉ lấy các comment cấp 1
         },
+        // {
+        //   $sort: { createdAt: -1 }, // Sắp xếp giảm dần theo ngày tạo
+        // },
         {
-          $sort: { createdAt: -1 }, // Sắp xếp giảm dần theo ngày tạo
+          $addFields: {
+            contentLength: { $strLenCP: "$content" }, // Tính độ dài của content
+          },
         },
-        
-        
+        {
+          $sort: { contentLength: -1 }, // Sắp xếp giảm dần theo độ dài content
+        },
       ]);
       return res.status(200).json({
         comments: comments,
@@ -247,10 +253,17 @@ class CommentController {
             },
           },
         },
+        // {
+        //   $sort: { createdAt: -1 }, // Sắp xếp giảm dần theo ngày tạo
+        // },
         {
-          $sort: { createdAt: -1 }, // Sắp xếp giảm dần theo ngày tạo
+          $addFields: {
+            contentLength: { $strLenCP: "$content" }, // Tính độ dài của content
+          },
         },
-        
+        {
+          $sort: { contentLength: -1 }, // Sắp xếp giảm dần theo độ dài content
+        },
         
       ]);
       return res.status(200).json({

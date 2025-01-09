@@ -15,7 +15,7 @@ import { handleGetPostByPostId } from "../../sercives/api";
 import { io, Socket } from 'socket.io-client';
 import clsx from 'clsx'
 import createBatchProcessor from "../../sercives/debounce";
-const socket = io(`http://127.0.0.1:4000`);
+const socket = io(process.env.REACT_APP_API_URL);
 interface Props {
   postId: string | undefined | null
   parentId?: string | undefined | null

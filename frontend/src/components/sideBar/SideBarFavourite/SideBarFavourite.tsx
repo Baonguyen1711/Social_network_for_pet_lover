@@ -132,7 +132,7 @@ const SideBarFavourite: React.FC<SideBarProps> = ({ isOpened }) => {
             </Box>
           </Link>
 
-          <Link to="/favourite/pets" className={style.text}>
+          {/* <Link to="/favourite/pets" className={style.text}>
             <Box
               sx={{
                 "&:hover": {
@@ -154,7 +154,7 @@ const SideBarFavourite: React.FC<SideBarProps> = ({ isOpened }) => {
                 Pets
               </Typography>
             </Box>
-          </Link>
+          </Link> */}
 
           <Link to="/favourite/posts" className={style.text}>
             <Box
