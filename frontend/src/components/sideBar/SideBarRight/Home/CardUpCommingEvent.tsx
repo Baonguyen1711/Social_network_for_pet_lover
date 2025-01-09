@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import clsx from "clsx";
 
-import { Avatar, AvatarGroup, Button } from "@mui/material";
+import { Avatar, AvatarGroup, Button, Link } from "@mui/material";
+import { lightTheme } from "../../../../themes/theme";
+
 import { Event } from "../../../../types";
 import style from "./UpCommingEvent.module.css";
 import {formatDate} from '../../../../helper'
@@ -47,8 +49,32 @@ const CardUpCommingEvent = () => {
             <div className={style.contentCard}>
               {chat.description}
             </div>
+
+            <Link href={chat.link} underline="none">
+              <Button
+                variant="contained"
+                
+                sx={{
+                  backgroundColor:lightTheme.colors.primary,
+                  color: lightTheme.colors.text,
+                  textTransform: "none", // Keeps the text as is (not all caps)
+                  fontSize: "16px",      // Slightly larger text for better readability
+                  padding: "8px 16px",   // Adds spacing for a comfortable click area
+                  borderRadius: "8px",   // Rounded corners for a modern look
+                  boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)", // Adds a subtle shadow
+                  "&:hover": {
+                    backgroundColor: "rgba(0, 0, 0, 0.2)", // Darker shade for hover effect
+                    boxShadow: "0px 6px 10px rgba(0, 0, 0, 0.2)", // Enhanced shadow on hover
+                  },
+                }}
+              >
+                Go Visit Event Page
+              </Button>
+            </Link>
             <div></div>
           </div>
+
+        
         );
       })}
     </>

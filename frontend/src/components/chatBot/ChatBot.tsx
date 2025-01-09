@@ -4,12 +4,17 @@ import { useState, useRef, useEffect } from 'react'
 import { ChatBubbleOutlined, CloseOutlined } from '@mui/icons-material'
 import MessageInput from '../message/MessageInput'
 import MessageDisplay from '../message/MessageDisplay'
+import { handleGetFavouritedPetByUserId } from '../../sercives/api';
+import { useSocket } from '../message/SocketContext'
 
 const ChatBot = () => {
 
   const [isOpened, setIsOpened] = useState<boolean>(false)
-  const [scrollToBottom, setScrollToBottom] = useState(false); 
+  const [scrollToBottom, setScrollToBottom] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [petFavourites, setPetFavourites] = useState([]) 
+  // const [initialInput, setInitialInput] = useState<string | null>(null);
+  const {initialInput, setInitialInput} = useSocket()
 
   useEffect(() => {
     if (scrollToBottom && scrollRef.current) {
@@ -17,6 +22,24 @@ const ChatBot = () => {
       setScrollToBottom(false); // Reset flag after scrolling
     }
   }, [scrollToBottom]); 
+
+  useEffect(()=>{
+    const getFavouritePets = async () => {
+      debugger;
+      const petFavouriteArray = await handleGetFavouritedPetByUserId()
+      setPetFavourites(petFavouriteArray)
+    }
+    
+    getFavouritePets()
+  },[])
+
+  useEffect(() => {
+    if (initialInput) {
+      setInitialInput(initialInput); // Preload the input with the initial message
+      setIsOpened(true); // Auto-open the chatbot
+    }
+  }, [initialInput]);
+
 
   const shockwaveAnimation = keyframes`
   0% {
@@ -77,7 +100,7 @@ const ChatBot = () => {
             backgroundColor: "#f8f8f8", 
           }}
         >
-          <MessageInput recipent={null} isChatbot={true} />
+          <MessageInput recipent={null} isChatbot={true} petFavourites={JSON.stringify(petFavourites)}  />
         </Box>
       </Box>
       :

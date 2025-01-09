@@ -68,11 +68,11 @@ const ToolTipBox: React.FC<Props> = ({
                   <p>{currentUser?.location}</p>
                 </div>
 
-                {currentUser && currentUser?.petCount > 1 ? (
+                {/* {currentUser && currentUser?.petCount > 1 ? (
                   <p>Have {currentUser?.petCount} pets</p>
                 ) : (
                   <p>Have a pets</p>
-                )}
+                )} */}
               </div>
             </div>
             <div className={style.actionsBar}>

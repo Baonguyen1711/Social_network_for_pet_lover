@@ -41,7 +41,8 @@ const ProposalCommentContainer: React.FC<props> = (props) => {
         throw new Error("Error in getting message");
       }
       const data = await response.json();
-      if (data.comments.length > 0) {
+      if (data.comments.length > 0) { 
+        console.log("abcdègh",data.comments)
         setComments(data.comments);
         props.updateComments(data.comments);
       }
@@ -76,5 +77,6 @@ const ProposalCommentContainer: React.FC<props> = (props) => {
     </>
   );
 };
+
 
 export default ProposalCommentContainer;

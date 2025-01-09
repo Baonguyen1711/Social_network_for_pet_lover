@@ -63,7 +63,7 @@ const LoginForm: React.FC = () => {
                 <Typography
                     variant="h6" color="#ACBAA4" margin={3} gutterBottom
                 >
-                    Sign in to begin your adventure in discovering the pet lover world
+                    Sign in to begin your adventure in discovering the fashion lover world
                 </Typography>
                 <form onSubmit={handleSubmit}>
                     <TextField

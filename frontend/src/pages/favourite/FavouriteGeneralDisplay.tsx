@@ -55,7 +55,7 @@ const FavouriteGeneralDisplay = () => {
   };
   return (
     <div className={style.container}>
-      <div className={style.favouriteContainer}>
+      {/* <div className={style.favouriteContainer}>
         <div className={style.row}>
           <p className={style.section}>Pets Favourite</p>
           <div className={style.row}>
@@ -74,7 +74,7 @@ const FavouriteGeneralDisplay = () => {
             <PetGeneral key={pet.petInfo._id} pet={pet} />
           )):<EmptyPetGeneral/>}
         </div>
-      </div>
+      </div> */}
       <div className={style.favouriteContainer}>
         <div className={style.row}>
           <p className={style.section}>Posts Favourite</p>
