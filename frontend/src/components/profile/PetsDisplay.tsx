@@ -79,7 +79,7 @@ const PetsDisplay = () => {
         }}
       >
         {/* Button dấu cộng */}
-        
+        {userId===localStorage.getItem("userId") ? 
         <Button
         className={style.btnAddPet}
           sx={{
@@ -111,6 +111,8 @@ const PetsDisplay = () => {
           />
           <div className={style.addTextButton}>Add pet</div>
         </Button>
+        : ("")}
+        
       </Box>
       <Box sx={{ width: "100%", mx: "auto", mt: 4 }}>
         {petsData != undefined && petsData?.length > 0

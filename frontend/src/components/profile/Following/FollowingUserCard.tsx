@@ -54,12 +54,12 @@ const FollowingUserCard: React.FC<Props> = ({
         src={user.avatar}
         className={clsx(style.avatar)}
         onClick={() => {
-          navigate(`/profile/${user._id}`);
+          navigate(`/profile/${user._id}/posts`);
         }}
       />
       <p
         onClick={() => {
-          navigate(`/profile/${user._id}`);
+          navigate(`/profile/${user._id}/posts`);
         }}
       >
         {user.firstname + " " + user.lastname}
