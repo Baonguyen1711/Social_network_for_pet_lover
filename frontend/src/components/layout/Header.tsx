@@ -12,17 +12,23 @@ interface Props {
 }
 
 const Header: React.FC = () => {
-  var avatarSrc = localStorage.getItem("userAvatar")
-  const userId = localStorage.getItem("userId")
-  const userEmail = localStorage.getItem("email")
-  const { hasNotification, likePostDetailed, setHasNotification, notiList, setNotiList } = useSocket()
+  var avatarSrc = localStorage.getItem("userAvatar");
+  const userId = localStorage.getItem("userId");
+  const userEmail = localStorage.getItem("email");
+  const {
+    hasNotification,
+    likePostDetailed,
+    setHasNotification,
+    notiList,
+    setNotiList,
+  } = useSocket();
   // State for modal visibility
   const [open, setOpen] = useState(false);
   const [openDetailPostModal, setOpenDetailPostModal] = useState(false);
-  const [detailedNotiList, setDetailedNotiList] = useState<any[]>([])
+  const [detailedNotiList, setDetailedNotiList] = useState<any[]>([]);
   const handleOpenDetailPostModal = () => setOpenDetailPostModal(true);
   const handleCloseDetailPostModal = () => setOpenDetailPostModal(false);
-  
+
   // Modal handlers
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
@@ -34,20 +40,19 @@ const Header: React.FC = () => {
   useEffect(() => {
     const getNoti = async () => {
       debugger;
-      const url = `${process.env.REACT_APP_API_URL}/api/v1/notification/get?page=1&limit=5&postOwnerEmail=${userEmail}`
+      const url = `${process.env.REACT_APP_API_URL}/api/v1/notification/get?page=1&limit=5&postOwnerEmail=${userEmail}`;
       try {
-        const response = await fetch(url)
-        const data = await response.json()
+        const response = await fetch(url);
+        const data = await response.json();
 
-        localStorage.setItem("NotiQueue", JSON.stringify(data.noties))
-        setNotiList(data.noties)
+        localStorage.setItem("NotiQueue", JSON.stringify(data.noties));
+        setNotiList(data.noties);
       } catch (e) {
-        console.log(e)
+        console.log(e);
       }
-
-    }
-    getNoti()
-  }, [])
+    };
+    getNoti();
+  }, []);
   return (
     <>
       <Box
@@ -65,12 +70,21 @@ const Header: React.FC = () => {
           fontSize: "30px",
           paddingLeft: "50px",
           marginRight: "50px",
-          borderBottom:"1px solid #89966B"
+          borderBottom: "1px solid #89966B",
         }}
       >
         {/* Left Side */}
-        <div className={clsx(style.avatarContainer)} onClick={() => { navigate('/home') }}>
-          <img src='https://res.cloudinary.com/dh6brjozr/image/upload/Brown_Black_Simple_Modern_Pet_Shop_Logo_hizos1.png' />
+        <div
+          className={clsx(style.avatarContainer)}
+          onClick={() => {
+            if (window.location.pathname === "/home") {
+              window.location.reload(); // Làm mới trang
+            } else {
+              navigate("/home"); // Điều hướng
+            }
+          }}
+        >
+          <img src="https://res.cloudinary.com/dh6brjozr/image/upload/Brown_Black_Simple_Modern_Pet_Shop_Logo_hizos1.png" />
         </div>
         {/* Middle Box */}
         <Box
@@ -81,7 +95,7 @@ const Header: React.FC = () => {
             alignItems: "center", // Centers content vertically
           }}
         >
-          <SearchHeader/>
+          <SearchHeader />
         </Box>
 
         {/* Right Side */}
@@ -117,41 +131,44 @@ const Header: React.FC = () => {
               <Typography variant="h6" component="h2" gutterBottom>
                 Notifications
               </Typography>
-              {notiList ? notiList.map((noti, index) => (
+              {notiList ? (
+                notiList.map((noti, index) => (
+                  <Link
+                    href={`/post/${noti.postId}`}
+                    underline="none"
+                    color="black"
+                  >
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        mb: 2,
+                      }}
+                    >
+                      {/* User Avatar */}
+                      <Avatar
+                        src={noti.userAvatar}
+                        alt={noti.userName}
+                        sx={{
+                          width: 40,
+                          height: 40,
+                          mr: 2,
+                        }}
+                      />
 
-                <Link href={`/post/${noti.postId}`} underline='none' color='black'>
-                  <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    mb: 2,
-                  }}
-                >
-                  {/* User Avatar */}
-                  <Avatar
-                    src={noti.userAvatar}
-                    alt={noti.userName}
-                    sx={{
-                      width: 40,
-                      height: 40,
-                      mr: 2,
-                    }}
-                  />
-
-                  {/* Text Content */}
-                  <Box>
-                    <Typography variant="body1">
-                      {`${noti.userName} ${noti.eventType} your post`}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {noti.createdAt.toLocaleString()}
-                    </Typography>
-                  </Box>
-                </Box>
-                </Link>
-                
-
-              )) : (
+                      {/* Text Content */}
+                      <Box>
+                        <Typography variant="body1">
+                          {`${noti.userName} ${noti.eventType} your post`}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {noti.createdAt.toLocaleString()}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Link>
+                ))
+              ) : (
                 <Typography>No new notifications.</Typography>
               )}
             </Box>

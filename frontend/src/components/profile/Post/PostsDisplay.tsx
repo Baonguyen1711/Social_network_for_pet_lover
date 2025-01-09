@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import PostInformationCard from "./PostInformationCard";
 import { Box } from "@mui/material";
 import { PostProvider } from "./PostContext";
@@ -11,15 +11,18 @@ const PostsDisplay = () => {
   const [postsData, setPostsData] = useState<Post[]>([]);
   const [user, setUser] = useState<User>();
   const [page, setPage] = useState(1); // Thêm state phân trang
+  const [isLoading, setIsLoading] = useState(false);
+  const [isEmptyData, setIsEmptyData] = useState(false);
   const { url, setUrl } = useContext(AccessUrlContext)!;
+  const postsContainerRef = useRef<HTMLDivElement>(null);
 
   const toggleDisplayToolBox = () => {
     setIsDisplayTool((prev) => !prev);
   };
 
   const fetchData = async () => {
-    if (!url) return;
-    console.log("asdad")
+    if (!url|| isEmptyData || isLoading) return;
+    setIsLoading(true);
     try {
       const response = await fetch(`${url}&page=${page}&limit=10`, {
         method: "GET",
@@ -28,48 +31,93 @@ const PostsDisplay = () => {
         throw new Error("Error in getting posts");
       }
       const data = await response.json();
+      if (data.posts.length === 0) {
+        console.log('fecth')
+        setIsEmptyData(true); // Dữ liệu trả về rỗng, dừng tải thêm
+        setTimeout(() => setIsEmptyData(false), 1000); // Sau 0.5s cho phép tiếp tục tải nếu có dữ liệu
+      }
       setPostsData((prevPosts) => [...prevPosts, ...data.posts]); // Thêm bài viết mới vào bài viết cũ
       setUser(data.user);
     } catch (e) {
       console.error("Error fetching data:", e);
+    } finally {
+      setIsLoading(false); // Kết thúc việc tải dữ liệu
+    }
+  };
+
+  const fetchNewData = async () => {
+    if (!url) return;
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${url}&page=1&limit=10`, {
+        method: "GET",
+      });
+      if (!response.ok) {
+        throw new Error("Error in getting posts");
+      }
+      const data = await response.json();
+      console.log("fetchFirst",data.posts)
+      setPostsData(data.posts); // Thêm bài viết mới vào bài viết cũ
+      setUser(data.user);
+    } catch (e) {
+      console.error("Error fetching data:", e);
+    }finally {
+      setIsLoading(false); // Kết thúc việc tải dữ liệu
     }
   };
 
   const updatePostsState = async () => {
     try {
-      fetchData();
+      fetchNewData();
     } catch (error) {
       console.error("Error updating post state:", error);
     }
   };
 
   const handleScroll = () => {
-    const scrollPosition = window.innerHeight + document.documentElement.scrollTop;
-    const bottomPosition = document.documentElement.offsetHeight;
-    if (scrollPosition >=  bottomPosition / 2) {
+    if (!postsContainerRef.current) return;
+    const scrollPosition =
+      postsContainerRef.current.scrollTop +
+      postsContainerRef.current.clientHeight;
+    const bottomPosition = postsContainerRef.current.scrollHeight;
+    if (scrollPosition >= bottomPosition - 100) {
       setPage((prevPage) => prevPage + 1); // Cập nhật số trang để tải thêm bài viết
     }
   };
 
   useEffect(() => {
-    //console.log("fetch")
-    fetchData(); // Call fetchData inside useEffect when URL or page changes
-  }, [url, page]);
-
+    fetchData();
+  }, [page]);
+  useEffect(() => {
+    fetchNewData();
+  }, [url]);
   useEffect(() => {
     const interval = setInterval(updatePostsState, 15000); // Cập nhật bài viết mỗi 15s
     return () => clearInterval(interval); // Dọn dẹp interval khi component unmount
   }, []);
 
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll); // Thêm sự kiện cuộn vô hạn
+    if (postsContainerRef.current) {
+      postsContainerRef.current.addEventListener("scroll", handleScroll); // Lắng nghe sự kiện cuộn chỉ trong container bài viết
+    }
     return () => {
-      window.removeEventListener("scroll", handleScroll); // Dọn dẹp sự kiện khi component unmount
+      if (postsContainerRef.current) {
+        postsContainerRef.current.removeEventListener("scroll", handleScroll); // Dọn dẹp sự kiện khi component unmount
+      }
     };
   }, []);
 
   return (
-    <Box sx={{ width: "100%", mx: "auto", mt: 4  }}>
+    <Box
+      sx={{
+        width: "100%",
+        height: "calc(100vh - 80px)", 
+        overflowY: "auto",
+        mx: "auto",
+        mt: 4,
+      }}
+      ref={postsContainerRef}
+    >
       <PostRequestBar
         user={user}
         toggleDisplayToolBox={toggleDisplayToolBox}
@@ -77,11 +125,13 @@ const PostsDisplay = () => {
         updatePostsState={updatePostsState}
       />
       {postsData?.length > 0
-        ? postsData.map((post) => (
+        ? (<> {postsData.map((post) => (
             <PostProvider post={post} key={post._id}>
               <PostInformationCard updatePostsState={updatePostsState} />
             </PostProvider>
-          ))
+          ))}
+          {}
+          </>)
         : "Don't have any post"}
     </Box>
   );

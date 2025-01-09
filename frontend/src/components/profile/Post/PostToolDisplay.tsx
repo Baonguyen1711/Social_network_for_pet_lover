@@ -17,7 +17,7 @@ import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
 import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
 import React, { useEffect, useRef, useState } from "react";
 import uploadToCloudinary from "../UploadImage";
-import { Post,FormPost, User } from "../../../types";
+import { Post, FormPost, User } from "../../../types";
 
 interface PostToolDisplayProps {
   isOpen: boolean; // Điều khiển hiển thị
@@ -36,10 +36,11 @@ const PostToolDisplay: React.FC<PostToolDisplayProps> = ({
     content: "",
     images: [],
   });
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [selectedImages, setSelectedImages] = useState<File[] | null>(null);
   const [isChanged, setIsChanged] = useState(false);
   const [_message, setMessage] = useState(false);
-  const [userData,setUserData] = useState<User>()
+  const [userData, setUserData] = useState<User>();
+  const [isDisableConfirmButton, setIsDisableConfirmButton] = useState(true);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,15 +52,15 @@ const PostToolDisplay: React.FC<PostToolDisplayProps> = ({
     }
     setFields((fields) => ({
       ...fields,
-      ...{  
+      ...{
         [id]: value,
       },
     }));
     setIsChanged(true);
   };
   useEffect(() => {
-    const userId = localStorage.getItem('userId')
-    const fetchData = async () => { 
+    const userId = localStorage.getItem("userId");
+    const fetchData = async () => {
       const url = `${process.env.REACT_APP_API_URL}/api/v1/user/getbyid/${userId}`;
       try {
         const response = await fetch(url, {
@@ -70,7 +71,7 @@ const PostToolDisplay: React.FC<PostToolDisplayProps> = ({
         }
         const data = await response.json();
         setUserData(data.user);
-      } catch (e) { 
+      } catch (e) {
         console.error("Error fetching data:", e);
       }
     };
@@ -94,7 +95,7 @@ const PostToolDisplay: React.FC<PostToolDisplayProps> = ({
       );
       return;
     }
-    setSelectedImage(file);
+    setSelectedImages((prev) => (prev ? [...prev, file] : [file]));
   };
   const handleUploadImage = () => {
     if (fileInputRef.current) {
@@ -113,39 +114,46 @@ const PostToolDisplay: React.FC<PostToolDisplayProps> = ({
 
   const handlePostData = async () => {
     let response;
-    if(!CheckValidField()) {
-      window.alert(_message)
-      return}
-    if (selectedImage) {
-      let uploadedImageUrl = await uploadToCloudinary(selectedImage);
-      setFields((fields) => ({
-        ...fields,
-        images: [uploadedImageUrl], // Update the images field
-      }));
-      response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/post/create`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: localStorage.getItem("userId"),
-          title: fields.title,
-          content: fields.content,
-          imgUrl: uploadedImageUrl,
-        }),
-      });
+
+    if (selectedImages) {
+      for (let selectedImage of selectedImages) {
+        let uploadedImageUrl = await uploadToCloudinary(selectedImage);
+        fields.images?.push(uploadedImageUrl);
+      }
+      if (!CheckValidField()) {
+        window.alert(_message);
+        return;
+      }
+      response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/v1/post/create`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: localStorage.getItem("userId"),
+            title: fields.title,
+            content: fields.content,
+            imgUrl: fields.images ? fields.images : [],
+          }),
+        }
+      );
     } else {
-      response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/post/create`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: localStorage.getItem("userId"),
-          title: fields.title,
-          content: fields.content,
-        }),
-      });
+      response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/v1/post/create`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: localStorage.getItem("userId"),
+            title: fields.title,
+            content: fields.content,
+          }),
+        }
+      );
     }
 
     if (response.ok) {
@@ -156,15 +164,17 @@ const PostToolDisplay: React.FC<PostToolDisplayProps> = ({
       window.alert("Have a trouble");
     }
   };
-  const CheckValidField =  () => 
-  {
-    if(fields.title===""&&!selectedImage&&fields.content==="")
-    {
+  const CheckValidField = () => {
+    if (
+      fields.title === "" &&
+      fields.images?.length === 0 &&
+      fields.content === ""
+    ) {
       return false;
     }
-    return true
-  }
-  
+    return true;
+  };
+
   return (
     <>
       <Modal
@@ -235,7 +245,7 @@ const PostToolDisplay: React.FC<PostToolDisplayProps> = ({
                   variant="h5"
                   sx={{ alignSelf: "center", marginLeft: "10px" }}
                 >
-                  {userData&&userData.firstname+" "+userData.lastname}
+                  {userData && userData.firstname + " " + userData.lastname}
                 </Typography>
                 {/* <Typography variant="body1" sx={{ alignSelf: "center" }}>
                   đang cảm thấy
@@ -303,53 +313,68 @@ const PostToolDisplay: React.FC<PostToolDisplayProps> = ({
                 required
               />
 
-              {selectedImage ? (
-                <Box
-                  sx={{
-                    position: "relative",
-                    width: "auto",
-                    paddingTop: "75%", // 4:3 Aspect Ratio
-                    border: "1px solid #ddd",
-                    borderRadius: "8px",
-                    overflow: "hidden",
-                    marginBottom: "16px",
-                  }}
-                >
-                  <img
-                    src={URL.createObjectURL(selectedImage)}
-                    alt="Uploaded"
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                    }}
-                  />
-                  <Button
-                    onClick={() => setSelectedImage(null)} // Đặt lại ảnh về null khi nhấn
+              {selectedImages ? (
+                selectedImages.map((selectedImage) => (
+                  <Box
                     sx={{
-                      position: "absolute",
-                      top: "8px",
-                      right: "8px",
-                      opacity: "0.4",
-                      backgroundColor: "#99A67A", // Màu nền trắng mờ
-                      border: "2px solid #CCDCBA",
-                      color: "#E6F5DE", // Màu chữ
-                      borderRadius: "50%", // Hình dạng tròn
-                      minWidth: "32px", // Kích thước nhỏ nhất
-                      height: "32px", // Chiều cao cố định
-                      "&:hover": {
-                        backgroundColor: "#B6C79B",
-                        color: "#708258", // Màu chữ
-                        border: "1px solid #99A67A", // Hiệu ứng hover
-                      },
+                      position: "relative",
+                      width: "auto",
+                      paddingTop: "75%", // 4:3 Aspect Ratio
+                      border: "1px solid #ddd",
+                      borderRadius: "8px",
+                      overflow: "hidden",
+                      marginBottom: "16px",
                     }}
                   >
-                    <a>X</a>
-                  </Button>
-                </Box>
+                    <img
+                      src={URL.createObjectURL(selectedImage)}
+                      alt="Uploaded"
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                    <Button
+                      onClick={() => {
+                        setSelectedImages((prev) => {
+                          setIsDisableConfirmButton(
+                            selectedImages.length === 1
+                          );
+                          return prev
+                            ? prev.filter(
+                                (img) =>
+                                  img?.lastModified !==
+                                  selectedImage?.lastModified
+                              )
+                            : [];
+                        });
+                      }} // Đặt lại ảnh về null khi nhấn
+                      sx={{
+                        position: "absolute",
+                        top: "8px",
+                        right: "8px",
+                        opacity: "0.4",
+                        backgroundColor: "#99A67A", // Màu nền trắng mờ
+                        border: "2px solid #CCDCBA",
+                        color: "#E6F5DE", // Màu chữ
+                        borderRadius: "50%", // Hình dạng tròn
+                        minWidth: "32px", // Kích thước nhỏ nhất
+                        height: "32px", // Chiều cao cố định
+                        "&:hover": {
+                          backgroundColor: "#B6C79B",
+                          color: "#708258", // Màu chữ
+                          border: "1px solid #99A67A", // Hiệu ứng hover
+                        },
+                      }}
+                    >
+                      <a>X</a>
+                    </Button>
+                  </Box>
+                ))
               ) : (
                 <Typography color="text.secondary">
                   No image selected

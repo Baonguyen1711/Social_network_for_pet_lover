@@ -77,6 +77,7 @@ class FollowController {
       const existingFollow = await Follow.findOne({
         followerId: new ObjectId(`${followerId}`),
         followingId: new ObjectId(`${followingId}`),
+        isDelete:false
       });
 
       // Trả về kết quả

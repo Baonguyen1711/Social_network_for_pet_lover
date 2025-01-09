@@ -28,13 +28,6 @@ const HomeForm = () => {
     backgroundColor: lightTheme.colors.primary, // Inline background color style
 
   };
-  // const updatePostsState = async (returnPost: Post | undefined) => {
-  //   try {
-  //     await fetchData();
-  //   } catch (error) {
-  //     console.error("Error updating post state:", error);
-  //   }
-  // };
   return (
     <div style={backgr} className={style.coverContainer}>
       <div className={style.bodyContainer}>

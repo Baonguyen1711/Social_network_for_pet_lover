@@ -5,10 +5,12 @@ import style from "./css/MainProfileForm.module.css";
 import { Outlet, Link, useParams, useLocation } from "react-router-dom";
 import { User } from "../../types";
 import { AccessUrlContext, AccessUrlProvider } from "./AccessUrlContext";
+import { checkFollowed } from "../../sercives/api";
 
 const MainProfileForm: React.FC = () => {
   const { userId } = useParams();
   const [userEmail, setUserEmail] = useState<string>("");
+
   const [userData, setUserData] = useState<User>();
   const location = useLocation();
   const pathParts = location.pathname.split('/');
@@ -27,12 +29,13 @@ const MainProfileForm: React.FC = () => {
         const data = await response.json();
         setUserData(data.user);
         setUserEmail(data.user.email);
+        
       } catch (e) {
         console.error("Error fetching data:", e);
       }
     };
-
-    fetchData(); // Call fetchData inside useEffect
+    
+    fetchData(); // Call fetchData inside ususeEffect
   }, [userId]);
   return (
     <div className={style.coverContainer}>

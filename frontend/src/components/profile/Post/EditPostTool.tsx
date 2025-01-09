@@ -135,7 +135,7 @@ const PostToolDisplay: React.FC<PostToolDisplayProps> = ({
       for (let selectedImage of selectedImages) {
         let uploadedImageUrl = await uploadToCloudinary(selectedImage);
         fields.images?.push(uploadedImageUrl);
-        console.log("fields.images", fields.images);
+        //console.log("fields.images", fields.images);
       }
     }
     if (!CheckValidField()) {

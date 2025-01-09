@@ -46,8 +46,8 @@ export async function handleFollow(
   }
 }
 export async function checkFollowed(
-  follower: string | null,
-  followingId: string | undefined
+  follower: string | null|undefined,
+  followingId: string | undefined|null
 ) {
   try {
     const response = await fetch(
@@ -63,7 +63,10 @@ export async function checkFollowed(
         }),
       }
     );
-    return response;
+    if(response.ok)
+    {
+      return response.json()
+    }
   } catch (error) {
     console.error("Error fetch follow user:", error);
     alert("Error occurred while trying to fetch follow.");
@@ -587,7 +590,7 @@ export async function handleDeleteCommentAPI(commentId: string | undefined) {
     }
   }
 
-  export async function handleDeleteFollow(followerId: string | undefined, followingId: string | undefined) {
+  export async function handleDeleteFollow(followerId: string | undefined |null, followingId: string | undefined|null) {
     try {
       const response = await fetch(
         `${process.env.REACT_APP_API_URL}/api/v1/follow/deletefollow?followerId=${followerId}&followingId=${followingId}`,
