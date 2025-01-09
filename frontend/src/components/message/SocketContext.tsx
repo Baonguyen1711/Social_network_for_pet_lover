@@ -5,7 +5,7 @@ import { MessageComponentType, EventSocket } from '../../types';
 import { RecentChat } from '../../types';
 import { useBackground } from './BackgroundContext';
 import { handleGetPostByPostId } from '../../sercives/api';
-const socket = io(`http://127.0.0.1:4000`);
+const socket = io(process.env.REACT_APP_API_URL);
 
 interface SocketContextType {
   socket: Socket;
