@@ -36,6 +36,7 @@ import { useParams } from "react-router-dom";
 const PostsDisplay = () => {
   const [isDisplayTool, setIsDisplayTool] = useState(false);
   const [postsData, setPostsData] = useState<Post[]>([]);
+  const [page,setPage] = useState(0)
   const [user, setUser] = useState<User>();
   const { url, setUrl } = useContext(AccessUrlContext)!;
   const toggleDisplayToolBox = () => {
@@ -52,22 +53,59 @@ const PostsDisplay = () => {
   useEffect(() => {
     fetchData(); // Call fetchData inside useEffect
   }, [url]);
-  const fetchData = async () => {
+  // const fetchData = async () => {
+  //   if (!url) return;
+  //   try {
+  //     const response = await fetch(url, {
+  //       method: "GET",
+  //     });
+  //     if (!response.ok) {
+  //       throw new Error("Error in getting message");
+  //     }
+  //     const data = await response.json();
+  //     setPostsData(data.posts);
+  //     setUser(data.user);
+  //   } catch (e) {
+  //     console.error("Error fetching data:", e);
+  //   }
+  // };
+  const fetchData = async (page: number = 1, limit: number = 2) => {
     if (!url) return;
     try {
-      const response = await fetch(url, {
+      const response = await fetch(`${url}&page=${page}&limit=${limit}`, {
         method: "GET",
       });
       if (!response.ok) {
-        throw new Error("Error in getting message");
+        throw new Error("Error in getting posts");
       }
       const data = await response.json();
-      setPostsData(data.posts);
-      setUser(data.user);
+      if (data.posts.length > 0) {
+        console.log('fetchaskdja')
+        setPostsData((prev) => [...prev, ...data.posts]); // Append new data
+        setUser(data.user);
+      } else {
+        console.log("No more posts to load");
+      }
     } catch (e) {
       console.error("Error fetching data:", e);
     }
   };
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          fetchData(page + 1); // Tăng page lên và gọi API
+          setPage((prev) => prev + 1);
+        }
+      },
+      { threshold: 1 }
+    );
+
+    const loadMoreTrigger = document.querySelector("#load-more-trigger");
+    if (loadMoreTrigger) observer.observe(loadMoreTrigger);
+
+    return () => observer.disconnect();
+  }, [page]);
   // const handleHide = () => {
   //   console.log("Hide clicked");
   // };
@@ -89,6 +127,7 @@ const PostsDisplay = () => {
             );
           })
         : "Don't have any post"}
+        <div id="load-more-trigger"></div> 
     </Box>
   );
 };
