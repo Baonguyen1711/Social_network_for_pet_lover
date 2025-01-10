@@ -70,8 +70,8 @@ const Header: React.FC = () => {
       >
         {/* Left Side */}
         <div className={clsx(style.avatarContainer)} onClick={() => { navigate('/home') }}>
-          {/* <img src='https://res.cloudinary.com/dh6brjozr/image/upload/Brown_Black_Simple_Modern_Pet_Shop_Logo_hizos1.png' /> */}
-          𝓕𝓪𝓼𝓱𝓲𝓸𝓷𝓲𝓼𝓽𝓪
+          <img src='https://res.cloudinary.com/dh6brjozr/image/upload/Brown_Black_Simple_Modern_Pet_Shop_Logo_hizos1.png' />
+{/*           𝓕𝓪𝓼𝓱𝓲𝓸𝓷𝓲𝓼𝓽𝓪 */}
         </div>
         {/* Middle Box */}
         <Box
