@@ -299,13 +299,24 @@ class PostController {
 
   async getPostsByFollowedUsers(req, res) {
     try {
-      const { userId,page,limit } = req.query;
-      console.log(userId,page,limit)
-      if (!ObjectId.isValid(userId)) {
-        return res.status(400).send({ error: "Invalid userId format", userId });
+      const { userId, page, limit } = req.query;
+      //console.log(userId,page,limit)
+      const pageNum = parseInt(page); // Chuyển page thành số nguyên
+      const limitNum = parseInt(limit); // Chuyển limit thành số nguyên
+
+      if (
+        !ObjectId.isValid(userId) ||
+        isNaN(pageNum) ||
+        pageNum <= 0 ||
+        isNaN(limitNum) ||
+        limitNum <= 0
+      ) {
+        return res
+          .status(400)
+          .send({ error: "Invalid input parameters", userId, page, limit });
       }
       connectToDb();
-
+      const skip = (page - 1) * limit;
       const followedUsers = await Follow.find(
         {
           followerId: new ObjectId(`${userId}`),
@@ -333,10 +344,10 @@ class PostController {
           },
         },
         {
-          $skip: (page - 1) * limit
+          $skip: skip,
         },
         {
-          $limit: limit
+          $limit: limitNum,
         },
         {
           $lookup: {
@@ -476,13 +487,11 @@ class PostController {
       const { postId, userAccessId } = req.query;
       console.log("abcdfzzxx", postId, userAccessId);
       if (!ObjectId.isValid(postId) && !ObjectId.isValid(userAccessId)) {
-        return res
-          .status(400)
-          .json({
-            error: "Invalid userAccessId,postId format",
-            userAccessId,
-            postId,
-          });
+        return res.status(400).json({
+          error: "Invalid userAccessId,postId format",
+          userAccessId,
+          postId,
+        });
       }
       connectToDb();
       const posts = await Post.aggregate([

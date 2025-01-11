@@ -71,6 +71,7 @@ const PostsDisplay = () => {
   // };
   const fetchData = async (page: number = 1, limit: number = 2) => {
     if (!url) return;
+    console.log("abcde",`${url}&page=${page}&limit=${limit}`)
     try {
       const response = await fetch(`${url}&page=${page}&limit=${limit}`, {
         method: "GET",
