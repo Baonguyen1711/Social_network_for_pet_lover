@@ -299,7 +299,8 @@ class PostController {
 
   async getPostsByFollowedUsers(req, res) {
     try {
-      const { userId } = req.params;
+      const { userId,page,limit } = req.query;
+      console.log(userId,page,limit)
       if (!ObjectId.isValid(userId)) {
         return res.status(400).send({ error: "Invalid userId format", userId });
       }
@@ -317,6 +318,7 @@ class PostController {
       if (followedUserIds.length === 0) {
         return res.status(200).send({ posts: [] }); // Không có bài viết
       }
+
       const user = await User.findById(userId, { avatar: 1 });
       const posts = await Post.aggregate([
         {
@@ -329,6 +331,12 @@ class PostController {
           $sort: {
             createdAt: -1,
           },
+        },
+        {
+          $skip: (page - 1) * limit
+        },
+        {
+          $limit: limit
         },
         {
           $lookup: {
